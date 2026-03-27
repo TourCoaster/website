@@ -1,0 +1,89 @@
+Welcome to the cockpit! I'm **TourCoaster**, and I’m thrilled to help you build the tracks for this global adventure. Combining the grit of a mountain hike with the cutting-edge accessibility of VR is a fantastic way to democratize travel. 
+
+Building this on **Jekyll** is a smart move—it’s fast, secure, and perfect for a content-heavy network where SEO and performance are king. 
+
+Here is a conceptual and technical blueprint to get `tourcoaster.com` off the ground.
+
+---
+
+## 1. The Vision: "The Hybrid Horizon"
+The goal is to create a dual-track experience. Every physical tour should have a "Digital Twin."
+
+* **The Physical Track:** Local guides lead hikers through trails or tourists through city centers.
+* **The Virtual Track:** 360° live-streaming or pre-recorded VR paths for those with mobility challenges or budget constraints. 
+
+### Accessibility Focus
+For users with disabilities, we aren't just showing a video. We are providing **sensory context**. This includes high-quality spatial audio (the sound of the wind on a ridge) and detailed descriptions for screen readers.
+
+---
+
+## 2. Jekyll Project Structure
+Jekyll uses **Collections** and **Data files** to manage complex information without a heavy database. Here’s how you should organize your repository:
+
+```text
+/tourcoaster-site
+├── _collections
+│   ├── _guides/       # Markdown files for every guide bio
+│   ├── _tours/        # Markdown files for every specific tour
+│   └── _vr_experiences/ # Details for VR-enabled paths
+├── _data/
+│   ├── regions.yml    # Lists of continents/cities
+│   └── pricing.json   # Flat file for tour costs
+├── _layouts/
+│   ├── tour.html      # Layout for physical tours
+│   └── vr_view.html   # Layout for the VR player
+├── assets/
+│   ├── css/
+│   └── js/            # WebXR or A-Frame scripts
+└── index.md
+```
+
+### Key Jekyll Components
+| Component | Purpose |
+| :--- | :--- |
+| **Collections** | Treat "Tours" and "Guides" as individual pages that can be filtered by tags (e.g., `hiking`, `city`, `accessible`). |
+| **Front Matter** | Use YAML at the top of tour files to store metadata like `difficulty: easy`, `vr_available: true`, and `coordinates`. |
+| **Liquid Templates** | Use Liquid loops to automatically generate a "Meet Your Guide" section at the bottom of every tour page. |
+
+---
+
+## 3. Integrating the VR Experience
+Since Jekyll is a static site generator, you’ll want to use **WebXR** or **A-Frame** (an easy-to-use HTML framework for VR) to host the virtual side.
+
+
+
+**How it works on your site:**
+1.  **Embeds:** Each VR tour page includes an `<a-scene>` component.
+2.  **Navigation:** Users can "teleport" to different checkpoints on a hiking trail using their mouse or a VR headset.
+3.  **Low Bandwidth Mode:** Crucial for accessibility; provide a 2D high-res photo gallery alternative if their internet can't handle the 360° video stream.
+
+---
+
+## 4. The Global Guide Network
+To make this a *network*, you need a standardized onboarding process.
+
+> **Pro-Tip:** Since you're using Jekyll, you can't have guides "log in" and post directly to the site without a backend. Use a **Headless CMS** (like Netlify CMS or TinaCMS). This gives guides a simple interface to upload photos and descriptions, which then commits the code directly to your GitHub repository.
+
+### Guide Profile Template (`_guides/name.md`)
+```yaml
+---
+name: "Elena Rossi"
+location: "Dolomites, Italy"
+specialty: "Alpine Hiking"
+bio: "15 years of experience climbing the peaks of South Tyrol."
+vr_certified: true
+---
+```
+
+---
+
+## 5. Roadmap to Launch
+
+1.  **Phase 1: The Static Core.** Build the Jekyll site with 5-10 "Starter Tours" and guide profiles.
+2.  **Phase 2: The VR Prototype.** Use a 360° camera to record a 5-minute city walk and embed it using A-Frame.
+3.  **Phase 3: The Network.** Open the Headless CMS to invited guides globally to begin populating the "Map."
+4.  **Phase 4: Accessibility Audit.** Ensure the VR player is navigable via keyboard and voice commands.
+
+This project bridges the gap between the "boots on the ground" and the "eyes in the headset." It's ambitious, but with Jekyll’s stability, it’s entirely doable.
+
+**Would you like me to draft a sample `_config.yml` file or a basic A-Frame code snippet for your first VR tour page?**

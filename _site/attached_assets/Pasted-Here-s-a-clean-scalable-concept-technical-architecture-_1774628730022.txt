@@ -1,0 +1,380 @@
+Here’s a **clean, scalable concept + technical architecture** for **TourCoaster.com** as a global tour guide network with **physical + VR access**, designed natively for **Jekyll Pages**.
+
+---
+
+# 🌍 TOURCOASTER — CORE CONCEPT
+
+TourCoaster is a **hybrid exploration network** connecting:
+
+1. 🧭 Physical guides (hiking + city tours)
+2. 🌐 Digital explorers (self-guided travelers)
+3. 🥽 VR users (remote + accessibility users)
+4. ♿ Inclusive access layer (disability-first tourism)
+
+Think:
+
+> “Airbnb Experiences + AllTrails + Google Earth VR + Wikipedia travel guides — unified.”
+
+---
+
+# 🧠 1. PRODUCT ARCHITECTURE
+
+## A. Core Modules
+
+### 1. 🌍 Tour Network Layer
+
+* Verified global tour guides
+* City guides + hiking guides
+* Local experiences (nature, culture, food, architecture)
+* Ratings + trust scoring
+
+---
+
+### 2. 🗺️ Route Engine
+
+* GPS-based trails (hikes + urban walks)
+* AI-generated “recommended paths”
+* Difficulty + accessibility tagging
+* Weather + safety integration
+
+---
+
+### 3. 🥽 VR EXPERIENCE LAYER
+
+For users who:
+
+* cannot travel
+* have disabilities
+* want preview experiences
+
+Includes:
+
+* 360° immersive tours
+* Guided narration (AI or human voice)
+* “Live walk mode” (recorded guide walking in real time)
+* Scenic replay (nature loops, city flythroughs)
+
+---
+
+### 4. ♿ Accessibility Layer
+
+* Audio-first navigation mode
+* Wheelchair-accessible routing filters
+* “Virtual mobility” VR mode
+* Sign language overlays (future)
+
+---
+
+### 5. 🧑‍🤝‍🧑 Community Layer
+
+* Guide profiles
+* Traveler profiles
+* Trip journals
+* Community itineraries
+* Reviews + reputation system
+
+---
+
+### 6. 💰 Marketplace Layer
+
+* Booking tours
+* VR content monetization
+* Subscriptions (Explorer Pass)
+* Guide revenue share
+
+---
+
+# 🧱 2. SYSTEM ARCHITECTURE (HIGH LEVEL)
+
+```
+Frontend (Jekyll Static Site)
+        ↓
+API Layer (optional: Supabase / Firebase / Node)
+        ↓
+Content System (Markdown + JSON + Geo data)
+        ↓
+Media Layer (360 videos, VR assets, images)
+        ↓
+Optional: AI layer (recommendations + route generation)
+```
+
+---
+
+# 🗂️ 3. JEKYLL SITE STRUCTURE
+
+## 📁 Base Structure
+
+```
+tourcoaster/
+├── _config.yml
+├── _data/
+│   ├── guides.yml
+│   ├── tours.yml
+│   ├── routes.yml
+│   ├── cities.yml
+│   ├── hikes.yml
+│   └── vr_experiences.yml
+│
+├── _layouts/
+│   ├── default.html
+│   ├── tour.html
+│   ├── guide.html
+│   ├── city.html
+│   ├── hike.html
+│   ├── vr.html
+│   └── map.html
+│
+├── _includes/
+│   ├── header.html
+│   ├── footer.html
+│   ├── tour-card.html
+│   ├── guide-card.html
+│   ├── vr-player.html
+│   └── mapbox.html
+│
+├── _tours/
+├── _guides/
+├── _cities/
+├── _hikes/
+├── _vr/
+│
+├── assets/
+│   ├── css/
+│   ├── js/
+│   ├── vr/
+│   ├── images/
+│   └── 360/
+│
+├── pages/
+│   ├── index.md
+│   ├── explore.md
+│   ├── maps.md
+│   ├── vr.md
+│   ├── accessibility.md
+│   ├── become-a-guide.md
+│   └── about.md
+```
+
+---
+
+# 📄 4. CONTENT MODELS (Jekyll DATA STRUCTURE)
+
+## 🧭 Guide (`_data/guides.yml`)
+
+```yml
+- id: guide_001
+  name: "Elena Rivera"
+  location: "Barcelona"
+  specialties:
+    - urban tours
+    - architecture
+    - food culture
+  languages:
+    - English
+    - Spanish
+  rating: 4.9
+  vr_enabled: true
+  experience_years: 6
+```
+
+---
+
+## 🗺️ Tour (`_data/tours.yml`)
+
+```yml
+- id: tour_001
+  title: "Old Town Barcelona Walk"
+  type: "city"
+  guide_id: guide_001
+  duration: "2.5h"
+  difficulty: "easy"
+  accessibility: "partial"
+  geo_path:
+    - [41.3851, 2.1734]
+    - [41.3839, 2.1762]
+  vr_available: true
+  media:
+    cover: "/assets/images/barcelona_oldtown.jpg"
+    vr_360: "/assets/360/barcelona_oldtown.mp4"
+```
+
+---
+
+## 🏔️ Hike (`_data/hikes.yml`)
+
+```yml
+- id: hike_001
+  name: "Mont Blanc Scenic Trail"
+  difficulty: "hard"
+  elevation_gain: 1200
+  duration: "6h"
+  gps_track: "/assets/gps/montblanc.gpx"
+  vr_preview: true
+```
+
+---
+
+## 🥽 VR Experience (`_data/vr_experiences.yml`)
+
+```yml
+- id: vr_001
+  title: "Walk Through Kyoto Temples"
+  location: "Kyoto"
+  type: "immersive_walk"
+  duration: "15m"
+  accessibility: "full"
+  narration: "human_ai_mixed"
+  assets:
+    video_360: "/assets/vr/kyoto.mp4"
+    audio: "/assets/vr/kyoto_audio.mp3"
+```
+
+---
+
+# 🧭 5. WEBSITE EXPERIENCE DESIGN
+
+## 🏠 Homepage
+
+* Global map (interactive)
+* “Explore now” search bar
+* Featured tours
+* VR entry point
+
+---
+
+## 🗺️ Explore Page
+
+Filters:
+
+* City / Nature
+* Difficulty
+* Accessibility
+* VR available
+* Live guides
+
+---
+
+## 🥽 VR Page (KEY DIFFERENTIATOR)
+
+Sections:
+
+* “Travel without moving”
+* Featured immersive tours
+* Accessibility mode
+* VR headset compatibility
+
+---
+
+## 🧑 Guide Profile Page
+
+* Bio
+* Tours offered
+* Live availability
+* VR recordings
+* Reviews
+* Booking button
+
+---
+
+## ♿ Accessibility Page
+
+* Supported modes
+* VR assist features
+* Audio tours
+* High contrast UI
+
+---
+
+# 🧠 6. INTELLIGENCE LAYER (OPTIONAL BUT POWERFUL)
+
+## AI Functions
+
+* Generate itinerary from preferences
+* Suggest routes based on weather + fitness
+* Auto-generate VR narration scripts
+* Summarize tours into “preview mode”
+
+Example:
+
+> “3-day Kyoto cultural immersion under light walking conditions”
+
+---
+
+# 🧩 7. VR SYSTEM OPTIONS
+
+## Option A (MVP)
+
+* 360° video playback
+* Embedded YouTube/Vimeo VR
+* WebXR viewer
+
+## Option B (Advanced)
+
+* Three.js WebXR scenes
+* Interactive hotspots
+* Spatial audio
+
+## Option C (Future)
+
+* Full metaverse twin of cities
+* Real-time guide avatars
+* AI-guided exploration
+
+---
+
+# 💡 8. DIFFERENTIATION
+
+TourCoaster is NOT:
+
+* just booking tours
+* just travel blog
+* just maps
+
+It becomes:
+
+> 🌐 “The accessibility-first global exploration layer of the real world”
+
+---
+
+# 🚀 9. MVP ROADMAP (FAST BUILD)
+
+### Week 1–2
+
+* Jekyll structure
+* Tours + guides YAML
+* Basic map integration
+
+### Week 3–4
+
+* VR page (360 player)
+* Tour pages
+* Guide profiles
+
+### Week 5–6
+
+* Booking system (simple form or Stripe)
+* Ratings + reviews
+
+### Week 7+
+
+* AI itinerary generator
+* VR expansion
+* Guide onboarding system
+
+---
+
+# If you want next step
+
+I can help you build:
+
+### ⚙️ 1. Full Jekyll starter repo (ready to deploy)
+
+### 🧠 2. AI itinerary generator prompt system
+
+### 🥽 3. VR architecture (WebXR / Three.js stack)
+
+### 💰 4. Monetization + marketplace design
+
+### 🗺️ 5. Interactive map system (Mapbox integration)
+
+Just tell me which layer you want to build first.
