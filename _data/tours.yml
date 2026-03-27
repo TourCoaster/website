@@ -1,0 +1,149 @@
+- id: tour_001
+  title: "Old Town Barcelona Walk"
+  slug: "old-town-barcelona"
+  type: "city"
+  guide_id: guide_001
+  guide_name: "Elena Rivera"
+  location: "Barcelona, Spain"
+  continent: "Europe"
+  duration: "2.5 hours"
+  difficulty: "easy"
+  accessibility: "full"
+  accessibility_notes: "Flat terrain, wheelchair accessible, audio descriptions available"
+  price: 45
+  currency: "EUR"
+  vr_available: true
+  description: "Wander through the Gothic Quarter's medieval streets, discover hidden plazas, and taste authentic Catalan cuisine. This walking tour covers 2,000 years of Barcelona's history."
+  highlights:
+    - "Gothic Quarter medieval architecture"
+    - "La Boqueria market food tasting"
+    - "Hidden Roman ruins"
+    - "Local tapas experience"
+  image: "/assets/images/art/b1.webp"
+  rating: 4.9
+  reviews_count: 87
+
+- id: tour_002
+  title: "Mont Blanc Scenic Trail"
+  slug: "mont-blanc-scenic"
+  type: "nature"
+  guide_id: guide_002
+  guide_name: "Marco Bernasconi"
+  location: "Swiss Alps, Switzerland"
+  continent: "Europe"
+  duration: "6 hours"
+  difficulty: "hard"
+  accessibility: "limited"
+  accessibility_notes: "Steep terrain, VR alternative available for accessibility"
+  price: 120
+  currency: "CHF"
+  vr_available: true
+  description: "Trek through one of the most spectacular alpine landscapes in the world. This challenging day hike offers panoramic views of Mont Blanc, glacial valleys, and wildflower meadows."
+  highlights:
+    - "Panoramic Mont Blanc views"
+    - "Alpine wildflower meadows"
+    - "Glacial valley crossing"
+    - "Mountain wildlife spotting"
+  image: "/assets/images/art/b2.webp"
+  rating: 4.8
+  reviews_count: 52
+
+- id: tour_003
+  title: "Kyoto Temple Path"
+  slug: "kyoto-temple-path"
+  type: "city"
+  guide_id: guide_003
+  guide_name: "Yuki Tanaka"
+  location: "Kyoto, Japan"
+  continent: "Asia"
+  duration: "3 hours"
+  difficulty: "easy"
+  accessibility: "partial"
+  accessibility_notes: "Some temple stairs, alternative flat routes available"
+  price: 60
+  currency: "USD"
+  vr_available: true
+  description: "Follow the ancient pilgrimage path through Kyoto's most sacred temples and serene Zen gardens. Includes a traditional tea ceremony experience."
+  highlights:
+    - "Kinkaku-ji Golden Pavilion"
+    - "Zen garden meditation"
+    - "Traditional tea ceremony"
+    - "Bamboo grove walk"
+  image: "/assets/images/art/b3.webp"
+  rating: 5.0
+  reviews_count: 143
+
+- id: tour_004
+  title: "Table Mountain Summit"
+  slug: "table-mountain-summit"
+  type: "nature"
+  guide_id: guide_004
+  guide_name: "Amara Osei"
+  location: "Cape Town, South Africa"
+  continent: "Africa"
+  duration: "5 hours"
+  difficulty: "moderate"
+  accessibility: "limited"
+  accessibility_notes: "Cable car alternative for summit access"
+  price: 55
+  currency: "USD"
+  vr_available: false
+  description: "Ascend one of the New Seven Wonders of Nature. This guided hike takes you through unique fynbos vegetation to the summit, with breathtaking views of Cape Town and the Atlantic Ocean."
+  highlights:
+    - "Summit panoramic views"
+    - "Unique fynbos flora"
+    - "Dassie wildlife encounters"
+    - "Sunset option available"
+  image: "/assets/images/art/b4.webp"
+  rating: 4.7
+  reviews_count: 38
+
+- id: tour_005
+  title: "Geneva Lakefront Discovery"
+  slug: "geneva-lakefront"
+  type: "city"
+  guide_id: guide_005
+  guide_name: "Lucas Moreau"
+  location: "Geneva, Switzerland"
+  continent: "Europe"
+  duration: "2 hours"
+  difficulty: "easy"
+  accessibility: "full"
+  accessibility_notes: "Fully wheelchair accessible, lakefront promenade"
+  price: 35
+  currency: "CHF"
+  vr_available: true
+  description: "Explore Geneva's stunning lakefront, from the iconic Jet d'Eau to the charming Old Town. This fully accessible tour showcases the city where diplomacy meets alpine beauty."
+  highlights:
+    - "Jet d'Eau fountain"
+    - "United Nations quarter"
+    - "Old Town cobblestone streets"
+    - "Lake Geneva panorama"
+  image: "/assets/images/art/b5.webp"
+  rating: 4.9
+  reviews_count: 112
+
+- id: tour_006
+  title: "Tijuca Rainforest Trek"
+  slug: "tijuca-rainforest"
+  type: "nature"
+  guide_id: guide_006
+  guide_name: "Isabella Costa"
+  location: "Rio de Janeiro, Brazil"
+  continent: "South America"
+  duration: "4 hours"
+  difficulty: "moderate"
+  accessibility: "partial"
+  accessibility_notes: "Lower trail is accessible, upper sections require mobility"
+  price: 50
+  currency: "USD"
+  vr_available: true
+  description: "Discover the world's largest urban rainforest. This guided trek through Tijuca National Park reveals hidden waterfalls, exotic wildlife, and panoramic views of Rio de Janeiro."
+  highlights:
+    - "Cascatinha waterfall"
+    - "Tropical wildlife spotting"
+    - "Vista Chinesa viewpoint"
+    - "Native flora exploration"
+  image: "/assets/images/art/b6.webp"
+  rating: 4.8
+  reviews_count: 71

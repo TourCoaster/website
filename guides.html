@@ -1,0 +1,38 @@
+---
+layout: default
+title: "Our Guides"
+color_scheme: Green
+---
+
+{% include layouts/nav/nav-1.html default_logo="black" drop_search=true %}
+
+<div class="wrapper light-wrapper page-title-wrapper">
+  <div class="container inner text-center">
+    <h1 class="page-title">Meet Our Guides</h1>
+    <p class="lead">Verified local experts from around the world, ready to share their home with you.</p>
+  </div>
+</div>
+
+<div class="wrapper white-wrapper">
+  <div class="container inner">
+    <div class="row">
+      {% for guide in site.data.guides %}
+      <div class="col-md-6 col-lg-4 mb-4">
+        {% include guide-card.html guide=guide %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="wrapper image-wrapper bg-image inverse-text" data-image-src="/assets/images/art/bg2.webp" style="background-image: url('/assets/images/art/bg2.webp'); background-size:cover;">
+  <div class="container inner text-center" style="padding: 80px 0;">
+    <h2 class="mb-3" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.5);">Become a TourCoaster Guide</h2>
+    <p class="lead mb-4" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.3); max-width:600px; margin: 0 auto;">
+      Share your expertise, connect with travelers, and earn from physical tours and VR content.
+    </p>
+    <a href="/for-guides" class="btn btn-white btn-lg rounded-pill">Apply Now</a>
+  </div>
+</div>
+
+{% include layouts/footer/footer-1.html %}

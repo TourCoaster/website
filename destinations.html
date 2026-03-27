@@ -1,0 +1,79 @@
+---
+layout: default
+title: "Destinations"
+color_scheme: Green
+---
+
+{% include layouts/nav/nav-1.html default_logo="black" drop_search=true %}
+
+<div class="wrapper light-wrapper page-title-wrapper">
+  <div class="container inner text-center">
+    <h1 class="page-title">Destinations</h1>
+    <p class="lead">Explore our growing network of tours and experiences across the globe.</p>
+  </div>
+</div>
+
+<div class="wrapper white-wrapper">
+  <div class="container inner">
+    <h2 class="section-title text-center mb-5">Europe</h2>
+    <div class="row">
+      {% for tour in site.data.tours %}
+      {% if tour.continent == "Europe" %}
+      <div class="col-md-6 col-lg-4 mb-4">
+        {% include tour-card.html tour=tour %}
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="space40"></div>
+
+    <h2 class="section-title text-center mb-5">Asia</h2>
+    <div class="row">
+      {% for tour in site.data.tours %}
+      {% if tour.continent == "Asia" %}
+      <div class="col-md-6 col-lg-4 mb-4">
+        {% include tour-card.html tour=tour %}
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="space40"></div>
+
+    <h2 class="section-title text-center mb-5">Africa</h2>
+    <div class="row">
+      {% for tour in site.data.tours %}
+      {% if tour.continent == "Africa" %}
+      <div class="col-md-6 col-lg-4 mb-4">
+        {% include tour-card.html tour=tour %}
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="space40"></div>
+
+    <h2 class="section-title text-center mb-5">South America</h2>
+    <div class="row">
+      {% for tour in site.data.tours %}
+      {% if tour.continent == "South America" %}
+      <div class="col-md-6 col-lg-4 mb-4">
+        {% include tour-card.html tour=tour %}
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="wrapper light-wrapper">
+  <div class="container inner text-center">
+    <h3 class="mb-3">Your Destination Not Listed?</h3>
+    <p class="lead mb-4">We're expanding to new locations every month. Request a destination or become a guide in your area.</p>
+    <a href="/for-guides" class="btn btn-primary btn-lg rounded-pill me-2">Become a Guide</a>
+    <a href="/contact/contact-1" class="btn btn-outline-primary btn-lg rounded-pill">Request Destination</a>
+  </div>
+</div>
+
+{% include layouts/footer/footer-1.html %}

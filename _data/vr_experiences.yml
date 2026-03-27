@@ -1,0 +1,109 @@
+- id: vr_001
+  title: "Walk Through Kyoto Temples"
+  slug: "kyoto-temples-vr"
+  location: "Kyoto, Japan"
+  continent: "Asia"
+  type: "immersive_walk"
+  duration: "15 min"
+  accessibility: "full"
+  accessibility_notes: "Full keyboard navigation, audio descriptions, high contrast mode"
+  narration: "human"
+  guide_name: "Yuki Tanaka"
+  guide_id: guide_003
+  description: "Experience the serene beauty of Kyoto's most iconic temples from anywhere in the world. This fully accessible VR tour features spatial audio, detailed narration, and interactive information points."
+  highlights:
+    - "360-degree temple interiors"
+    - "Spatial audio with nature sounds"
+    - "Interactive information hotspots"
+    - "Guided meditation segment"
+  image: "/assets/images/art/b3.webp"
+  rating: 4.9
+  reviews_count: 234
+
+- id: vr_002
+  title: "Swiss Alps Panorama"
+  slug: "swiss-alps-vr"
+  location: "Swiss Alps, Switzerland"
+  continent: "Europe"
+  type: "scenic_flythrough"
+  duration: "20 min"
+  accessibility: "full"
+  accessibility_notes: "One-hand navigation, slow-paced option, audio descriptions"
+  narration: "ai"
+  guide_name: "Marco Bernasconi"
+  guide_id: guide_002
+  description: "Soar over the Swiss Alps in this breathtaking VR flythrough. Experience mountain peaks, glacial lakes, and alpine villages captured in stunning 360-degree detail."
+  highlights:
+    - "Matterhorn panoramic view"
+    - "Glacial lake flyover"
+    - "Alpine village exploration"
+    - "Seasonal variations (summer/winter)"
+  image: "/assets/images/art/b2.webp"
+  rating: 4.8
+  reviews_count: 189
+
+- id: vr_003
+  title: "Lake Geneva Virtual Tour"
+  slug: "lake-geneva-vr"
+  location: "Geneva, Switzerland"
+  continent: "Europe"
+  type: "immersive_walk"
+  duration: "12 min"
+  accessibility: "full"
+  accessibility_notes: "Wheelchair perspective available, full audio descriptions"
+  narration: "human"
+  guide_name: "Lucas Moreau"
+  guide_id: guide_005
+  description: "Take a virtual stroll along Lake Geneva's famous promenade. From the Jet d'Eau to the Botanical Gardens, experience Geneva's waterfront as if you were there."
+  highlights:
+    - "Jet d'Eau close-up experience"
+    - "Lakefront promenade walk"
+    - "Old Town aerial perspective"
+    - "Sunset over the Alps"
+  image: "/assets/images/art/b5.webp"
+  rating: 5.0
+  reviews_count: 312
+
+- id: vr_004
+  title: "Barcelona Gothic Quarter"
+  slug: "barcelona-gothic-vr"
+  location: "Barcelona, Spain"
+  continent: "Europe"
+  type: "immersive_walk"
+  duration: "18 min"
+  accessibility: "full"
+  accessibility_notes: "Sign language overlay available, audio descriptions in 3 languages"
+  narration: "human"
+  guide_name: "Elena Rivera"
+  guide_id: guide_001
+  description: "Navigate the medieval maze of Barcelona's Gothic Quarter in immersive VR. Discover hidden plazas, ancient Roman walls, and the stories behind every stone."
+  highlights:
+    - "Medieval street exploration"
+    - "Roman wall ruins"
+    - "Cathedral plaza experience"
+    - "Multi-language narration"
+  image: "/assets/images/art/b1.webp"
+  rating: 4.7
+  reviews_count: 167
+
+- id: vr_005
+  title: "Rio de Janeiro Rainforest"
+  slug: "rio-rainforest-vr"
+  location: "Rio de Janeiro, Brazil"
+  continent: "South America"
+  type: "nature_immersion"
+  duration: "25 min"
+  accessibility: "full"
+  accessibility_notes: "Slow navigation mode, detailed audio of wildlife sounds"
+  narration: "human_ai_mixed"
+  guide_name: "Isabella Costa"
+  guide_id: guide_006
+  description: "Immerse yourself in the lush Tijuca Rainforest without leaving your living room. Hear tropical birds, feel the waterfall mist, and explore winding trails through this urban jungle paradise."
+  highlights:
+    - "Waterfall immersion experience"
+    - "Tropical bird calls spatial audio"
+    - "Canopy level perspective"
+    - "Wildlife identification overlay"
+  image: "/assets/images/art/b6.webp"
+  rating: 4.9
+  reviews_count: 145

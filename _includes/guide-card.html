@@ -1,0 +1,31 @@
+<div class="card shadow-lg h-100">
+  {% if include.guide.image %}
+  <figure class="card-img-top" style="margin:0;">
+    <img src="{{ include.guide.image }}" alt="{{ include.guide.name }}" style="width:100%; height:220px; object-fit:cover;" />
+  </figure>
+  {% endif %}
+  <div class="card-body p-4">
+    <h5 class="mb-1">{{ include.guide.name }}</h5>
+    <p class="text-muted mb-2"><small><i class="jam jam-map-marker"></i> {{ include.guide.location }}</small></p>
+    {% if include.guide.rating %}
+    <div class="mb-2">
+      <span class="text-warning">
+        {% assign full_stars = include.guide.rating | floor %}
+        {% for i in (1..full_stars) %}<i class="jam jam-star-full"></i>{% endfor %}
+      </span>
+      <small class="text-muted">{{ include.guide.rating }} ({{ include.guide.reviews_count }})</small>
+    </div>
+    {% endif %}
+    <div class="mb-2">
+      {% for spec in include.guide.specialties %}
+      <span class="badge bg-pale-green text-green rounded-pill mb-1">{{ spec }}</span>
+      {% endfor %}
+    </div>
+    {% if include.guide.vr_enabled %}
+    <small class="text-primary"><i class="jam jam-camera"></i> VR Tours Available</small>
+    {% endif %}
+  </div>
+  <div class="card-footer p-4 pt-0" style="border:none; background:none;">
+    <a href="/guides/{{ include.guide.slug }}" class="btn btn-sm btn-primary">View Profile</a>
+  </div>
+</div>

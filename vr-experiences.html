@@ -1,0 +1,81 @@
+---
+layout: default
+title: "VR Experiences"
+color_scheme: Green
+---
+
+{% include layouts/nav/nav-1.html default_logo="white" drop_search=true %}
+
+<div class="wrapper dark-wrapper inverse-text">
+  <div class="container inner text-center" style="padding: 80px 0;">
+    <span class="badge bg-primary rounded-pill mb-3" style="font-size:0.9rem;"><i class="jam jam-camera"></i> Virtual Reality</span>
+    <h1 class="display-4 mb-3">Travel Without Moving</h1>
+    <p class="lead mb-4" style="max-width:700px; margin:0 auto;">
+      Immersive 360-degree experiences that bring the world to you. Perfect for trip planning, remote exploration, or accessibility needs.
+    </p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <div class="text-center px-3">
+        <i class="jam jam-monitor" style="font-size:2rem;"></i>
+        <p class="small mt-1">Web Browser</p>
+      </div>
+      <div class="text-center px-3">
+        <i class="jam jam-smartphone" style="font-size:2rem;"></i>
+        <p class="small mt-1">Mobile</p>
+      </div>
+      <div class="text-center px-3">
+        <i class="jam jam-camera" style="font-size:2rem;"></i>
+        <p class="small mt-1">VR Headset</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrapper light-wrapper">
+  <div class="container inner">
+    <div class="row text-center mb-5">
+      <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+        <h2 class="section-title">Featured VR Experiences</h2>
+        <p class="lead">Step into these destinations from your living room.</p>
+      </div>
+    </div>
+    <div class="row">
+      {% for vr in site.data.vr_experiences %}
+      <div class="col-md-6 col-lg-4 mb-4">
+        {% include vr-card.html vr=vr %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="wrapper white-wrapper">
+  <div class="container inner">
+    <div class="row align-items-center">
+      <div class="col-lg-6 order-lg-2">
+        <h2 class="mb-3">Accessibility at the Core</h2>
+        <p class="lead mb-4">Every VR experience on TourCoaster is designed with accessibility as a primary feature, not an afterthought.</p>
+        <ul class="list-unstyled">
+          <li class="mb-3"><i class="jam jam-check-circle text-success me-2"></i> <strong>Keyboard Navigation</strong> — Full control without a mouse or controller</li>
+          <li class="mb-3"><i class="jam jam-check-circle text-success me-2"></i> <strong>Audio Descriptions</strong> — Detailed narration of every scene</li>
+          <li class="mb-3"><i class="jam jam-check-circle text-success me-2"></i> <strong>One-Hand Mode</strong> — Simplified controls for limited mobility</li>
+          <li class="mb-3"><i class="jam jam-check-circle text-success me-2"></i> <strong>Slow-Paced Options</strong> — Adjustable movement speed</li>
+          <li class="mb-3"><i class="jam jam-check-circle text-success me-2"></i> <strong>High Contrast</strong> — Enhanced visibility for visual impairments</li>
+          <li class="mb-3"><i class="jam jam-check-circle text-success me-2"></i> <strong>2D Fallback</strong> — Photo gallery alternative for low bandwidth</li>
+        </ul>
+      </div>
+      <div class="col-lg-6 order-lg-1">
+        <img src="/assets/images/art/about2.webp" alt="VR Accessibility" class="rounded shadow-lg" style="width:100%;" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrapper dark-wrapper inverse-text">
+  <div class="container inner text-center">
+    <h3 class="mb-3">Ready to Experience It?</h3>
+    <p class="lead mb-4">No special equipment needed. Start exploring in your browser right now.</p>
+    <a href="/contact/contact-1" class="btn btn-white btn-lg rounded-pill">Get Started</a>
+  </div>
+</div>
+
+{% include layouts/footer/footer-1.html %}

@@ -1,0 +1,83 @@
+---
+layout: default
+---
+
+{% include layouts/nav/nav-1.html default_logo="black" drop_search=true %}
+
+<div class="wrapper light-wrapper">
+  <div class="container inner">
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="card shadow-lg">
+          {% if page.image %}
+          <figure class="card-img-top">
+            <img src="{{ page.image }}" alt="{{ page.name }}" style="width:100%; height:300px; object-fit:cover;" />
+          </figure>
+          {% endif %}
+          <div class="card-body p-5">
+            <h3 class="mb-1">{{ page.name }}</h3>
+            <p class="text-muted mb-2"><i class="jam jam-map-marker"></i> {{ page.location }}</p>
+            {% if page.rating %}
+            <div class="mb-3">
+              <span class="text-warning">
+                {% assign full_stars = page.rating | floor %}
+                {% for i in (1..full_stars) %}<i class="jam jam-star-full"></i>{% endfor %}
+                {% assign remainder = page.rating | minus: full_stars %}
+                {% if remainder > 0 %}<i class="jam jam-star-half"></i>{% endif %}
+              </span>
+              <span class="text-muted ms-1">{{ page.rating }} ({{ page.reviews_count }} reviews)</span>
+            </div>
+            {% endif %}
+            {% if page.experience_years %}
+            <p><strong>Experience:</strong> {{ page.experience_years }} years</p>
+            {% endif %}
+            {% if page.languages %}
+            <p><strong>Languages:</strong> {{ page.languages | join: ", " }}</p>
+            {% endif %}
+            {% if page.vr_enabled %}
+            <span class="badge bg-primary rounded-pill mb-3"><i class="jam jam-camera"></i> VR Tours Available</span>
+            {% endif %}
+            {% if page.specialties %}
+            <div class="mt-2">
+              {% for spec in page.specialties %}
+              <span class="badge bg-pale-green text-green rounded-pill mb-1">{{ spec }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <h2 class="mb-3">About {{ page.name }}</h2>
+        <div class="lead mb-5">{{ page.bio }}</div>
+        {{ content }}
+
+        {% assign guide_tours = site.data.tours | where: "guide_id", page.guide_id %}
+        {% if guide_tours.size > 0 %}
+        <h3 class="mt-5 mb-4">Tours by {{ page.name }}</h3>
+        <div class="row">
+          {% for tour in guide_tours %}
+          <div class="col-md-6 mb-4">
+            {% include tour-card.html tour=tour %}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% assign guide_vr = site.data.vr_experiences | where: "guide_id", page.guide_id %}
+        {% if guide_vr.size > 0 %}
+        <h3 class="mt-5 mb-4">VR Experiences</h3>
+        <div class="row">
+          {% for vr in guide_vr %}
+          <div class="col-md-6 mb-4">
+            {% include vr-card.html vr=vr %}
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include layouts/footer/footer-1.html %}

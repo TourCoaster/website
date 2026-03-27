@@ -1,0 +1,83 @@
+---
+layout: default
+title: "Explore Tours"
+color_scheme: Green
+---
+
+{% include layouts/nav/nav-1.html default_logo="black" drop_search=true %}
+
+<div class="wrapper light-wrapper page-title-wrapper">
+  <div class="container inner text-center">
+    <h1 class="page-title">Explore Tours</h1>
+    <p class="lead">Discover guided experiences across nature trails and city streets worldwide.</p>
+  </div>
+</div>
+
+<div class="wrapper white-wrapper">
+  <div class="container inner">
+    <div class="row mb-5">
+      <div class="col-lg-12">
+        <div class="d-flex flex-wrap justify-content-center gap-2 mb-4" id="tour-filters">
+          <button class="btn btn-primary rounded-pill filter-btn active" data-filter="all">All Tours</button>
+          <button class="btn btn-outline-primary rounded-pill filter-btn" data-filter="nature">Nature & Hiking</button>
+          <button class="btn btn-outline-primary rounded-pill filter-btn" data-filter="city">City Exploration</button>
+          <button class="btn btn-outline-primary rounded-pill filter-btn" data-filter="vr">VR Available</button>
+          <button class="btn btn-outline-primary rounded-pill filter-btn" data-filter="accessible">Fully Accessible</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" id="tour-grid">
+      {% for tour in site.data.tours %}
+      <div class="col-md-6 col-lg-4 mb-4 tour-item"
+           data-type="{{ tour.type }}"
+           data-vr="{{ tour.vr_available }}"
+           data-accessibility="{{ tour.accessibility }}">
+        {% include tour-card.html tour=tour %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="wrapper light-wrapper">
+  <div class="container inner text-center">
+    <h3 class="mb-3">Can't find what you're looking for?</h3>
+    <p class="lead mb-4">Our guide network is growing every day. Tell us your dream destination and we'll connect you with a local expert.</p>
+    <a href="/contact/contact-1" class="btn btn-primary btn-lg rounded-pill">Request a Custom Tour</a>
+  </div>
+</div>
+
+{% include layouts/footer/footer-1.html %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var filterBtns = document.querySelectorAll('.filter-btn');
+  var tourItems = document.querySelectorAll('.tour-item');
+
+  filterBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      filterBtns.forEach(function(b) {
+        b.classList.remove('active', 'btn-primary');
+        b.classList.add('btn-outline-primary');
+      });
+      this.classList.add('active', 'btn-primary');
+      this.classList.remove('btn-outline-primary');
+
+      var filter = this.getAttribute('data-filter');
+
+      tourItems.forEach(function(item) {
+        if (filter === 'all') {
+          item.style.display = '';
+        } else if (filter === 'vr') {
+          item.style.display = item.getAttribute('data-vr') === 'true' ? '' : 'none';
+        } else if (filter === 'accessible') {
+          item.style.display = item.getAttribute('data-accessibility') === 'full' ? '' : 'none';
+        } else {
+          item.style.display = item.getAttribute('data-type') === filter ? '' : 'none';
+        }
+      });
+    });
+  });
+});
+</script>

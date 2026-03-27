@@ -1,0 +1,124 @@
+- id: guide_001
+  name: "Elena Rivera"
+  slug: "elena-rivera"
+  location: "Barcelona, Spain"
+  country: "Spain"
+  continent: "Europe"
+  specialties:
+    - urban tours
+    - architecture
+    - food culture
+  languages:
+    - English
+    - Spanish
+    - Catalan
+  rating: 4.9
+  reviews_count: 127
+  vr_enabled: true
+  experience_years: 6
+  bio: "Born and raised in Barcelona, Elena brings the city's hidden stories to life. From Gothic Quarter mysteries to modernist masterpieces, her tours blend history, architecture, and the best local tapas spots."
+  image: "/assets/images/art/t1.webp"
+
+- id: guide_002
+  name: "Marco Bernasconi"
+  slug: "marco-bernasconi"
+  location: "Swiss Alps, Switzerland"
+  country: "Switzerland"
+  continent: "Europe"
+  specialties:
+    - alpine hiking
+    - nature photography
+    - wildlife
+  languages:
+    - English
+    - German
+    - French
+    - Italian
+  rating: 4.8
+  reviews_count: 89
+  vr_enabled: true
+  experience_years: 12
+  bio: "A certified mountain guide with over a decade of experience in the Swiss Alps. Marco specializes in accessible alpine trails and captures breathtaking 360-degree panoramas for VR hikers worldwide."
+  image: "/assets/images/art/t2.webp"
+
+- id: guide_003
+  name: "Yuki Tanaka"
+  slug: "yuki-tanaka"
+  location: "Kyoto, Japan"
+  country: "Japan"
+  continent: "Asia"
+  specialties:
+    - temple tours
+    - zen gardens
+    - traditional culture
+  languages:
+    - English
+    - Japanese
+  rating: 5.0
+  reviews_count: 203
+  vr_enabled: true
+  experience_years: 8
+  bio: "Yuki guides visitors through the spiritual heart of Japan. Her tours weave together the tranquility of Zen gardens, the grandeur of ancient temples, and the subtle art of the Japanese tea ceremony."
+  image: "/assets/images/art/t3.webp"
+
+- id: guide_004
+  name: "Amara Osei"
+  slug: "amara-osei"
+  location: "Cape Town, South Africa"
+  country: "South Africa"
+  continent: "Africa"
+  specialties:
+    - nature trails
+    - coastal hikes
+    - cultural heritage
+  languages:
+    - English
+    - Afrikaans
+    - Zulu
+  rating: 4.7
+  reviews_count: 64
+  vr_enabled: false
+  experience_years: 5
+  bio: "From Table Mountain summits to Cape Point trails, Amara showcases the incredible biodiversity and cultural richness of the Western Cape. Every hike comes with stories of the land and its people."
+  image: "/assets/images/art/t4.webp"
+
+- id: guide_005
+  name: "Lucas Moreau"
+  slug: "lucas-moreau"
+  location: "Geneva, Switzerland"
+  country: "Switzerland"
+  continent: "Europe"
+  specialties:
+    - lake tours
+    - city walks
+    - 360 photography
+  languages:
+    - English
+    - French
+  rating: 4.9
+  reviews_count: 156
+  vr_enabled: true
+  experience_years: 10
+  bio: "A pioneer in 360-degree photography and virtual touring, Lucas has been documenting Geneva's lakefront, old town, and surrounding mountains for over a decade. His VR tours let you experience Lake Geneva from anywhere in the world."
+  image: "/assets/images/art/t5.webp"
+
+- id: guide_006
+  name: "Isabella Costa"
+  slug: "isabella-costa"
+  location: "Rio de Janeiro, Brazil"
+  country: "Brazil"
+  continent: "South America"
+  specialties:
+    - rainforest hikes
+    - urban exploration
+    - street art
+  languages:
+    - English
+    - Portuguese
+    - Spanish
+  rating: 4.8
+  reviews_count: 98
+  vr_enabled: true
+  experience_years: 7
+  bio: "Isabella bridges Rio's vibrant urban culture with its spectacular natural landscapes. From Tijuca Forest trails to Lapa street art walks, she creates unforgettable experiences for adventurers of all abilities."
+  image: "/assets/images/art/t6.webp"

@@ -1,0 +1,97 @@
+---
+layout: default
+---
+
+{% include layouts/nav/nav-1.html default_logo="black" drop_search=true %}
+
+<div class="wrapper image-wrapper bg-image" data-image-src="{{ page.image | default: '/assets/images/art/bg1.webp' }}" style="background-image: url('{{ page.image | default: '/assets/images/art/bg1.webp' }}');">
+  <div class="container inner text-center" style="padding: 80px 0;">
+    <h1 class="page-title" style="color: #fff; text-shadow: 2px 2px 8px rgba(0,0,0,0.7);">{{ page.title }}</h1>
+    <p class="lead" style="color: #fff; text-shadow: 1px 1px 4px rgba(0,0,0,0.7);">
+      <i class="jam jam-map-marker"></i> {{ page.location }}
+      &nbsp;&bull;&nbsp;
+      <i class="jam jam-clock"></i> {{ page.duration }}
+      &nbsp;&bull;&nbsp;
+      {% if page.difficulty == "easy" %}
+      <span class="badge bg-success rounded-pill">Easy</span>
+      {% elsif page.difficulty == "moderate" %}
+      <span class="badge bg-warning rounded-pill">Moderate</span>
+      {% elsif page.difficulty == "hard" %}
+      <span class="badge bg-danger rounded-pill">Hard</span>
+      {% endif %}
+    </p>
+  </div>
+</div>
+
+<div class="wrapper light-wrapper">
+  <div class="container inner">
+    <div class="row">
+      <div class="col-lg-8">
+        <h2 class="mb-3">About This Tour</h2>
+        <p class="lead">{{ page.description }}</p>
+        {{ content }}
+
+        {% if page.highlights %}
+        <h3 class="mt-5 mb-3">Tour Highlights</h3>
+        <div class="row">
+          {% for highlight in page.highlights %}
+          <div class="col-md-6 mb-3">
+            <div class="d-flex align-items-center">
+              <span class="icon-bg-circle bg-pale-green me-3"><i class="jam jam-check text-green"></i></span>
+              <span>{{ highlight }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      <div class="col-lg-4">
+        <div class="card shadow-lg">
+          <div class="card-body p-5">
+            <h4 class="mb-3">Book This Tour</h4>
+            {% if page.price %}
+            <div class="price mb-3">
+              <h3 class="text-primary">{{ page.currency }} {{ page.price }}</h3>
+              <span class="text-muted">per person</span>
+            </div>
+            {% endif %}
+            <ul class="list-unstyled mb-4">
+              <li class="mb-2"><i class="jam jam-clock me-2"></i> <strong>Duration:</strong> {{ page.duration }}</li>
+              <li class="mb-2"><i class="jam jam-map-marker me-2"></i> <strong>Location:</strong> {{ page.location }}</li>
+              <li class="mb-2"><i class="jam jam-user me-2"></i> <strong>Guide:</strong> {{ page.guide_name }}</li>
+              {% if page.accessibility %}
+              <li class="mb-2"><i class="jam jam-heart me-2"></i> <strong>Accessibility:</strong> {{ page.accessibility }}</li>
+              {% endif %}
+            </ul>
+            {% if page.accessibility_notes %}
+            <div class="alert alert-info">
+              <small><i class="jam jam-info"></i> {{ page.accessibility_notes }}</small>
+            </div>
+            {% endif %}
+            <a href="/contact/contact-1" class="btn btn-primary btn-block w-100 mb-2">Book Now</a>
+            {% if page.vr_available %}
+            <a href="/vr-experiences" class="btn btn-outline-primary btn-block w-100">
+              <i class="jam jam-camera"></i> Try VR Preview
+            </a>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if page.rating %}
+        <div class="card shadow-lg mt-4">
+          <div class="card-body p-4 text-center">
+            <h4>{{ page.rating }}</h4>
+            <span class="text-warning">
+              {% assign full_stars = page.rating | floor %}
+              {% for i in (1..full_stars) %}<i class="jam jam-star-full"></i>{% endfor %}
+            </span>
+            <p class="text-muted mt-1">{{ page.reviews_count }} reviews</p>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include layouts/footer/footer-1.html %}

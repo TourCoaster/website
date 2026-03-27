@@ -1,119 +1,96 @@
-# General Settings
-title: "Snowlake - Creative Business and Startup Jekyll Theme"
-email: "tortoizthemes@gmail.com"
-email_2: "support@tortoizthemes.com"
-description: >- # this means to ignore newlines until "baseurl:"
-  Snowlake Jekyll Theme is a perfectly crafted fast loading and SEO-friendly static site generator theme
-  with a variety of UI elements and countless features. A perfect theme to build your next dream project.
+title: "TourCoaster - Global Tour Guide Network"
+email: "hello@tourcoaster.com"
+email_2: "support@tourcoaster.com"
+description: >-
+  TourCoaster connects you with verified local guides for authentic hiking and city tours worldwide.
+  Experience destinations physically or through immersive VR — accessible to everyone.
 favicon: "/assets/images/favicon.webp"
 
-# Seo Meta Settings
 meta_og_image: "/assets/images/meta-image.webp"
 meta_twitter_image: "/assets/images/meta-image.webp"
 
-# Site Wide Theme Color Setting
-color_scheme:  #Aqua Blue Brown Cobalt Green Hibiscus Leaf Meander Orange Pink Purple Red Rose Sky Teal Violet Yellow
+color_scheme: Green
+font_scheme:
 
-# Site Wide Theme Font Setting
-font_scheme:  # Jost, Nunito , DM Sans + Zilla Slab , HK Grotesk, Abhaya, Libre
-
-# Sitewide Logo
 black_logo_1x: "/assets/images/logo.webp"
 black_logo_2x: "/assets/images/logo@2x.webp"
 light_logo_1x: "/assets/images/logo-light.webp"
 light_logo_2x: "/assets/images/logo-light@2x.webp"
 
-# Site Wide Address and Phone Number
-address_01: 'Moonshine St. <br>14/05 Light City,<br /> London, United Kingdom'
-phone_number: "+00 (123) 456 78 90"
+address_01: 'Geneva, Switzerland'
+phone_number: "+41 (0) 22 000 00 00"
 
-# Site Wide Copyright
-copyright_text: "© 2025 Snowlake. All rights reserved."
+copyright_text: "&copy; 2025 TourCoaster. All rights reserved."
 
-# Site Wide Google Analytics
 google_analytics:
   enable: false
-  key: "UA-664136761-1"  # UA-664136761-1
+  key: ""
 
-# Site Wide Google Map  
 google_map: |
-  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3172.4564967931838!2d-122.03250858386237!3d37.33169997984258!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fb5b6e94ffe23%3A0x63bb79532baa6af4!2sApple+Campus!5e0!3m2!1sen!2str!4v1553850783971!5m2!1sen!2str" style="width:100%; height: 100%; border:0" allowfullscreen=""></iframe>
+  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d87988.68085498587!2d6.0757!3d46.2044!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x478c64ef6f596d61%3A0x20ab3a2b3a3b3c3d!2sGeneva%2C+Switzerland!5e0!3m2!1sen!2sch" style="width:100%; height: 100%; border:0" allowfullscreen=""></iframe>
 
-# Site Wide Social Accounts
 social_accounts:
   title: "Follow Us"
   links:
     - url: "#"
       icon: "jam jam-twitter"
-
     - url: "#"
       icon: "jam jam-facebook"
-
     - url: "#"
       icon: "jam jam-instagram"
-
-    - url: "#"
-      icon: "jam jam-vimeo"
-      
     - url: "#"
       icon: "jam jam-youtube"
 
-# Site Wide External Links for footer
 external_links:
-  title: "Learn More"
+  title: "Explore"
   links:
-    - url: "#"
-      text: "About Us"
-    - url: "#"
-      text: "Our Story"
-    - url: "#"
-      text: "Projects"
-    - url: "#"
-      text: "Pricing"
-    - url: "#"
-      text: "Features"
+    - url: "/explore"
+      text: "Find Tours"
+    - url: "/vr-experiences"
+      text: "VR Experiences"
+    - url: "/guides"
+      text: "Our Guides"
+    - url: "/destinations"
+      text: "Destinations"
+    - url: "/blogs/index"
+      text: "Blog"
 
-# Site Wide External Links for footer
 external_links_02:
-  title: "Need Help?"
+  title: "Get Started"
   links:
-    - url: "#"
-      text: "Support"
-    - url: "#"
-      text: "Get Started"
-    - url: "#"
+    - url: "/for-guides"
+      text: "Become a Guide"
+    - url: "/about"
+      text: "About Us"
+    - url: "/accessibility"
+      text: "Accessibility"
+    - url: "/contact/contact-1"
       text: "Contact Us"
-    - url: "#"
-      text: "Terms of Use"
     - url: "#"
       text: "Privacy Policy"
 
-# Site Wide External Links for footer
 external_links_03:
   title: "Company"
   links:
+    - url: "/about"
+      text: "Our Story"
+    - url: "/for-guides"
+      text: "Partner With Us"
     - url: "#"
-      text: "Our Team"
+      text: "Terms of Use"
     - url: "#"
-      text: "Strategy"
+      text: "Support"
     - url: "#"
-      text: "Service"
-    - url: "#"
-      text: "Mission"
-    - url: "#"
-      text: "Process"
+      text: "FAQ"
 
-# Footer Newsletter
 footer_newsletter:
   title: "Our Newsletter"
-  sub_title: "Subscribe to our newsletter to get our news & deals delivered to your inbox!"
+  sub_title: "Subscribe to get the latest tours, VR experiences, and travel inspiration delivered to your inbox!"
   subscribe_button_text: "Join"
 
-# Author Page Background Image
 author_page_header:
   header_background_image: "/assets/images/art/bg31.webp"
 
-# Gallery
 gallery:
   images:
   - img: "/assets/images/art/z1.svg"

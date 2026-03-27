@@ -1,0 +1,111 @@
+---
+layout: default
+---
+
+{% include layouts/nav/nav-1.html default_logo="black" drop_search=true %}
+
+<div class="wrapper dark-wrapper inverse-text">
+  <div class="container inner text-center" style="padding: 60px 0;">
+    <span class="badge bg-primary rounded-pill mb-3"><i class="jam jam-camera"></i> VR Experience</span>
+    <h1 class="page-title">{{ page.title }}</h1>
+    <p class="lead">
+      <i class="jam jam-map-marker"></i> {{ page.location }}
+      &nbsp;&bull;&nbsp;
+      <i class="jam jam-clock"></i> {{ page.duration }}
+      &nbsp;&bull;&nbsp;
+      <i class="jam jam-heart"></i> {{ page.accessibility }} accessibility
+    </p>
+  </div>
+</div>
+
+<div class="wrapper light-wrapper">
+  <div class="container inner">
+    <div class="row">
+      <div class="col-lg-8">
+        {% if page.image %}
+        <div class="mb-5 position-relative" style="border-radius: 8px; overflow: hidden;">
+          <img src="{{ page.image }}" alt="{{ page.title }}" class="w-100" style="height: 400px; object-fit: cover;" />
+          <div class="position-absolute top-50 start-50 translate-middle">
+            <a class="btn btn-circle btn-primary btn-lg">
+              <i class="jam jam-play"></i>
+            </a>
+          </div>
+        </div>
+        {% endif %}
+
+        <h2 class="mb-3">Experience Details</h2>
+        <p class="lead">{{ page.description }}</p>
+        {{ content }}
+
+        {% if page.highlights %}
+        <h3 class="mt-5 mb-3">What You'll Experience</h3>
+        <div class="row">
+          {% for highlight in page.highlights %}
+          <div class="col-md-6 mb-3">
+            <div class="d-flex align-items-center">
+              <span class="icon-bg-circle bg-pale-primary me-3"><i class="jam jam-check text-primary"></i></span>
+              <span>{{ highlight }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      <div class="col-lg-4">
+        <div class="card shadow-lg">
+          <div class="card-body p-5">
+            <h4 class="mb-3">VR Experience Info</h4>
+            <ul class="list-unstyled mb-4">
+              <li class="mb-2"><i class="jam jam-clock me-2"></i> <strong>Duration:</strong> {{ page.duration }}</li>
+              <li class="mb-2"><i class="jam jam-map-marker me-2"></i> <strong>Location:</strong> {{ page.location }}</li>
+              {% if page.guide_name %}
+              <li class="mb-2"><i class="jam jam-user me-2"></i> <strong>Narrated by:</strong> {{ page.guide_name }}</li>
+              {% endif %}
+              <li class="mb-2"><i class="jam jam-heart me-2"></i> <strong>Accessibility:</strong> {{ page.accessibility }}</li>
+              {% if page.narration %}
+              <li class="mb-2"><i class="jam jam-mic me-2"></i> <strong>Narration:</strong> {{ page.narration }}</li>
+              {% endif %}
+            </ul>
+            {% if page.accessibility_notes %}
+            <div class="alert alert-success">
+              <small><i class="jam jam-heart"></i> {{ page.accessibility_notes }}</small>
+            </div>
+            {% endif %}
+            <a href="#" class="btn btn-primary btn-block w-100 mb-2">
+              <i class="jam jam-play"></i> Launch VR Tour
+            </a>
+            <a href="#" class="btn btn-outline-primary btn-block w-100">
+              <i class="jam jam-picture"></i> View 2D Gallery
+            </a>
+          </div>
+        </div>
+
+        <div class="card shadow-lg mt-4">
+          <div class="card-body p-4">
+            <h5 class="mb-3">Compatibility</h5>
+            <ul class="list-unstyled mb-0">
+              <li class="mb-2"><i class="jam jam-monitor me-2 text-primary"></i> Web Browser</li>
+              <li class="mb-2"><i class="jam jam-smartphone me-2 text-primary"></i> Mobile Device</li>
+              <li class="mb-2"><i class="jam jam-camera me-2 text-primary"></i> VR Headset (WebXR)</li>
+            </ul>
+          </div>
+        </div>
+
+        {% if page.rating %}
+        <div class="card shadow-lg mt-4">
+          <div class="card-body p-4 text-center">
+            <h4>{{ page.rating }}</h4>
+            <span class="text-warning">
+              {% assign full_stars = page.rating | floor %}
+              {% for i in (1..full_stars) %}<i class="jam jam-star-full"></i>{% endfor %}
+            </span>
+            <p class="text-muted mt-1">{{ page.reviews_count }} reviews</p>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include layouts/footer/footer-1.html %}
