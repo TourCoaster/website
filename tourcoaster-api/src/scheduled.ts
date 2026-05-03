@@ -76,6 +76,7 @@ export const scheduled = async (
   }
 
   const changed = diffUrls(prev, next);
+  if (changed.length === 0 && Object.keys(prev).length > 0) return;
   const urls = Array.from(new Set([`${origin}/sitemap.xml`, ...changed]));
 
   ctx.waitUntil(
