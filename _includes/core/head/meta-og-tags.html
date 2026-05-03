@@ -2,7 +2,11 @@
 {%- assign _desc  = page.meta_description | default: page.description | default: site.data.general_settings.description -%}
 {%- assign _abs   = page.url | absolute_url -%}
 {%- if page.og_image -%}
-  {%- assign _img = page.og_image -%}
+  {%- if page.og_image contains "://" -%}
+    {%- assign _img = page.og_image -%}
+  {%- else -%}
+    {%- assign _img = page.og_image | absolute_url -%}
+  {%- endif -%}
 {%- elsif page.jsonld_kind == "tour" and page.slug -%}
   {%- assign _img = "https://og.tourcoaster.com/tour/" | append: page.slug | append: ".png" -%}
 {%- elsif page.jsonld_kind == "guide" and page.slug -%}
@@ -12,7 +16,15 @@
 {%- elsif site.data.general_settings.meta_og_image -%}
   {%- assign _img = site.data.general_settings.meta_og_image | absolute_url -%}
 {%- endif -%}
-{%- assign _twitter_img = page.twitter_image | default: _img -%}
+{%- if page.twitter_image -%}
+  {%- if page.twitter_image contains "://" -%}
+    {%- assign _twitter_img = page.twitter_image -%}
+  {%- else -%}
+    {%- assign _twitter_img = page.twitter_image | absolute_url -%}
+  {%- endif -%}
+{%- else -%}
+  {%- assign _twitter_img = _img -%}
+{%- endif -%}
 {%- assign _og_type = page.og_type | default: "website" -%}
 {%- assign _site_name = site.data.general_settings.title -%}
 
