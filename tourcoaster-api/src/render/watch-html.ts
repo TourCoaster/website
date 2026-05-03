@@ -47,19 +47,6 @@ const renderShell = (title: string, body: string): string => `<!doctype html>
 </style>
 </head><body>${body}</body></html>`;
 
-export const renderUnauthenticated = (returnTo: string): string =>
-  renderShell(
-    'Sign in to watch — TourCoaster',
-    `<div class="watch-screen">
-       <h1>Sign in to watch</h1>
-       <p>This 360° tour is available to TourCoaster subscribers. Sign in and we'll bring you right back.</p>
-       <p>
-         <a class="btn" href="/login?return_to=${encodeURIComponent(returnTo)}">Sign in</a>
-         <a class="btn secondary" href="/">Back home</a>
-       </p>
-     </div>`
-  );
-
 export const renderPaymentRequired = (tourSlug: string, tourTitle: string): string =>
   renderShell(
     `${tourTitle} — Subscribe to watch`,
@@ -152,6 +139,15 @@ export const renderWatchPage = (data: WatchData): string => {
     <a-entity id="watch-vr-hud" position="0 -0.6 -1.4">
       <a-text id="watch-vr-status" value="${stateLabel(state)}" align="center" color="#ffffff" width="2.4"></a-text>
       <a-text id="watch-vr-viewers" value="0 watching" align="center" color="#ff4f7b" width="2" position="0 -0.18 0"></a-text>
+    </a-entity>
+    <!-- In-world chat panel anchored to the left of the viewer so chat is
+         legible inside WebXR (the 2D DOM HUD isn't visible in VR). The
+         panel renders the most recent six lines from /v1/streams/:id/socket.
+    -->
+    <a-entity id="watch-vr-chat" position="-1.6 0 -1.4" rotation="0 30 0">
+      <a-plane width="1.4" height="1.0" color="#000000" opacity="0.45"></a-plane>
+      <a-text value="Chat" color="#ff4f7b" width="1.2" position="-0.6 0.42 0.01"></a-text>
+      <a-text id="watch-vr-chat-text" value="" color="#ffffff" width="1.3" baseline="top" anchor="left" position="-0.65 0.32 0.01" wrap-count="32"></a-text>
     </a-entity>
   </a-scene>
 

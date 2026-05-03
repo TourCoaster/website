@@ -15,10 +15,11 @@
 import { Hono } from 'hono';
 import type { AppEnv } from '../types';
 import { verifyAccessJwt } from '../auth/jwks';
+import { upsertUserFromAccess } from '../auth/provision';
+import { AppError } from '../middleware/error';
 import {
   renderNotFound,
   renderPaymentRequired,
-  renderUnauthenticated,
   renderWatchPage,
   type WatchState,
   type WatchTour,
@@ -41,27 +42,44 @@ const HTML = { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-
 
 watchRoute.get('/:tourId', async (c) => {
   const tourIdOrSlug = c.req.param('tourId');
-  const path = `/watch/${encodeURIComponent(tourIdOrSlug)}`;
+  const path = `/watch/${encodeURIComponent(tourIdOrSlug)}` +
+    (c.req.query('replay') === '1' ? '?replay=1' : '');
+  const loginRedirect = (): Response =>
+    c.redirect(`/login?return_to=${encodeURIComponent(path)}`, 302);
 
-  // --- Authentication. ----------------------------------------------------
+  // --- Authentication.
+  // Per the task brief: "401 → redirect to login". We mirror the existing
+  // requireAccessAuth() semantics — verify the JWT, then provision/refresh
+  // the local users row via upsertUserFromAccess so first-time subscribers
+  // and email-changed accounts are handled identically to other routes.
+  // Suspended accounts surface the same 403 our middleware emits.
   const token =
     c.req.header('Cf-Access-Jwt-Assertion') ?? cookieToken(c.req.header('cookie'));
-  if (!token) {
-    return c.html(renderUnauthenticated(path), 401, HTML);
-  }
+  if (!token) return loginRedirect();
   let claims;
   try {
     claims = await verifyAccessJwt(token, c.env);
   } catch {
-    return c.html(renderUnauthenticated(path), 401, HTML);
+    return loginRedirect();
   }
-  const userRow = await c.env.DB.prepare(
-    `SELECT id, role FROM users WHERE google_sub = ?1 LIMIT 1`
-  )
-    .bind(claims.sub)
-    .first<{ id: string; role: string | null }>();
-  if (!userRow) {
-    return c.html(renderUnauthenticated(path), 401, HTML);
+  let user;
+  try {
+    user = await upsertUserFromAccess(c.env, claims);
+  } catch (err) {
+    if (err instanceof AppError && err.status === 409) {
+      // Identity conflict — bounce to login w/ the conflict surfaced there.
+      return loginRedirect();
+    }
+    throw err;
+  }
+  if (user.status === 'suspended') {
+    return c.html(
+      `<!doctype html><meta charset="utf-8"><title>Account suspended</title>` +
+        `<body style="font-family:system-ui;padding:32px;background:#000;color:#fff;text-align:center">` +
+        `<h1>Account suspended</h1><p>Please contact support.</p></body>`,
+      403,
+      HTML
+    );
   }
 
   // --- Tour lookup (id or slug, must be published). -----------------------
@@ -89,8 +107,8 @@ watchRoute.get('/:tourId', async (c) => {
   }
 
   // --- ACL: owner | admin | active subscription | vr_session for tour. ---
-  const isOwner = tour.owner_id === userRow.id;
-  const isAdmin = userRow.role === 'admin';
+  const isOwner = tour.owner_id === user.id;
+  const isAdmin = user.role === 'admin';
 
   let allowed = isOwner || isAdmin;
   if (!allowed) {
@@ -98,7 +116,7 @@ watchRoute.get('/:tourId', async (c) => {
       `SELECT 1 AS x FROM subscriptions
          WHERE user_id = ?1 AND status IN ('active','trialing','past_due') LIMIT 1`
     )
-      .bind(userRow.id)
+      .bind(user.id)
       .first<{ x: number }>();
     if (sub) allowed = true;
   }
@@ -109,7 +127,7 @@ watchRoute.get('/:tourId', async (c) => {
            AND (expires_at IS NULL OR expires_at > strftime('%Y-%m-%dT%H:%M:%fZ','now'))
          LIMIT 1`
     )
-      .bind(userRow.id, tour.id)
+      .bind(user.id, tour.id)
       .first<{ x: number }>();
     if (vr) allowed = true;
   }

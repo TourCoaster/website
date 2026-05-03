@@ -39,6 +39,10 @@
   var chatInput = document.getElementById('watch-chat-input');
   var vrViewers = document.getElementById('watch-vr-viewers');
   var vrStatus = document.getElementById('watch-vr-status');
+  var vrChatText = document.getElementById('watch-vr-chat-text');
+  // Rolling buffer of the last few chat lines so the in-VR <a-text> stays
+  // legible. We render the freshest message at the top.
+  var vrChatBuffer = [];
   var toast = document.getElementById('watch-toast');
 
   function api(path, init) {
@@ -227,6 +231,17 @@
     chatList.appendChild(row);
     while (chatList.children.length > 60) chatList.removeChild(chatList.firstChild);
     chatList.scrollTop = chatList.scrollHeight;
+
+    // Mirror into the in-VR chat panel so subscribers in WebXR can read
+    // chat without dropping out of the headset.
+    if (vrChatText && vrChatText.setAttribute) {
+      var line = ((msg.role === 'guide' ? 'GUIDE ' : '') +
+                  (msg.from || 'guest').slice(0, 8) + ': ' +
+                  String(msg.text || '')).slice(0, 120);
+      vrChatBuffer.push(line);
+      while (vrChatBuffer.length > 6) vrChatBuffer.shift();
+      vrChatText.setAttribute('value', vrChatBuffer.slice().reverse().join('\n'));
+    }
   }
 
   if (chatForm) {
