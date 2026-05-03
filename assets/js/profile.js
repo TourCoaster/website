@@ -129,8 +129,10 @@
     });
     if (!putRes.ok) throw new Error('Upload failed (' + putRes.status + ').');
 
-    var updated = await saveProfile({ avatar_key: presign.key });
-    return updated;
+    // The avatar_key is already persisted server-side by POST /v1/guides/me/avatar.
+    // Re-fetch the profile so the form picks up the new key + cache-busted preview.
+    var refreshed = await api('/v1/guides/me');
+    return refreshed.ok ? await refreshed.json() : Object.assign({}, currentProfile, { avatar_key: presign.key });
   }
 
   function parseLanguages(raw) {

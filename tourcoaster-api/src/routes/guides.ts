@@ -189,6 +189,20 @@ me.post('/avatar', async (c) => {
 
   const uploadUrl = await presignPut(c.env, key, ct, 600);
 
+  // Persist the avatar_key now (per task contract: this endpoint persists
+  // the resulting key). The dashboard PUTs the bytes immediately after.
+  // If the upload fails, /v1/media/<key> 404s until the user retries; the
+  // key reference is harmless and the next successful upload overwrites it.
+  const now = new Date().toISOString();
+  const res = await c.env.DB.prepare(
+    'UPDATE guide_profiles SET avatar_key = ?1, updated_at = ?2 WHERE user_id = ?3'
+  )
+    .bind(key, now, user.id)
+    .run();
+  if (res.meta.changes === 0) {
+    throw new AppError(404, 'profile_missing', 'Guide profile not found.');
+  }
+
   return c.json({
     uploadUrl,
     key,
@@ -254,8 +268,11 @@ export const guidesHtmlRoute = new Hono<AppEnv>().get('/:slug', async (c) => {
   // host in production (api.tourcoaster.com).
   const apiBase = url.host.startsWith('api.') ? `${url.protocol}//${url.host}` : 'https://api.tourcoaster.com';
 
+  // Edits must reflect "within seconds" per the task spec, so we don't
+  // allow shared caches to hold stale HTML. Browsers may revalidate; CDNs
+  // must not store.
   return c.html(renderGuidePage(profile, apiBase), 200, {
-    'cache-control': 'public, max-age=60, s-maxage=300',
+    'cache-control': 'no-store',
   });
 });
 

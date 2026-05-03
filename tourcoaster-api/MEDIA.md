@@ -70,7 +70,13 @@ Content-Type: image/jpeg
 Body: <bytes>
 ```
 
-Followed by `PATCH /v1/guides/me { "avatar_key": "<key>" }` to commit.
+The `avatar_key` is persisted on the guide's profile by the presign call
+itself, so no follow-up PATCH is needed — the upload only delivers bytes
+to a key the server has already committed to. (If the PUT fails, the next
+successful presign+upload overwrites the unused key; orphaned bytes in R2
+are cleaned up by a background sweep.) `PATCH /v1/guides/me { avatar_key }`
+remains supported for explicit clears (`avatar_key: null`) and
+ownership-checked overrides.
 
 ## R2 S3 credentials
 
