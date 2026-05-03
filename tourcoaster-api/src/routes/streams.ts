@@ -70,6 +70,11 @@ streamsRoute.post('/start', requireRole('guide'), async (c) => {
   if (tour.vr_enabled !== 1) {
     throw new AppError(409, 'vr_not_enabled', 'Enable VR on this tour before going live.');
   }
+  // Server-side gate so a guide can't bypass the dashboard filter and start
+  // a live input on a draft / deleted tour.
+  if (tour.status !== 'published') {
+    throw new AppError(409, 'tour_not_published', 'Publish the tour before going live.');
+  }
 
   // Reuse an existing active row instead of leaking live inputs.
   const existing = await c.env.DB.prepare(
@@ -289,8 +294,20 @@ streamsRoute.get('/:id/replay', async (c) => {
 // ---------------------------------------------------------------------------
 
 streamsRoute.get('/:id/status', async (c) => {
+  const user = c.get('user');
   const row = await loadStream(c.env, c.req.param('id'));
   if (!row) throw new AppError(404, 'stream_not_found', 'Stream not found.');
+
+  // Same gating as /playback and /socket so an authenticated stranger
+  // can't enumerate viewer counts / status by guessing stream ids.
+  const allowed =
+    row.owner_id === user.id ||
+    user.role === 'admin' ||
+    (await userHasActiveSubscription(c.env, user.id)) ||
+    (await userHasVrSession(c.env, user.id, row.tour_id));
+  if (!allowed) {
+    throw new AppError(402, 'payment_required', 'A subscription or booking is required to view this stream.');
+  }
 
   let viewerCount = 0;
   try {
