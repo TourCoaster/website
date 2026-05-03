@@ -5,6 +5,11 @@
 CF_ACCESS_TEAM_DOMAIN=your-team.cloudflareaccess.com
 CF_ACCESS_AUD=your-access-application-aud-tag
 
+# R2 S3-compatible API token (Phase 4 — avatar presigned uploads).
+# Create in Cloudflare dashboard → R2 → Manage R2 API Tokens (Object Read & Write).
+R2_ACCESS_KEY_ID=your-r2-access-key-id
+R2_SECRET_ACCESS_KEY=your-r2-secret-access-key
+
 # Stripe (Phase 6)
 STRIPE_SECRET_KEY=sk_test_xxx
 STRIPE_WEBHOOK_SECRET=whsec_xxx

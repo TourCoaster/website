@@ -54,7 +54,7 @@
   <!-- Google Analytics-->
   
 </head>
-<body >
+<body  data-auth-page="dashboard-profile">
   <div class="content-wrapper">
     <!--  Nav Name :Classic Header -->
 <nav
@@ -223,40 +223,80 @@
   <!-- /.offcanvas-info -->
 
 <div class="wrapper light-wrapper page-title-wrapper">
-  <div class="container inner">
-    <h1 class="page-title">Edit Profile</h1>
-    <p class="lead">Your public guide profile, visible at /guides/[your-slug].</p>
+  <div class="container inner d-flex flex-wrap align-items-center justify-content-between">
+    <div>
+      <h1 class="page-title mb-1">Edit Profile</h1>
+      <p class="text-muted mb-0">Your public guide profile, visible at <code data-public-url>/guides/…</code>.</p>
+    </div>
+    <a href="/dashboard/" class="btn btn-sm btn-outline-secondary rounded-pill">&larr; Dashboard</a>
   </div>
 </div>
 
 <div class="wrapper white-wrapper">
-  <div class="container inner" style="max-width:720px;">
-    <form id="profile-form" class="card shadow-sm rounded-4 p-4">
-      <div class="mb-3">
-        <label class="form-label">Display name</label>
-        <input class="form-control" name="display_name" placeholder="e.g. Marie L." disabled />
+  <div class="container inner" style="max-width:760px;">
+    <div id="profile-status" class="alert alert-info" role="status">Loading your profile…</div>
+
+    <form id="profile-form" class="card shadow-sm rounded-4 p-4" style="display:none;">
+      <div class="d-flex align-items-center mb-4">
+        <img id="avatar-preview" src="/assets/images/avatar.webp" alt="Avatar"
+             class="rounded-circle me-3" width="96" height="96"
+             style="object-fit:cover;width:96px;height:96px;">
+        <div class="flex-grow-1">
+          <label class="form-label mb-1">Avatar</label>
+          <input type="file" class="form-control form-control-sm" id="avatar-input" accept="image/jpeg,image/png,image/webp">
+          <small class="text-muted">JPEG, PNG, or WebP. Up to 5 MB.</small>
+        </div>
       </div>
+
       <div class="mb-3">
-        <label class="form-label">Location</label>
-        <input class="form-control" name="location" placeholder="City, Country" disabled />
+        <label class="form-label" for="display_name">Display name</label>
+        <input class="form-control" id="display_name" name="display_name" maxlength="80" placeholder="e.g. Marie L." />
       </div>
+
       <div class="mb-3">
-        <label class="form-label">Languages</label>
-        <input class="form-control" name="languages" placeholder="English, French, Spanish" disabled />
+        <label class="form-label" for="slug">Public URL slug</label>
+        <div class="input-group">
+          <span class="input-group-text">tourcoaster.com/guides/</span>
+          <input class="form-control" id="slug" name="slug" maxlength="40" pattern="[a-z0-9](?:[a-z0-9-]{0,38}[a-z0-9])?" required />
+        </div>
+        <small class="text-muted">Lowercase letters, numbers, and dashes only.</small>
       </div>
+
       <div class="mb-3">
-        <label class="form-label">Bio</label>
-        <textarea class="form-control" name="bio" rows="5" placeholder="Tell travelers what makes your tours special." disabled></textarea>
+        <label class="form-label" for="location">Location</label>
+        <input class="form-control" id="location" name="location" maxlength="120" placeholder="City, Country" />
       </div>
+
       <div class="mb-3">
-        <label class="form-label">Avatar</label>
-        <input type="file" class="form-control" name="avatar" accept="image/*" disabled />
+        <label class="form-label" for="languages">Languages</label>
+        <input class="form-control" id="languages" name="languages" placeholder="English, French, Spanish" />
+        <small class="text-muted">Comma-separated. Up to 12.</small>
       </div>
-      <button type="submit" class="btn btn-primary rounded-pill" disabled>Save changes</button>
-      <p class="text-muted mt-3 mb-0"><small>This editor activates once authentication and the API ship.</small></p>
+
+      <div class="mb-3">
+        <label class="form-label" for="bio">Bio</label>
+        <textarea class="form-control" id="bio" name="bio" rows="6" maxlength="4000"
+                  placeholder="Tell travelers what makes your tours special."></textarea>
+      </div>
+
+      <div id="status-banner" class="alert d-none" role="status"></div>
+
+      <div class="d-flex justify-content-end gap-2">
+        <button type="reset" class="btn btn-outline-secondary rounded-pill">Reset</button>
+        <button type="submit" class="btn btn-primary rounded-pill" id="save-btn">Save changes</button>
+      </div>
     </form>
+
+    <p class="text-muted mt-4 mb-0" id="approval-note" style="display:none;">
+      <small>Your profile is <strong>pending approval</strong>. It will become publicly visible once an admin approves it.</small>
+    </p>
   </div>
 </div>
+
+<script>window.TOURCOASTER_CF_TEAM = "tourcoaster.cloudflareaccess.com";</script>
+
+<script src="/assets/js/auth.js" defer></script>
+<script src="/assets/js/profile.js" defer></script>
 
 <!-- footer with details v1 -->
 <footer class=" dark-wrapper inverse-text ">

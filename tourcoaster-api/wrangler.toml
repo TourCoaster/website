@@ -45,3 +45,9 @@ PUBLIC_SITE_ORIGIN = "http://localhost:5000"
 # Cloudflare Access — set per environment. Not secrets, but required for auth.
 CF_ACCESS_TEAM_DOMAIN = "your-team.cloudflareaccess.com"
 CF_ACCESS_AUD = "REPLACE_WITH_ACCESS_APPLICATION_AUD"
+# R2 / media. Account ID + bucket name are public; access keys are secrets
+# (see .dev.vars.example). R2_PUBLIC_BASE is the URL prefix used to render
+# absolute media URLs in HTML (typically the API origin so /v1/media works).
+R2_ACCOUNT_ID = "REPLACE_WITH_CLOUDFLARE_ACCOUNT_ID"
+R2_BUCKET_NAME = "tourcoaster-media"
+R2_PUBLIC_BASE = "https://api.tourcoaster.com"
