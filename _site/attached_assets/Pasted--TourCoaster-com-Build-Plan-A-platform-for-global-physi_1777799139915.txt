@@ -1,0 +1,288 @@
+# TourCoaster.com — Build Plan
+
+A platform for global physical tour guides, with paid in-person tours (Stripe one-time) and VR live-stream subscriptions (Stripe recurring).
+
+---
+
+## 1. Architecture at a glance
+
+| Layer | Tech | Role |
+|---|---|---|
+| Public site (SEO, marketing, public guide profiles, tour listings) | Jekyll on GitHub Pages | Static, fast, indexable |
+| Interactive UI (dashboards, booking, player) | Alpine.js or HTMX inside Jekyll layouts, OR a small React/Vite app served from Pages | Dynamic islands |
+| API / business logic | Cloudflare Workers (Hono framework) | Auth, CRUD, webhooks, stream control |
+| Database | Cloudflare D1 (SQLite at the edge) | Users, guides, tours, subscriptions, bookings |
+| File storage | Cloudflare R2 | Avatars, tour photos, recorded VOD assets |
+| Live + on-demand video | Cloudflare Stream | RTMP ingest from guides, HLS/DASH playback to viewers |
+| Auth | Custom JWT in Workers using Lucia-style sessions, OR Clerk / Auth0 if you want to skip building this | Email/password + magic links |
+| Payments | Stripe Checkout (one-time + subscription) + Stripe Customer Portal + webhook to Workers | Money |
+| DNS, WAF, CDN | Cloudflare | Routing tourcoaster.com to GitHub Pages and Workers |
+| VR playback | A-Frame or Three.js with WebXR, wrapping the Cloudflare Stream HLS feed in a 360° sphere | Headset viewing |
+
+You'll have **two repos** (or one monorepo with two folders):
+- `tourcoaster-site/` — Jekyll, deploys to GitHub Pages
+- `tourcoaster-api/` — Cloudflare Workers, deploys via Wrangler CLI
+
+Cloudflare DNS routes `tourcoaster.com` to Pages and `api.tourcoaster.com` to Workers.
+
+---
+
+## 2. Decisions to lock before you write code
+
+1. **Subscription tiers.** e.g. Free (browse only) / Explorer ($X/mo unlimited VR) / Wanderer ($Y/mo VR + replays + exclusive tours). Lock the prices.
+2. **Guide payout model.** Do you take a % of each booking and subscription? Stripe Connect (Express accounts) is the right primitive — guides onboard, you split funds automatically.
+3. **Geographic compliance.** GDPR (EU), data residency, age ratings for live content. Pick a privacy-policy generator early (Termly, iubenda).
+4. **Recording rights.** Are VR tours recorded for later replay? If yes, you need consent flows for guide and any people in frame.
+5. **Auth: build vs buy.** Building auth is a 1–2 week tax. **Strong recommendation: use Clerk or Supabase Auth** for v1 and rip it out later if you must.
+
+---
+
+## 3. Phased roadmap with Replit prompts
+
+Each phase below is meant to be one or two sessions with Replit. Copy the prompt block verbatim into Replit, then iterate. The prompts assume you've told Replit your overall goal once at the start of each new repl.
+
+---
+
+### Phase 0 — Account setup (no code)
+
+Manual, do this yourself:
+- Register `tourcoaster.com` and point nameservers to Cloudflare
+- Create GitHub org and two empty repos
+- Create Cloudflare account, enable Workers, D1, R2, Stream (Stream requires a paid plan for live)
+- Create Stripe account in test mode, enable Stripe Connect (Express)
+- Create Resend or Postmark account for transactional email
+- (Optional but recommended) Create Clerk account
+
+---
+
+### Phase 1 — Jekyll public site skeleton
+
+**Goal:** Public marketing site live on `tourcoaster.com`, deployable from GitHub Pages.
+
+**Replit prompt:**
+> Create a Jekyll 4 site named `tourcoaster-site` configured for GitHub Pages deployment. Use the `jekyll-theme` plugin allowance list compatible with GitHub Pages. I want these pages: `index.html` (hero + value prop + featured guides placeholder), `browse.html` (grid of tours, static placeholder cards), `guides/[slug].html` template via collections (one file per guide, use Jekyll collections with frontmatter for name, location, bio, languages, photo), `tours/[slug].html` template via collections, `pricing.html`, `become-a-guide.html`, `vr-setup.html` (placeholder), `login.html`, `signup.html`, `dashboard.html` (placeholder shell loaded as authenticated SPA later), `privacy.html`, `terms.html`. Use Tailwind CSS via the official `jekyll-postcss-v2` plugin or compile Tailwind separately. Set up `_layouts/default.html` with header, footer, and a `<slot>` for page content. Include an `assets/js/app.js` that will host all client-side JS. Add a GitHub Action workflow `.github/workflows/pages.yml` that builds the Jekyll site and deploys to GitHub Pages on push to `main`. Generate three example guide markdown files and three example tour markdown files so the templates have data. Make it visually clean — generous whitespace, modern sans-serif, large hero imagery placeholders.
+
+**After Replit finishes:** push the repo to GitHub, enable Pages in repo settings, point Cloudflare DNS CNAME at `<username>.github.io`.
+
+---
+
+### Phase 2 — Cloudflare Workers API skeleton + D1 schema
+
+**Goal:** A working API at `api.tourcoaster.com/health` returning JSON, with a real database.
+
+**Replit prompt:**
+> Create a Cloudflare Workers project named `tourcoaster-api` using TypeScript and the Hono framework. Use Wrangler v3. The Worker should expose a base API at `/v1`. Add CORS middleware allowing origin `https://tourcoaster.com` and `http://localhost:4000`. Add a `/v1/health` route returning `{ ok: true, time }`. Set up Cloudflare D1 binding named `DB`. Create a `migrations/` folder with `0001_init.sql` containing these tables: `users` (id TEXT PK, email UNIQUE, password_hash, role ENUM as TEXT 'traveler'|'guide'|'admin', created_at), `guide_profiles` (user_id FK, slug UNIQUE, display_name, bio, location, languages JSON, avatar_r2_key, stripe_account_id, status ENUM 'pending'|'approved'|'suspended'), `tours` (id, guide_id FK, slug, title, description, category, in_person_price_cents, allows_vr BOOL, duration_min, status ENUM 'draft'|'published'), `tour_media` (id, tour_id FK, r2_key, kind ENUM 'image'|'video'), `bookings` (id, user_id, tour_id, kind ENUM 'in_person'|'vr_session', stripe_payment_intent, status, scheduled_at), `subscriptions` (id, user_id, stripe_subscription_id, plan, status, current_period_end), `live_streams` (id, guide_id, tour_id, cf_stream_input_id, cf_stream_output_id, rtmp_url, stream_key_encrypted, status ENUM 'idle'|'live'|'ended', started_at, ended_at). Add Wrangler bindings for D1, R2 (`MEDIA`), and KV (`SESSIONS`). Provide a `npm run db:migrate` script using Wrangler. Provide a `README.md` explaining how to deploy. Do NOT implement endpoints yet beyond `/v1/health` — just the skeleton.
+
+---
+
+### Phase 3 — Auth
+
+**Goal:** Sign up, log in, get a session cookie that the Jekyll dashboard pages can read.
+
+**Replit prompt:**
+> Extend the `tourcoaster-api` Worker. Add auth endpoints under `/v1/auth`: `POST /signup` (email, password, role — 'traveler' or 'guide'), `POST /login`, `POST /logout`, `GET /me`. Hash passwords with `@noble/hashes` argon2id. On signup, create a `users` row and, if role is 'guide', also create a `guide_profiles` row with status 'pending' and a slug derived from email. Issue sessions as opaque tokens stored in the `SESSIONS` KV namespace with 30-day TTL, returned as an HttpOnly, Secure, SameSite=Lax cookie scoped to `.tourcoaster.com`. Add a `requireAuth` middleware and a `requireRole('guide')` middleware. Add `POST /v1/auth/magic-link/request` and `POST /v1/auth/magic-link/verify` using Resend for delivery — store the token in KV with 15-minute TTL. Write a Vitest test file with mocked KV/D1 covering signup, login, /me, role enforcement.
+
+**Then on the Jekyll side:** add a tiny client in `assets/js/auth.js` that posts to these endpoints from `login.html` and `signup.html`, and on success redirects to `dashboard.html`.
+
+---
+
+### Phase 4 — Guide profile editor
+
+**Goal:** A logged-in guide can edit their public profile, upload an avatar, and the public Jekyll page reflects it.
+
+There's a Jekyll-specific challenge here: Jekyll is static, so guide profile pages can't be edited live. Two clean options:
+
+- **Option A (recommended for v1):** public guide pages are server-rendered by a Worker route at `tourcoaster.com/guides/:slug` (Cloudflare Pages Functions or a Worker route with HTML response). Jekyll handles everything else.
+- **Option B:** Workers triggers a GitHub Action on profile update that regenerates Jekyll. Slower, more brittle.
+
+Plan for Option A.
+
+**Replit prompt:**
+> In `tourcoaster-api`, add `/v1/guides/me` (GET, PATCH) for the logged-in guide to read and update their own profile fields: display_name, bio, location, languages, avatar. Add `POST /v1/guides/me/avatar` accepting a presigned upload — return an R2 presigned PUT URL, store the resulting key on the profile. Add a public `GET /v1/guides/:slug` returning approved profiles only. Then add a new Worker route `GET /guides/:slug` (HTML) that fetches the profile from D1 and returns a server-rendered HTML page using the Hono JSX renderer, styled with Tailwind via CDN for now. This route should be configured in Wrangler with a `route` pattern `tourcoaster.com/guides/*` so it intercepts before Pages. Make sure the page sets correct OpenGraph and JSON-LD `Person` structured data for SEO.
+
+**Jekyll side:** add a `dashboard/profile.html` page with a form that calls these endpoints. Authenticated client-side JS handles the form.
+
+---
+
+### Phase 5 — Tours (CRUD + listing)
+
+**Replit prompt:**
+> Add tour endpoints to `tourcoaster-api`: `POST /v1/tours` (guide-only, creates a draft), `PATCH /v1/tours/:id` (guide-only, owner check), `POST /v1/tours/:id/publish`, `POST /v1/tours/:id/media` (presigned R2 PUT for images), `GET /v1/tours/:id` (public if published), `GET /v1/tours?category=&q=&limit=&cursor=` (public, returns published only with cursor pagination), `DELETE /v1/tours/:id` (soft delete via status). Add a public Worker HTML route `GET /tours/:slug` rendering the tour page server-side from D1, with Tailwind via CDN, OpenGraph tags, JSON-LD `TouristTrip` structured data, and two CTAs: "Book in person" and "Watch live in VR" (the second only shown if `allows_vr` and the user has an active subscription — pull session from cookie). Update the Jekyll `browse.html` to fetch from `/v1/tours` on page load and render cards client-side, with the Jekyll version as a fallback for first paint and SEO.
+
+---
+
+### Phase 6 — Stripe: in-person bookings + VR subscriptions
+
+**Goal:** Money moves. Stripe Connect for guides, Checkout for travelers, webhooks update D1.
+
+**Replit prompt:**
+> Integrate Stripe in `tourcoaster-api`. Two flows.
+>
+> Flow 1, guide onboarding: `POST /v1/billing/connect/onboard` creates a Stripe Express account for the logged-in guide (if not already created), returns an Account Link URL for them to complete onboarding. `POST /v1/billing/connect/refresh` re-issues the link. On `account.updated` webhook, store `charges_enabled` on the guide profile.
+>
+> Flow 2, traveler purchases: `POST /v1/checkout/in-person` body `{ tour_id, scheduled_at }` creates a Stripe Checkout Session in `payment` mode with `payment_intent_data.transfer_data.destination` set to the guide's connected account, taking a 15% platform fee via `application_fee_amount`. Returns the Checkout URL. `POST /v1/checkout/subscription` body `{ plan: 'explorer' | 'wanderer' }` creates a Checkout Session in `subscription` mode using a Stripe Price ID (env var). Both endpoints require auth.
+>
+> Add `/v1/webhooks/stripe` handling: `checkout.session.completed` (creates booking row or activates subscription), `customer.subscription.updated`, `customer.subscription.deleted`, `payment_intent.payment_failed`. Verify webhook signature with `STRIPE_WEBHOOK_SECRET`. Use idempotency keys.
+>
+> Add `/v1/billing/portal` returning a Stripe Customer Portal URL for the user to manage their subscription.
+>
+> Provide a `stripe-fixtures.json` and a `npm run stripe:setup` script that creates the Products and Prices via Stripe CLI so I can replicate test config easily.
+
+**Jekyll side:** wire `pricing.html` to call `/v1/checkout/subscription`, wire each tour page's "Book in person" button to `/v1/checkout/in-person`.
+
+---
+
+### Phase 7 — Cloudflare Stream: live ingest plumbing
+
+**Goal:** A guide can click "Go Live" and get RTMP credentials. A traveler can watch the resulting stream.
+
+**Replit prompt:**
+> Add Cloudflare Stream integration to `tourcoaster-api`. Create endpoints:
+>
+> `POST /v1/streams/start` body `{ tour_id }` — guide-only, owner check. Calls Cloudflare Stream API `POST /accounts/{account_id}/stream/live_inputs` to create a new live input with `recording.mode = 'automatic'` and `defaultCreator` set to the guide's user id. Store the returned `uid`, `rtmps.url`, `rtmps.streamKey` (encrypted with a key from env), and the `playback.hls` URL in the `live_streams` table with status `idle`. Returns the RTMP URL, stream key, and a server-time-only viewable HLS URL.
+>
+> `POST /v1/streams/:id/stop` — guide-only. Calls Stream API to delete the live input, sets status `ended`, sets `ended_at`.
+>
+> `GET /v1/streams/:id/playback` — viewer endpoint. Auth required. Checks: (a) user has active subscription with VR access, OR (b) user has a `vr_session` booking for this tour. If yes, returns a signed HLS URL using Cloudflare Stream signed URLs (JWT-based) with 2-hour TTL. If no, return 402.
+>
+> Add a Stream webhook receiver at `/v1/webhooks/stream` for `live_input.connected` and `live_input.disconnected` events to flip the `live_streams.status` between `idle` and `live` and to broadcast a Durable Object event so viewers can be notified.
+>
+> Use a Durable Object `LiveTourRoom` keyed by `tour_id` to manage WebSocket connections from viewers, broadcast viewer counts and chat, and push status changes.
+
+This is the most involved phase. Budget two sessions.
+
+---
+
+### Phase 8 — VR player (the headset experience)
+
+**Goal:** A subscriber on a Quest opens `tourcoaster.com/watch/:tour_id` and is dropped inside a 360° live tour.
+
+**Replit prompt:**
+> In `tourcoaster-site`, create `watch.html` (or a new Worker HTML route at `/watch/:tour_id` if you want server-side auth gating — preferred). Build a WebXR-ready 360° video player using A-Frame 1.5 (`<a-scene>`, `<a-videosphere>`). The page flow:
+>
+> 1. On load, fetch `/v1/streams/:id/playback`. If 402, show "Subscribe to watch" CTA. If 401, redirect to login.
+> 2. Receive signed HLS URL. Use `hls.js` for non-Safari browsers, native HLS for Safari/Quest browser.
+> 3. Bind the resulting `<video>` element as the source for `<a-videosphere>`.
+> 4. Add a 2D fallback overlay with play/pause and a "Enter VR" button (`scene.enterVR()`).
+> 5. Connect a WebSocket to the `LiveTourRoom` Durable Object for live viewer count and a simple chat panel anchored as a floating UI in 3D space (`<a-entity position="0 1.5 -2">`).
+> 6. Show the guide's avatar and name overlaid in 3D.
+> 7. Handle stream-ended state with a polite "This tour has ended" screen.
+>
+> Test target: Meta Quest 2/3 browser, Chrome/Edge/Safari desktop, mobile Safari with Cardboard fallback. Make sure the videosphere uses `equirect` projection — that's what 360° cameras output.
+
+---
+
+### Phase 9 — Guide "Go Live" dashboard + setup instructions
+
+**Goal:** A guide opens their dashboard, picks a tour, sees clear step-by-step instructions, and starts streaming in under 5 minutes.
+
+**Replit prompt:**
+> In `tourcoaster-site`, build a `dashboard/live.html` page (gated by guide auth). UI sections:
+>
+> 1. **Pre-flight checklist** (collapsible): camera connected, internet ≥ 10 Mbps up (run a JS speed test), tour selected.
+> 2. **Tour selector** dropdown of the guide's published, VR-enabled tours.
+> 3. **Big "Generate stream credentials" button** that calls `POST /v1/streams/start`. On success, show:
+>     - RTMP URL (copy button)
+>     - Stream key (masked, reveal-on-click, copy button, security warning)
+>     - "Test viewer link" that opens `/watch/:id` in a new tab
+> 4. **Setup instructions** rendered as a tabbed component, one tab per recommended setup. Default tabs:
+>     - **Insta360 X4 + phone (recommended for solo guides):** step-by-step with screenshots placeholders, settings (4K 30fps, equirectangular output, bitrate 8 Mbps), how to paste RTMP URL + stream key into Insta360 app's Live mode.
+>     - **GoPro Max + phone:** same structure.
+>     - **Ricoh Theta Z1 + laptop + OBS:** OBS scene setup, V360 plugin for equirectangular, RTMP output settings.
+>     - **Desktop + USB 360 webcam (Kandao Meeting, etc.) + OBS:** OBS setup.
+> 5. **Live status panel** that polls `/v1/streams/:id/status` every 3 seconds: idle / connecting / live (with viewer count from the Durable Object) / disconnected. Big red "End stream" button.
+> 6. **Post-stream screen:** recording link from Cloudflare Stream, share buttons, basic analytics (peak viewers, duration).
+>
+> Render the setup instructions from markdown files in `_data/setup_guides/` so they're easy to edit. Include a "Need help? Book a 15-minute onboarding call" link at the bottom.
+
+---
+
+### Phase 10 — Traveler dashboard
+
+**Replit prompt:**
+> Build `dashboard/index.html` for travelers (gated). Sections:
+>
+> 1. **Upcoming bookings** — list of in-person tours with date, location, guide info, calendar add buttons (.ics download generated client-side).
+> 2. **Live now** — fetch `/v1/streams/live` (new endpoint, returns currently-live streams the user has access to via subscription) and show clickable cards routing to `/watch/:id`.
+> 3. **Subscription** — current plan, next billing date, "Manage billing" button calling `/v1/billing/portal`.
+> 4. **History** — past tours watched and attended, with replay links if recordings exist.
+> 5. **Wishlist** — saved tours (add a `wishlist` table, simple CRUD endpoints).
+>
+> Add the corresponding API endpoints. Make all data load progressively with skeleton loaders.
+
+---
+
+### Phase 11 — Discovery, search, SEO
+
+**Replit prompt:**
+> Improve discoverability across the platform.
+>
+> On the API: add `GET /v1/search?q=` doing a simple LIKE query across guide display_name, tour title, tour description, and location. Add `GET /v1/sitemap-data` returning all published guides and tours with `updated_at`.
+>
+> On the Jekyll site: build a Jekyll plugin or build-step script that pre-fetches `/v1/sitemap-data` at build time and generates `sitemap.xml` and a static `browse.html` snapshot for SEO crawlers. Add JSON-LD structured data on home (`Organization`), guide pages (`Person`), and tour pages (`TouristTrip` and `Event` for live VR sessions). Add OpenGraph and Twitter card meta tags. Generate dynamic OG images via a Worker route `og.tourcoaster.com/tour/:id.png` using `@cf-wasm/photon` or a templated SVG-to-PNG approach. Add a `robots.txt` allowing all and pointing at the sitemap.
+>
+> Set up a daily Cloudflare Cron Trigger that pings IndexNow for changed URLs.
+
+---
+
+### Phase 12 — Trust, safety, ops
+
+**Replit prompt:**
+> Add admin and safety tooling.
+>
+> 1. Admin role and `/v1/admin/*` endpoints behind `requireRole('admin')`: list pending guide applications, approve/reject, suspend users, view recent bookings, view recent subscription churn.
+> 2. Build `dashboard/admin.html` consuming these.
+> 3. Add a simple report-content flow: `POST /v1/reports` with target_type ('tour' | 'guide' | 'stream') and reason. Notify admins via Resend email.
+> 4. Add rate limiting using Cloudflare's WAF rate-limiting rules — config-as-code via Terraform or a documented manual setup. Specifically: 10 login attempts per IP per minute, 5 signups per IP per hour, 60 generic API requests per minute.
+> 5. Add a "panic kill switch" KV flag `LIVE_STREAMING_DISABLED` that the streams endpoints check first.
+> 6. Add Sentry (or Cloudflare's built-in observability) for Workers errors. Pipe Stripe webhook failures to a Slack channel via webhook.
+> 7. Write a runbook in `RUNBOOK.md` covering: stuck stream, Stripe webhook failure replay, D1 backup/restore, R2 quota alarm response, rotating Stream API tokens.
+
+---
+
+### Phase 13 — Pre-launch QA
+
+Manual checklist (don't prompt Replit, just do it):
+- End-to-end test: traveler signs up, subscribes, watches a live VR tour on a real Quest
+- End-to-end test: guide signs up, completes Connect onboarding, goes live, gets paid
+- Stripe webhook replay testing using Stripe CLI
+- Load test the streams endpoints with k6 or Artillery — at minimum 100 concurrent viewers per stream
+- Lighthouse audits on every public page, target 90+ on all four metrics
+- Accessibility pass with axe-core, especially the VR player 2D fallback
+- Privacy policy, terms, cookie banner (Cloudflare Zaraz can manage this)
+- Email deliverability check (SPF, DKIM, DMARC for tourcoaster.com via Resend or Postmark)
+
+---
+
+## 4. Cost reality check
+
+Order-of-magnitude monthly cost at small scale (~1k MAU, ~50 active guides, ~200 hours of live streaming):
+
+- Cloudflare Workers + D1 + R2 + KV: roughly $5–25
+- Cloudflare Stream live: priced per minute of input + per minute delivered — this is your biggest variable. Verify current pricing at [cloudflare.com/products/cloudflare-stream](https://www.cloudflare.com/products/cloudflare-stream). Plan for this to be your largest infra line item once you have viewers.
+- Stripe: 2.9% + 30¢ per transaction, plus Connect fees
+- Resend or Postmark: free tier likely fine until ~3k emails/month
+- GitHub Pages: free
+- Domain: ~$15/year
+
+**Look up current Cloudflare Stream pricing before you finalize subscription tiers** — your VR plan price needs to comfortably cover expected stream-minute consumption per subscriber.
+
+---
+
+## 5. Suggested order if you want to ship fastest
+
+If you want a *minimum* shippable version that proves the model, do phases 0, 1, 2, 3 (consider buying auth via Clerk to skip half of this), 4, 5, 6, then jump to 7, 8, 9, then 10. Skip 11 and 12 for the first 50 users and add them as you grow. That's roughly 4–8 weeks of focused work depending on how much Replit accelerates you.
+
+The riskiest parts are 7, 8, and 9 (live VR streaming end-to-end). I'd strongly suggest building a throwaway proof-of-concept of just those three phases first — one guide, one viewer, one tour, hardcoded auth — before you build the rest of the platform around them. If you can't get a 360° camera streaming smoothly to a Quest browser, the whole product premise is at risk and you want to know that in week 1, not month 3.
+
+---
+
+## 6. What I need from you to refine this
+
+1. Confirm the dual-payment model (one-time for in-person, recurring for VR) — or correct me.
+2. Confirm Stripe Connect for guide payouts — or tell me you want to handle payouts manually for v1.
+3. Confirm "build vs buy" on auth.
+4. Tell me whether VR tours are recordable for replay or strictly ephemeral live.
+5. Tell me if guides are vetted/applied (manual approval) or self-serve.
+
+Once those are locked, I can tighten the prompts further — especially Phases 3, 6, and 7 — and add specific edge cases.
