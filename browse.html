@@ -15,7 +15,7 @@ color_scheme: green
     <p class="small text-muted">
       {%- if site.data.discovery.tours.size > 0 or site.data.discovery.guides.size > 0 -%}
       {{ site.data.discovery.tours.size }} tours · {{ site.data.discovery.guides.size }} guides
-      {%- if site.data.discovery.generated_at %} · updated {{ site.data.discovery.generated_at }}{% endif -%}
+      {%- if site.data.discovery.generated_at %} · updated {{ site.data.discovery.generated_at | escape }}{% endif -%}
       {%- else -%}
       Snapshot empty — see <a href="/explore/">/explore/</a> for the live, JS-rendered list.
       {%- endif -%}
@@ -30,11 +30,11 @@ color_scheme: green
     <ul class="list-unstyled row">
       {%- for tour in site.data.discovery.tours -%}
       <li class="col-md-6 col-lg-4 mb-3">
-        <a href="/tours/{{ tour.slug }}/" class="d-block p-3 rounded bg-pale-green text-decoration-none">
-          <strong class="d-block">{{ tour.title }}</strong>
+        <a href="/tours/{{ tour.slug | uri_escape }}/" class="d-block p-3 rounded bg-pale-green text-decoration-none">
+          <strong class="d-block">{{ tour.title | escape }}</strong>
           <span class="small text-muted">
-            {%- if tour.location %}{{ tour.location }}{% endif -%}
-            {%- if tour.category %} · {{ tour.category }}{% endif -%}
+            {%- if tour.location %}{{ tour.location | escape }}{% endif -%}
+            {%- if tour.category %} · {{ tour.category | escape }}{% endif -%}
             {%- if tour.vr_enabled %} · VR{% endif -%}
           </span>
         </a>
@@ -50,10 +50,10 @@ color_scheme: green
     <ul class="list-unstyled row">
       {%- for guide in site.data.discovery.guides -%}
       <li class="col-md-6 col-lg-4 mb-3">
-        <a href="/guides/{{ guide.slug }}/" class="d-block p-3 rounded bg-pale-blue text-decoration-none">
-          <strong class="d-block">{{ guide.display_name | default: guide.slug }}</strong>
+        <a href="/guides/{{ guide.slug | uri_escape }}/" class="d-block p-3 rounded bg-pale-blue text-decoration-none">
+          <strong class="d-block">{{ guide.display_name | default: guide.slug | escape }}</strong>
           {%- if guide.location -%}
-          <span class="small text-muted">{{ guide.location }}</span>
+          <span class="small text-muted">{{ guide.location | escape }}</span>
           {%- endif -%}
         </a>
       </li>

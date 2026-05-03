@@ -16,8 +16,8 @@ sitemap: false
   {%- assign live_tour_slugs = "" | split: "" -%}
   {%- for tour in site.data.discovery.tours -%}
   <url>
-    <loc>{{ "/tours/" | append: tour.slug | append: "/" | absolute_url }}</loc>
-    {%- if tour.updated_at %}<lastmod>{{ tour.updated_at }}</lastmod>{%- endif %}
+    <loc>{{ "/tours/" | append: tour.slug | append: "/" | absolute_url | xml_escape }}</loc>
+    {%- if tour.updated_at %}<lastmod>{{ tour.updated_at | xml_escape }}</lastmod>{%- endif %}
     <changefreq>weekly</changefreq>
   </url>
   {%- assign live_tour_slugs = live_tour_slugs | push: tour.slug -%}
@@ -25,8 +25,8 @@ sitemap: false
   {%- assign live_guide_slugs = "" | split: "" -%}
   {%- for guide in site.data.discovery.guides -%}
   <url>
-    <loc>{{ "/guides/" | append: guide.slug | append: "/" | absolute_url }}</loc>
-    {%- if guide.updated_at %}<lastmod>{{ guide.updated_at }}</lastmod>{%- endif %}
+    <loc>{{ "/guides/" | append: guide.slug | append: "/" | absolute_url | xml_escape }}</loc>
+    {%- if guide.updated_at %}<lastmod>{{ guide.updated_at | xml_escape }}</lastmod>{%- endif %}
     <changefreq>weekly</changefreq>
   </url>
   {%- assign live_guide_slugs = live_guide_slugs | push: guide.slug -%}
