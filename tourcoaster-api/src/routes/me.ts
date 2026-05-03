@@ -47,7 +47,7 @@ meRoute.get('/', async (c) => {
   if (user.role === 'guide') {
     const row = await c.env.DB.prepare(
       `SELECT user_id, slug, display_name, bio, location, languages, avatar_key,
-              status, charges_enabled
+              status, charges_enabled, stripe_account_id
          FROM guide_profiles WHERE user_id = ?1`
     )
       .bind(user.id)

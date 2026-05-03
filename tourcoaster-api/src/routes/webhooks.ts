@@ -80,6 +80,7 @@ type CheckoutSession = {
   customer?: string | null;
   client_reference_id?: string | null;
   payment_intent?: string | null;
+  payment_status?: 'paid' | 'unpaid' | 'no_payment_required' | null;
   amount_total?: number | null;
   currency?: string | null;
   metadata?: Record<string, string> | null;
@@ -99,14 +100,18 @@ const onCheckoutCompleted = async (env: AppEnv['Bindings'], event: StripeEvent):
     const currency = (meta.tourcoaster_currency ?? session.currency ?? 'USD').toUpperCase();
     const fee = Number(meta.tourcoaster_platform_fee_cents ?? 0);
     const scheduled = meta.tourcoaster_scheduled_at ?? null;
+    // Only treat the booking as paid if Stripe says funds are confirmed.
+    // Async methods would arrive as 'unpaid' here and resolve later via
+    // payment_intent.succeeded / .payment_failed.
+    const status = session.payment_status === 'paid' ? 'paid' : 'pending';
 
     await env.DB.prepare(
       `INSERT INTO bookings
          (id, tour_id, traveler_id, scheduled_at, amount_cents, currency,
           platform_fee_cents, stripe_checkout_session_id, stripe_payment_intent_id, status)
-       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, 'paid')
+       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
        ON CONFLICT(id) DO UPDATE SET
-         status = 'paid',
+         status = excluded.status,
          stripe_payment_intent_id = excluded.stripe_payment_intent_id,
          updated_at = strftime('%Y-%m-%dT%H:%M:%fZ','now')`
     )
@@ -119,7 +124,8 @@ const onCheckoutCompleted = async (env: AppEnv['Bindings'], event: StripeEvent):
         currency,
         fee,
         session.id,
-        session.payment_intent ?? null
+        session.payment_intent ?? null,
+        status
       )
       .run();
     return;

@@ -115,6 +115,11 @@ checkoutRoute.post('/in-person', async (c) => {
       mode: 'payment',
       customer: customerId,
       client_reference_id: bookingId,
+      // Restrict to immediate payment methods so checkout.session.completed
+      // arrives only after funds are confirmed. Async methods (SEPA debit,
+      // bank transfers) would otherwise let us mark a booking 'paid' before
+      // the money lands.
+      payment_method_types: ['card'],
       success_url: `${origin}/checkout/success/?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/checkout/cancel/?tour=${encodeURIComponent(tour.id)}`,
       payment_intent_data: {
@@ -210,7 +215,9 @@ checkoutRoute.post('/subscription', async (c) => {
         tourcoaster_plan: plan,
       },
     },
-    idempotencyKey: `checkout_sub_${user.id}_${plan}`,
+    // Per-attempt idempotency key — using a stable user+plan key would let a
+    // retry inside Stripe's 24h window resurrect an old/canceled session.
+    idempotencyKey: `checkout_sub_${user.id}_${plan}_${crypto.randomUUID()}`,
   });
 
   return c.json({ url: session.url, sessionId: session.id });
