@@ -22,7 +22,9 @@ export type WatchTour = {
   title: string;
   description: string | null;
   vr_enabled: boolean;
-  replay_hls_url: string | null;
+  // Boolean signal only — the actual replay URL is signed on demand by
+  // /v1/streams/:id/replay. We never bake a replay URL into the HTML.
+  hasReplay: boolean;
 };
 
 export type WatchData = {

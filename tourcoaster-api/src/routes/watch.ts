@@ -181,7 +181,9 @@ watchRoute.get('/:tourId', async (c) => {
     title: tour.title,
     description: tour.description,
     vr_enabled: tour.vr_enabled === 1,
-    replay_hls_url: tour.replay_hls_url,
+    // Surface only a boolean to the client — the signed replay URL is
+    // minted by /v1/streams/:id/replay after the same ACL check.
+    hasReplay: !!stream?.recording_uid || !!tour.replay_hls_url,
   };
   return c.html(renderWatchPage({ tour: watchTour, state, apiBase }), 200, HTML);
 });

@@ -150,7 +150,7 @@
       // live_streams.recording_uid presence). Falling back to the marker
       // URL on the tour record keeps existing tours that were recorded
       // before this field was added playable.
-      if (state.hasReplay || tour.replay_hls_url) {
+      if (state.hasReplay || tour.hasReplay) {
         ctaEnded = '<a class="btn" href="/watch/' + encodeURIComponent(tour.slug) + '?replay=1">Watch the replay</a> ' + ctaEnded;
       }
       showFallback('This tour has ended.', ctaEnded);
@@ -231,7 +231,7 @@
     // Preserve replay availability from the initial server-rendered state
     // (or the tour record) so the ended screen still shows the replay CTA
     // when a recording exists, even after the live → ended transition.
-    var hadReplay = (state && state.hasReplay) || !!tour.replay_hls_url;
+    var hadReplay = (state && state.hasReplay) || !!tour.hasReplay;
     var endedStreamId = state && state.streamId;
     state = { kind: 'ended', streamId: endedStreamId, hasReplay: hadReplay };
     setStatus('This tour has ended', 'ended');
