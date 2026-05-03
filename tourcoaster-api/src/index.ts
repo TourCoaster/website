@@ -18,6 +18,9 @@ import { streamsRoute } from './routes/streams';
 import { streamWebhooksRoute } from './routes/stream-webhooks';
 import { watchRoute } from './routes/watch';
 import { speedtestRoute } from './routes/speedtest';
+import { bookingsRoute } from './routes/bookings';
+import { wishlistRoute } from './routes/wishlist';
+import { historyRoute } from './routes/history';
 import type { AppEnv } from './types';
 
 export { LiveTourRoom } from './stream/durable';
@@ -58,6 +61,9 @@ v1.route('/webhooks', webhooksRoute);
 v1.route('/streams', streamsRoute);
 v1.route('/webhooks/stream', streamWebhooksRoute);
 v1.route('/speedtest', speedtestRoute);
+v1.route('/bookings', bookingsRoute);
+v1.route('/wishlist', wishlistRoute);
+v1.route('/history', historyRoute);
 
 app.route('/v1', v1);
 

@@ -23,11 +23,20 @@ body_attributes: 'data-auth-page="dashboard"'
 
 <div class="wrapper white-wrapper">
   <div class="container inner">
-    <div class="row gy-4">
+
+    <div id="td-error" class="alert alert-warning d-none" role="alert"></div>
+
+    <section data-role="guide" class="row gy-4" style="display:none;">
       <div class="col-md-6 col-lg-4">
         <a href="/dashboard/profile" class="card text-decoration-none p-4 h-100 rounded-4 shadow-sm">
           <h5 class="mb-2"><i class="jam jam-user me-2 text-primary"></i> Profile</h5>
           <p class="text-muted mb-0">Edit your public guide profile and avatar.</p>
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <a href="/dashboard/tours" class="card text-decoration-none p-4 h-100 rounded-4 shadow-sm">
+          <h5 class="mb-2"><i class="jam jam-map me-2 text-primary"></i> Tours</h5>
+          <p class="text-muted mb-0">Create and edit your tour catalog.</p>
         </a>
       </div>
       <div class="col-md-6 col-lg-4">
@@ -37,16 +46,71 @@ body_attributes: 'data-auth-page="dashboard"'
         </a>
       </div>
       <div class="col-md-6 col-lg-4">
-        <a href="/pricing" class="card text-decoration-none p-4 h-100 rounded-4 shadow-sm">
-          <h5 class="mb-2"><i class="jam jam-credit-card me-2 text-primary"></i> Subscription</h5>
-          <p class="text-muted mb-0">Manage billing and your plan.</p>
+        <a href="/dashboard/billing" class="card text-decoration-none p-4 h-100 rounded-4 shadow-sm">
+          <h5 class="mb-2"><i class="jam jam-credit-card me-2 text-primary"></i> Payouts</h5>
+          <p class="text-muted mb-0">Connect Stripe and review earnings.</p>
         </a>
       </div>
+    </section>
+
+    <div data-role="traveler" style="display:none;">
+
+      <section class="mb-5">
+        <h2 class="h4 mb-3">Upcoming bookings</h2>
+        <div id="td-bookings" class="row gy-3">
+          <div class="col-12"><div class="td-skeleton" style="height:88px;"></div></div>
+        </div>
+      </section>
+
+      <section class="mb-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h2 class="h4 mb-0">Live now</h2>
+          <button type="button" class="btn btn-sm btn-link p-0" id="td-live-refresh">Refresh</button>
+        </div>
+        <div id="td-live" class="row gy-3">
+          <div class="col-12"><div class="td-skeleton" style="height:120px;"></div></div>
+        </div>
+      </section>
+
+      <section class="mb-5">
+        <h2 class="h4 mb-3">Subscription</h2>
+        <div id="td-subscription" class="card shadow-sm rounded-4 p-4">
+          <div class="td-skeleton" style="height:60px;"></div>
+        </div>
+      </section>
+
+      <section class="mb-5">
+        <h2 class="h4 mb-3">History</h2>
+        <div id="td-history" class="row gy-3">
+          <div class="col-12"><div class="td-skeleton" style="height:88px;"></div></div>
+        </div>
+      </section>
+
+      <section class="mb-5">
+        <h2 class="h4 mb-3">Wishlist</h2>
+        <div id="td-wishlist" class="row gy-3">
+          <div class="col-12"><div class="td-skeleton" style="height:120px;"></div></div>
+        </div>
+      </section>
+
     </div>
   </div>
 </div>
 
+<style>
+.td-skeleton {
+  background: linear-gradient(90deg, #f1f3f5 25%, #e9ecef 37%, #f1f3f5 63%);
+  background-size: 400% 100%;
+  border-radius: 0.75rem;
+  animation: td-shimmer 1.4s ease infinite;
+}
+@keyframes td-shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+.td-card { border: 1px solid #e9ecef; border-radius: 0.75rem; padding: 1rem; background: #fff; }
+.td-empty { color: #6c757d; font-style: italic; }
+</style>
+
 {% include utilities/auth-config.html %}
 <script src="/assets/js/auth.js" defer></script>
+<script src="/assets/js/traveler-dashboard.js" defer></script>
 
 {% include layouts/footer/footer-1.html %}

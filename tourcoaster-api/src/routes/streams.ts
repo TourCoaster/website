@@ -234,6 +234,54 @@ const userHasVrSession = async (
   return !!row;
 };
 
+// ---------------------------------------------------------------------------
+// GET /v1/streams/live — list currently-live streams the caller can access.
+// Owner / admin / active-subscription / vr_session all unlock the row.
+// ---------------------------------------------------------------------------
+
+streamsRoute.get('/live', async (c) => {
+  const user = c.get('user');
+  const hasSub = user.role === 'admin' ? true : await userHasActiveSubscription(c.env, user.id);
+
+  const rows = await c.env.DB.prepare(
+    `SELECT ls.id, ls.tour_id, ls.started_at, ls.status,
+            t.slug, t.title, t.location,
+            gp.display_name AS guide_display_name,
+            gp.slug AS guide_slug,
+            (ls.owner_id = ?1) AS is_owner,
+            EXISTS (
+              SELECT 1 FROM vr_sessions s
+               WHERE s.user_id = ?1 AND s.tour_id = ls.tour_id
+                 AND (s.expires_at IS NULL OR s.expires_at > strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+            ) AS has_vr_session
+       FROM live_streams ls
+       JOIN tours t ON t.id = ls.tour_id
+       LEFT JOIN guide_profiles gp ON gp.user_id = ls.owner_id
+      WHERE ls.status IN ('connecting','live')
+      ORDER BY (ls.started_at IS NULL), ls.started_at DESC
+      LIMIT 50`
+  )
+    .bind(user.id)
+    .all<{
+      id: string;
+      tour_id: string;
+      started_at: string | null;
+      status: string;
+      slug: string;
+      title: string;
+      location: string | null;
+      guide_display_name: string | null;
+      guide_slug: string | null;
+      is_owner: number;
+      has_vr_session: number;
+    }>();
+
+  const items = (rows.results ?? []).filter(
+    (r) => user.role === 'admin' || r.is_owner === 1 || hasSub || r.has_vr_session === 1
+  );
+  return c.json({ items });
+});
+
 streamsRoute.get('/:id/playback', async (c) => {
   const user = c.get('user');
   const row = await loadStream(c.env, c.req.param('id'));

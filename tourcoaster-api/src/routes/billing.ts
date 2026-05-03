@@ -101,6 +101,43 @@ billingRoute.post('/connect/refresh', requireRole('guide'), async (c) => {
 // Stripe Customer Portal (any authenticated user with a customer record).
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// GET /v1/billing/subscription — caller's most-recent subscription (or null).
+// ---------------------------------------------------------------------------
+
+billingRoute.get('/subscription', async (c) => {
+  const user = c.get('user');
+  const row = await c.env.DB.prepare(
+    `SELECT plan, status, current_period_end, cancel_at_period_end
+       FROM subscriptions
+      WHERE user_id = ?1
+      ORDER BY CASE status
+                 WHEN 'active' THEN 0
+                 WHEN 'trialing' THEN 1
+                 WHEN 'past_due' THEN 2
+                 ELSE 3 END,
+               updated_at DESC
+      LIMIT 1`
+  )
+    .bind(user.id)
+    .first<{
+      plan: string;
+      status: string;
+      current_period_end: string | null;
+      cancel_at_period_end: number;
+    }>();
+  return c.json({
+    subscription: row
+      ? {
+          plan: row.plan,
+          status: row.status,
+          current_period_end: row.current_period_end,
+          cancel_at_period_end: row.cancel_at_period_end === 1,
+        }
+      : null,
+  });
+});
+
 billingRoute.post('/portal', async (c) => {
   const user = c.get('user');
   const row = await c.env.DB.prepare(
