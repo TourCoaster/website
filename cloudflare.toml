@@ -1,5 +1,5 @@
 [build]
-  command = "node scripts/prefetch-discovery.mjs && jekyll build"
+  command = "PREFETCH_DISCOVERY=0 node scripts/prefetch-discovery.mjs && jekyll build"
   publish = "_site"
 
 [build.environment]
@@ -23,7 +23,7 @@
   status = 200
 
 [context.production]
-  command = "node scripts/prefetch-discovery.mjs && jekyll build"
+  command = "PREFETCH_DISCOVERY=0 node scripts/prefetch-discovery.mjs && jekyll build"
 
 [context.preview]
   command = "node scripts/prefetch-discovery.mjs && jekyll build --drafts --future"

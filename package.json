@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "prefetch": "node scripts/prefetch-discovery.mjs",
-    "build": "node scripts/prefetch-discovery.mjs && bundle exec jekyll build",
-    "serve": "node scripts/prefetch-discovery.mjs && bundle exec jekyll serve --host 0.0.0.0 --port 5000"
+    "build": "PREFETCH_DISCOVERY=0 node scripts/prefetch-discovery.mjs && bundle exec jekyll build",
+    "serve": "PREFETCH_DISCOVERY=0 node scripts/prefetch-discovery.mjs && bundle exec jekyll serve --host 0.0.0.0 --port 5000"
   }
 }

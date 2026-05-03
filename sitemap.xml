@@ -13,26 +13,34 @@ sitemap: false
   </url>
   {%- endfor -%}
 
+  {%- assign live_tour_slugs = "" | split: "" -%}
   {%- for tour in site.data.discovery.tours -%}
   <url>
     <loc>{{ "/tours/" | append: tour.slug | append: "/" | absolute_url }}</loc>
     {%- if tour.updated_at %}<lastmod>{{ tour.updated_at }}</lastmod>{%- endif %}
     <changefreq>weekly</changefreq>
   </url>
+  {%- assign live_tour_slugs = live_tour_slugs | push: tour.slug -%}
   {%- endfor -%}
+  {%- assign live_guide_slugs = "" | split: "" -%}
   {%- for guide in site.data.discovery.guides -%}
   <url>
     <loc>{{ "/guides/" | append: guide.slug | append: "/" | absolute_url }}</loc>
     {%- if guide.updated_at %}<lastmod>{{ guide.updated_at }}</lastmod>{%- endif %}
     <changefreq>weekly</changefreq>
   </url>
+  {%- assign live_guide_slugs = live_guide_slugs | push: guide.slug -%}
   {%- endfor -%}
 
   {%- for tour in site.tours -%}
+  {%- unless live_tour_slugs contains tour.slug -%}
   <url><loc>{{ tour.url | absolute_url }}</loc><changefreq>weekly</changefreq></url>
+  {%- endunless -%}
   {%- endfor -%}
   {%- for guide in site.guides -%}
+  {%- unless live_guide_slugs contains guide.slug -%}
   <url><loc>{{ guide.url | absolute_url }}</loc><changefreq>weekly</changefreq></url>
+  {%- endunless -%}
   {%- endfor -%}
   {%- for vr in site.vr_experiences -%}
   <url><loc>{{ vr.url | absolute_url }}</loc><changefreq>weekly</changefreq></url>
