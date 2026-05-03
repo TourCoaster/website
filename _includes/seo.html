@@ -8,14 +8,14 @@
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "{{ site.data.general_settings.title | escape }}",
+  "name": {{ site.data.general_settings.title | jsonify }},
   "url": "{{ site.url }}",
   "logo": "{{ site.data.general_settings.black_logo_1x | absolute_url }}",
-  "description": "{{ site.data.general_settings.description | strip_newlines | strip | escape }}",
-  "email": "{{ site.data.general_settings.email }}",
+  "description": {{ site.data.general_settings.description | strip_newlines | strip | jsonify }},
+  "email": {{ site.data.general_settings.email | jsonify }},
   "address": {
     "@type": "PostalAddress",
-    "addressLocality": "{{ site.data.general_settings.address_01 | escape }}"
+    "addressLocality": {{ site.data.general_settings.address_01 | jsonify }}
   }
 }
 </script>
@@ -23,7 +23,7 @@
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "{{ site.data.general_settings.title | escape }}",
+  "name": {{ site.data.general_settings.title | jsonify }},
   "url": "{{ site.url }}",
   "potentialAction": {
     "@type": "SearchAction",
@@ -59,7 +59,7 @@
   },{% endif %}
   "provider": {
     "@type": "Organization",
-    "name": "{{ site.data.general_settings.title | escape }}",
+    "name": {{ site.data.general_settings.title | jsonify }},
     "url": "{{ site.url }}"
   }
 }
@@ -83,7 +83,7 @@
   },
   "organizer": {
     "@type": "Organization",
-    "name": "{{ site.data.general_settings.title | escape }}",
+    "name": {{ site.data.general_settings.title | jsonify }},
     "url": "{{ site.url }}"
   }
 }
@@ -109,7 +109,7 @@
   },{% endif %}
   "worksFor": {
     "@type": "Organization",
-    "name": "{{ site.data.general_settings.title | escape }}",
+    "name": {{ site.data.general_settings.title | jsonify }},
     "url": "{{ site.url }}"
   }
 }
@@ -127,7 +127,7 @@
   {% if page.date %}"datePublished": "{{ page.date | date_to_xmlschema }}",{% endif %}
   "author": {
     "@type": "Organization",
-    "name": "{{ site.data.general_settings.title | escape }}"
+    "name": {{ site.data.general_settings.title | jsonify }}
   }
 }
 </script>

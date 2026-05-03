@@ -119,6 +119,11 @@ Static site deployment:
   (satori + resvg/yoga wasm). Matching `.svg` variants are also served.
   Tour and guide layouts default `og:image` / `twitter:image` to these
   URLs whenever `page.slug` is present.
+  - Architecture note: there is one Worker binary. Cloudflare routes
+    bind both `api.tourcoaster.com/*` and `og.tourcoaster.com/*` to it.
+    `index.ts` host-dispatches: requests whose `Host` starts with `og.`
+    go to the OG router; everything else hits the API. DNS: a proxied
+    CNAME `og` -> the Workers route is required.
 - IndexNow: daily Cloudflare Cron (`17 4 * * *`) at
   `tourcoaster-api/src/scheduled.ts` diffs the sitemap snapshot stored in
   the FLAGS KV and POSTs changed URLs to api.indexnow.org. Set the
