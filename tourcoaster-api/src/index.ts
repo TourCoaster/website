@@ -25,15 +25,20 @@ const v1 = new Hono<AppEnv>();
 v1.route('/health', healthRoute); // public
 v1.route('/auth/logout', logoutRoute); // public, best-effort cookie clear
 v1.route('/media', mediaRoute); // public read-through to R2
-v1.route('/guides', guidesPublicRoute); // public guide JSON by slug
 
+// Protected routes — must be registered BEFORE the public /guides/:slug
+// route so that /v1/guides/me is not shadowed by the public slug matcher.
 const protectedRoutes = new Hono<AppEnv>();
 protectedRoutes.use('*', requireAccessAuth());
 protectedRoutes.route('/me', meRoute);
 protectedRoutes.route('/auth/role', roleRoute);
 protectedRoutes.route('/guides/me', guidesMeRoute);
-
 v1.route('/', protectedRoutes);
+
+// Public guide JSON by slug. Registered AFTER /guides/me so the protected
+// route wins. The public handler also explicitly rejects the reserved slug
+// "me" as defense-in-depth.
+v1.route('/guides', guidesPublicRoute);
 
 app.route('/v1', v1);
 

@@ -203,8 +203,13 @@ export const guidesMeRoute = me;
 // /v1/guides/:slug — public JSON (approved only)
 // ----------------------------------------------------------------------------
 
+const RESERVED_SLUGS = new Set(['me', 'admin', 'api', 'new']);
+
 export const guidesPublicRoute = new Hono<AppEnv>().get('/:slug', async (c) => {
   const slug = c.req.param('slug');
+  if (RESERVED_SLUGS.has(slug)) {
+    throw new AppError(404, 'guide_not_found', 'Guide not found.');
+  }
   const row = await c.env.DB.prepare(
     `SELECT g.*, u.email FROM guide_profiles g
      JOIN users u ON u.id = g.user_id

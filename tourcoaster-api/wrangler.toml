@@ -3,10 +3,14 @@ main = "src/index.ts"
 compatibility_date = "2024-12-18"
 compatibility_flags = ["nodejs_compat"]
 
-# Routes: production. Replace with your zone after DNS is set up.
-# routes = [
-#   { pattern = "api.tourcoaster.com/*", zone_name = "tourcoaster.com" }
-# ]
+# Routes: production. The same Worker serves the API on api.tourcoaster.com
+# AND the server-rendered public guide pages on tourcoaster.com/guides/*
+# (overriding the static Jekyll output for that path). Uncomment and adjust
+# zone_name once DNS is set up; in development `wrangler dev` ignores routes.
+routes = [
+  { pattern = "api.tourcoaster.com/*", zone_name = "tourcoaster.com" },
+  { pattern = "tourcoaster.com/guides/*", zone_name = "tourcoaster.com" }
+]
 
 # ---------------------------------------------------------------------------
 # Bindings — replace the placeholder IDs with the real ones from
