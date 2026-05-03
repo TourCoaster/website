@@ -194,7 +194,18 @@
       var msg; try { msg = JSON.parse(ev.data); } catch (_) { return; }
       if (msg.type === 'hello') {
         if (typeof msg.viewer_count === 'number') setViewerCount(msg.viewer_count);
-        if (msg.status === 'live') setStatus('Live now', 'live');
+        if (msg.status === 'live') {
+          // The room already knows the stream is broadcasting — promote
+          // idle → live and start playback, in case the DB state we were
+          // rendered with is stale.
+          if (state.kind === 'idle' && state.streamId) {
+            state = { kind: 'live', streamId: state.streamId };
+            setStatus('Live now', 'live');
+            startPlayback();
+          } else {
+            setStatus('Live now', 'live');
+          }
+        }
         if (msg.status === 'ended') onEnded();
       } else if (msg.type === 'viewer_count' && typeof msg.viewer_count === 'number') {
         setViewerCount(msg.viewer_count);
@@ -217,12 +228,17 @@
   }
 
   function onEnded() {
-    state = { kind: 'ended' };
+    // Preserve replay availability from the initial server-rendered state
+    // (or the tour record) so the ended screen still shows the replay CTA
+    // when a recording exists, even after the live → ended transition.
+    var hadReplay = (state && state.hasReplay) || !!tour.replay_hls_url;
+    var endedStreamId = state && state.streamId;
+    state = { kind: 'ended', streamId: endedStreamId, hasReplay: hadReplay };
     setStatus('This tour has ended', 'ended');
     if (hls) try { hls.destroy(); } catch (_) {}
     try { videoEl.pause(); } catch (_) {}
-    var cta = '<a class="btn" href="/tours/' + encodeURIComponent(tour.slug) + '">Back to tour</a>';
-    if (tour.replay_hls_url) cta = '<a class="btn" href="/watch/' + encodeURIComponent(tour.slug) + '?replay=1">Watch replay</a> ' + cta;
+    var cta = '<a class="btn secondary" href="/tours/' + encodeURIComponent(tour.slug) + '">Back to tour</a>';
+    if (hadReplay) cta = '<a class="btn" href="/watch/' + encodeURIComponent(tour.slug) + '?replay=1">Watch replay</a> ' + cta;
     showFallback('This tour has ended.', cta);
   }
 

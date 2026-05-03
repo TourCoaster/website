@@ -10,7 +10,10 @@ compatibility_flags = ["nodejs_compat"]
 routes = [
   { pattern = "api.tourcoaster.com/*", zone_name = "tourcoaster.com" },
   { pattern = "tourcoaster.com/guides/*", zone_name = "tourcoaster.com" },
-  { pattern = "tourcoaster.com/tours/*", zone_name = "tourcoaster.com" }
+  { pattern = "tourcoaster.com/tours/*", zone_name = "tourcoaster.com" },
+  # /watch/:tour_id is the auth-gated VR/2D player; it must hit the Worker
+  # so server-side gating runs before any signed HLS URL is exposed.
+  { pattern = "tourcoaster.com/watch/*", zone_name = "tourcoaster.com" }
 ]
 
 # ---------------------------------------------------------------------------
