@@ -1,11 +1,13 @@
 import { Hono } from 'hono';
 import type { AppEnv } from '../types';
+import { requireAccessAuth, requireRole } from '../auth/middleware';
 
 export const speedtestRoute = new Hono<AppEnv>();
+speedtestRoute.use('*', requireAccessAuth());
 
 const MAX_BYTES = 16 * 1024 * 1024;
 
-speedtestRoute.post('/', async (c) => {
+speedtestRoute.post('/', requireRole('guide'), async (c) => {
   const body = c.req.raw.body;
   if (body) {
     const reader = body.getReader();

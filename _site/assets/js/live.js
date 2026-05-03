@@ -249,7 +249,7 @@
     document.getElementById('postlive-peak').textContent = String(peakViewers);
     if (currentTour) {
       var rec = document.getElementById('postlive-recording');
-      rec.innerHTML = 'Available on the <a href="/tours/' + currentTour.slug + '">tour page</a> once Cloudflare finishes processing.';
+      rec.textContent = 'Processing — usually ready in a couple of minutes.';
       var share = document.getElementById('postlive-share-link');
       share.href = location.origin + '/tours/' + currentTour.slug;
       share.style.display = '';
@@ -258,8 +258,24 @@
       copyBtn.onclick = function () {
         if (navigator.clipboard) navigator.clipboard.writeText(share.href).then(function () { setBanner('Share link copied.', 'info'); });
       };
+      pollReplay(currentStreamId, currentTour.slug, 0);
     }
     document.getElementById('postlive-card').style.display = '';
+  }
+
+  function pollReplay(streamId, slug, attempt) {
+    if (!streamId || attempt > 30) return;
+    api('/v1/streams/' + streamId + '/replay').then(function (res) {
+      if (res.ok) {
+        var rec = document.getElementById('postlive-recording');
+        var url = '/watch/' + slug + '?replay=1';
+        rec.innerHTML = '<a href="' + url + '">Watch the replay</a>';
+      } else {
+        setTimeout(function () { pollReplay(streamId, slug, attempt + 1); }, 10000);
+      }
+    }).catch(function () {
+      setTimeout(function () { pollReplay(streamId, slug, attempt + 1); }, 10000);
+    });
   }
 
   async function stopStream() {
