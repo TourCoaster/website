@@ -31,6 +31,9 @@ export type Bindings = {
   STREAM_SIGNING_PEM?: string;
   STREAM_KEY_SECRET?: string;
   STREAM_CUSTOMER_CODE?: string;
+  // IndexNow key issued by Bing/Yandex; also served as `${key}.txt` for
+  // ownership verification. Optional — when unset the cron is a no-op.
+  INDEXNOW_KEY?: string;
   // Durable Object that fans out viewer count + chat for one live stream.
   LIVE_ROOMS: DurableObjectNamespace;
 };

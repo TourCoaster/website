@@ -11,8 +11,15 @@ routes = [
   { pattern = "api.tourcoaster.com/*", zone_name = "tourcoaster.com" },
   { pattern = "tourcoaster.com/guides/*", zone_name = "tourcoaster.com" },
   { pattern = "tourcoaster.com/tours/*", zone_name = "tourcoaster.com" },
-  { pattern = "tourcoaster.com/watch/*", zone_name = "tourcoaster.com" }
+  { pattern = "tourcoaster.com/watch/*", zone_name = "tourcoaster.com" },
+  # OG image worker. og.tourcoaster.com/{tour,guide}/:id renders templated
+  # SVG (servable as image/svg+xml) used in OpenGraph + Twitter cards.
+  { pattern = "og.tourcoaster.com/*", zone_name = "tourcoaster.com" }
 ]
+
+# Daily cron — IndexNow ping for changed URLs (see src/scheduled.ts).
+[triggers]
+crons = ["17 4 * * *"]
 
 # ---------------------------------------------------------------------------
 # Bindings — replace the placeholder IDs with the real ones from

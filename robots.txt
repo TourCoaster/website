@@ -7,5 +7,10 @@ User-agent: *
 Allow: /
 Disallow: /dashboard/
 Disallow: /watch/
+Disallow: /login
+Disallow: /signup
+Disallow: /success
+Disallow: /cancel
 
 Sitemap: {{ site.url }}/sitemap.xml
+Sitemap: {{ site.url }}/feed.xml

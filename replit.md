@@ -87,3 +87,29 @@ Static site deployment:
 - `/about` — About page
 - `/accessibility` — Accessibility features
 - `/blogs/index` — Blog listing
+- `/browse/` — Static crawler-friendly snapshot of every published tour + guide
+- `/sitemap.xml` — Augmented with prefetched API data (see below)
+- `/robots.txt` — Allows crawling, disallows account-only paths
+
+## SEO & Discovery (Phase 11)
+
+- API: `GET /v1/search?q=` (LIKE search across guide names, tour
+  titles/descriptions, locations) and `GET /v1/sitemap-data` (cached 5 min).
+- Build-time prefetch: `node scripts/prefetch-discovery.mjs` writes
+  `_data/discovery.yml`. Run before `bundle exec jekyll build`. Falls back
+  to the existing snapshot (or an empty stub) if the API is unreachable.
+- `sitemap.xml` and `browse.html` consume `site.data.discovery` so live
+  tours/guides are crawlable even though they live in D1, not Jekyll.
+- JSON-LD: `_includes/seo.html` emits Organization + WebSite on home,
+  `TouristTrip` (and `Event` for live VR) on tour pages, `Person` on
+  guide pages, `BlogPosting` on blog posts. Driven by `page.jsonld_kind`.
+- OG/Twitter cards via `_includes/core/head/meta-og-tags.html` (absolute
+  URLs, fallback chain, configurable `og_type` / `og_image`).
+- Dynamic OG images: `og.tourcoaster.com/{tour,guide}/<slug>.png` served
+  by the same Workers binary (templated SVG; PNG rasterization is a
+  follow-up).
+- IndexNow: daily Cloudflare Cron (`17 4 * * *`) at
+  `tourcoaster-api/src/scheduled.ts` diffs the sitemap snapshot stored in
+  the FLAGS KV and POSTs changed URLs to api.indexnow.org. Set the
+  `INDEXNOW_KEY` Worker secret to enable; the Worker also serves
+  `/<key>.txt` for ownership verification.

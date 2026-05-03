@@ -5,13 +5,35 @@ sitemap: false
 ---
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  {%- assign primary = "/,/about,/explore,/vr-experiences,/guides,/destinations,/for-guides,/accessibility,/pricing" | split: "," -%}
+  {%- assign primary = "/,/about,/explore,/browse,/vr-experiences,/guides,/destinations,/for-guides,/accessibility,/pricing" | split: "," -%}
   {%- for path in primary -%}
   <url>
     <loc>{{ path | absolute_url }}</loc>
     <changefreq>weekly</changefreq>
   </url>
   {%- endfor -%}
+
+  {%- comment -%}
+    Live data prefetched from /v1/sitemap-data into _data/discovery.yml.
+    See scripts/prefetch-discovery.mjs. We prefer live data; the static
+    Jekyll collections under _tours/_guides/_vr_experiences are still
+    emitted as a fallback for any handcrafted pages.
+  {%- endcomment -%}
+  {%- for tour in site.data.discovery.tours -%}
+  <url>
+    <loc>{{ "/tours/" | append: tour.slug | append: "/" | absolute_url }}</loc>
+    {%- if tour.updated_at %}<lastmod>{{ tour.updated_at }}</lastmod>{%- endif %}
+    <changefreq>weekly</changefreq>
+  </url>
+  {%- endfor -%}
+  {%- for guide in site.data.discovery.guides -%}
+  <url>
+    <loc>{{ "/guides/" | append: guide.slug | append: "/" | absolute_url }}</loc>
+    {%- if guide.updated_at %}<lastmod>{{ guide.updated_at }}</lastmod>{%- endif %}
+    <changefreq>weekly</changefreq>
+  </url>
+  {%- endfor -%}
+
   {%- for tour in site.tours -%}
   <url><loc>{{ tour.url | absolute_url }}</loc><changefreq>weekly</changefreq></url>
   {%- endfor -%}

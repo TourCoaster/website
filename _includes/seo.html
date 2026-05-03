@@ -1,7 +1,21 @@
-{% comment %} Extra SEO partial: canonical link + JSON-LD. Used by default layout. {% endcomment %}
-{% assign abs_url = page.url | absolute_url %}
+{% comment %}
+  Extra SEO partial: canonical link, robots meta, and JSON-LD.
+  Included from _layouts/default.html. Per-page overrides:
+    page.canonical              — override the canonical URL
+    page.noindex                — adds noindex,nofollow
+    page.jsonld_kind            — "tour", "guide", "tour_event", "blog"; default
+                                 omits the page-specific block (Organization +
+                                 WebSite ld+json on the homepage cover the
+                                 default case).
+    page.title / page.description / page.image — populate JSON-LD fields.
+    page.location / page.duration_minutes / page.price / page.currency
+                                — TouristTrip extras for tours.
+    page.starts_at / page.stream_url
+                                — Event extras for live VR airings.
+{% endcomment %}
+{% assign abs_url = page.canonical | default: page.url | absolute_url %}
 <link rel="canonical" href="{{ abs_url }}" />
-<meta name="robots" content="{% if page.noindex %}noindex,nofollow{% else %}index,follow{% endif %}" />
+<meta name="robots" content="{% if page.noindex %}noindex,nofollow{% else %}index,follow,max-image-preview:large{% endif %}" />
 
 {% if page.url == "/" or page.url == "/index.html" %}
 <script type="application/ld+json">
@@ -29,6 +43,103 @@
     "@type": "SearchAction",
     "target": "{{ site.url }}/explore?q={search_term_string}",
     "query-input": "required name=search_term_string"
+  }
+}
+</script>
+{% endif %}
+
+{% if page.jsonld_kind == "tour" %}
+{%- assign tour_image = page.image | default: page.cover | default: site.data.general_settings.meta_og_image -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TouristTrip",
+  "name": {{ page.title | jsonify }},
+  "description": {{ page.description | default: page.excerpt | strip_html | strip_newlines | jsonify }},
+  "url": "{{ abs_url }}",
+  {% if tour_image %}"image": "{{ tour_image | absolute_url }}",{% endif %}
+  {% if page.location %}"touristType": [{{ page.location | jsonify }}],{% endif %}
+  {% if page.location %}"itinerary": {
+    "@type": "Place",
+    "name": {{ page.location | jsonify }},
+    "address": { "@type": "PostalAddress", "addressLocality": {{ page.location | jsonify }} }
+  },{% endif %}
+  {% if page.price and page.currency %}"offers": {
+    "@type": "Offer",
+    "price": "{{ page.price }}",
+    "priceCurrency": "{{ page.currency }}",
+    "availability": "https://schema.org/InStock",
+    "url": "{{ abs_url }}"
+  },{% endif %}
+  "provider": {
+    "@type": "Organization",
+    "name": "{{ site.data.general_settings.title | escape }}",
+    "url": "{{ site.url }}"
+  }
+}
+</script>
+  {% if page.vr_enabled and page.starts_at %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": {{ page.title | append: " — Live VR" | jsonify }},
+  "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "startDate": "{{ page.starts_at }}",
+  "url": "{{ page.stream_url | default: abs_url }}",
+  {% if tour_image %}"image": "{{ tour_image | absolute_url }}",{% endif %}
+  "location": {
+    "@type": "VirtualLocation",
+    "url": "{{ page.stream_url | default: abs_url }}"
+  },
+  "organizer": {
+    "@type": "Organization",
+    "name": "{{ site.data.general_settings.title | escape }}",
+    "url": "{{ site.url }}"
+  }
+}
+</script>
+  {% endif %}
+{% endif %}
+
+{% if page.jsonld_kind == "guide" %}
+{%- assign guide_image = page.image | default: site.data.general_settings.meta_og_image -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": {{ page.name | default: page.title | jsonify }},
+  "url": "{{ abs_url }}",
+  {% if guide_image %}"image": "{{ guide_image | absolute_url }}",{% endif %}
+  {% if page.bio or page.description %}"description": {{ page.bio | default: page.description | strip_html | strip_newlines | jsonify }},{% endif %}
+  {% if page.languages %}"knowsLanguage": {{ page.languages | jsonify }},{% endif %}
+  "jobTitle": "Tour guide",
+  {% if page.location %}"address": {
+    "@type": "PostalAddress",
+    "addressLocality": {{ page.location | jsonify }}
+  },{% endif %}
+  "worksFor": {
+    "@type": "Organization",
+    "name": "{{ site.data.general_settings.title | escape }}",
+    "url": "{{ site.url }}"
+  }
+}
+</script>
+{% endif %}
+
+{% if page.jsonld_kind == "blog" or page.layout == "single" %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": {{ page.title | jsonify }},
+  "url": "{{ abs_url }}",
+  {% if page.image %}"image": "{{ page.image | absolute_url }}",{% endif %}
+  {% if page.date %}"datePublished": "{{ page.date | date_to_xmlschema }}",{% endif %}
+  "author": {
+    "@type": "Organization",
+    "name": "{{ site.data.general_settings.title | escape }}"
   }
 }
 </script>

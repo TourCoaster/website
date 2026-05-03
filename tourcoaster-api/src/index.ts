@@ -21,6 +21,9 @@ import { speedtestRoute } from './routes/speedtest';
 import { bookingsRoute } from './routes/bookings';
 import { wishlistRoute } from './routes/wishlist';
 import { historyRoute } from './routes/history';
+import { searchRoute, sitemapDataRoute } from './routes/discovery';
+import { ogRoute } from './routes/og';
+import { scheduled } from './scheduled';
 import type { AppEnv } from './types';
 
 export { LiveTourRoom } from './stream/durable';
@@ -65,7 +68,26 @@ v1.route('/bookings', bookingsRoute);
 v1.route('/wishlist', wishlistRoute);
 v1.route('/history', historyRoute);
 
+// Discovery: public search + sitemap source-of-truth used by the Jekyll
+// prebuild and the IndexNow cron.
+v1.route('/search', searchRoute);
+v1.route('/sitemap-data', sitemapDataRoute);
+
 app.route('/v1', v1);
+
+// IndexNow ownership verification. Crawlers fetch /<key>.txt and expect
+// the key as the body. Routed at the apex so Bing/Yandex can verify the
+// `tourcoaster.com/...` URLs we submit.
+app.get('/:keyfile{[A-Za-z0-9_-]+\\.txt}', (c) => {
+  const expected = c.env.INDEXNOW_KEY;
+  if (!expected) return c.notFound();
+  const file = c.req.param('keyfile');
+  if (file !== `${expected}.txt`) return c.notFound();
+  return c.text(expected, 200, { 'cache-control': 'public, max-age=86400' });
+});
+
+// OG image worker — served from og.tourcoaster.com via wrangler routes.
+app.route('/', ogRoute);
 
 // Public server-rendered pages. In production a Workers Route on
 // tourcoaster.com/{guides,tours}/* hits these handlers and overrides the
@@ -82,4 +104,7 @@ app.get('/', (c) =>
   })
 );
 
-export default app;
+export default {
+  fetch: app.fetch,
+  scheduled,
+};

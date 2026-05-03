@@ -53,12 +53,17 @@ export const renderGuidePage = (g: GuideProfile, apiBase: string): string => {
   <meta property="og:title" content="${escapeHtml(title)}">
   <meta property="og:description" content="${escapeHtml(description)}">
   <meta property="og:url" content="${escapeHtml(url)}">
-  <meta property="og:image" content="${escapeHtml(avatar)}">
+  <meta property="og:image" content="https://og.tourcoaster.com/guide/${encodeURIComponent(g.slug)}.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:site_name" content="${SITE_NAME}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${escapeHtml(title)}">
   <meta name="twitter:description" content="${escapeHtml(description)}">
-  <meta name="twitter:image" content="${escapeHtml(avatar)}">
+  <meta name="twitter:image" content="https://og.tourcoaster.com/guide/${encodeURIComponent(g.slug)}.png">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <link rel="me" href="${escapeHtml(avatar)}">
+  <link rel="image_src" href="${escapeHtml(avatar)}">
   <link rel="stylesheet" href="${SITE_ORIGIN}/assets/css/plugins.css">
   <link rel="stylesheet" href="${SITE_ORIGIN}/assets/css/style.css">
   <link rel="stylesheet" href="${SITE_ORIGIN}/assets/css/color/green.css">

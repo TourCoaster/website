@@ -1,0 +1,68 @@
+---
+layout: default
+title: "Browse all tours and guides on TourCoaster"
+permalink: /browse/
+description: "Static crawler-friendly index of every published TourCoaster tour and verified guide. Generated from live API data at build time."
+color_scheme: green
+---
+
+{% include layouts/nav/nav-1.html default_logo="black" drop_search=true %}
+
+<div class="wrapper light-wrapper page-title-wrapper">
+  <div class="container inner text-center">
+    <h1 class="page-title">Browse TourCoaster</h1>
+    <p class="lead">A complete index of every published tour and verified guide on the platform — built from live data so search engines always find the latest experiences.</p>
+    <p class="small text-muted">
+      {%- if site.data.discovery.tours.size > 0 or site.data.discovery.guides.size > 0 -%}
+      {{ site.data.discovery.tours.size }} tours · {{ site.data.discovery.guides.size }} guides
+      {%- if site.data.discovery.generated_at %} · updated {{ site.data.discovery.generated_at }}{% endif -%}
+      {%- else -%}
+      Snapshot empty — see <a href="/explore/">/explore/</a> for the live, JS-rendered list.
+      {%- endif -%}
+    </p>
+  </div>
+</div>
+
+<div class="wrapper white-wrapper">
+  <div class="container inner">
+    <h2 class="mb-4">Tours</h2>
+    {%- if site.data.discovery.tours.size > 0 -%}
+    <ul class="list-unstyled row">
+      {%- for tour in site.data.discovery.tours -%}
+      <li class="col-md-6 col-lg-4 mb-3">
+        <a href="/tours/{{ tour.slug }}/" class="d-block p-3 rounded bg-pale-green text-decoration-none">
+          <strong class="d-block">{{ tour.title }}</strong>
+          <span class="small text-muted">
+            {%- if tour.location %}{{ tour.location }}{% endif -%}
+            {%- if tour.category %} · {{ tour.category }}{% endif -%}
+            {%- if tour.vr_enabled %} · VR{% endif -%}
+          </span>
+        </a>
+      </li>
+      {%- endfor -%}
+    </ul>
+    {%- else -%}
+    <p class="text-muted">No tours indexed yet. <a href="/explore/">Browse live.</a></p>
+    {%- endif -%}
+
+    <h2 class="mt-5 mb-4">Guides</h2>
+    {%- if site.data.discovery.guides.size > 0 -%}
+    <ul class="list-unstyled row">
+      {%- for guide in site.data.discovery.guides -%}
+      <li class="col-md-6 col-lg-4 mb-3">
+        <a href="/guides/{{ guide.slug }}/" class="d-block p-3 rounded bg-pale-blue text-decoration-none">
+          <strong class="d-block">{{ guide.display_name | default: guide.slug }}</strong>
+          {%- if guide.location -%}
+          <span class="small text-muted">{{ guide.location }}</span>
+          {%- endif -%}
+        </a>
+      </li>
+      {%- endfor -%}
+    </ul>
+    {%- else -%}
+    <p class="text-muted">No guides indexed yet.</p>
+    {%- endif -%}
+  </div>
+</div>
+
+{% include layouts/footer/footer-1.html %}

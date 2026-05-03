@@ -1,23 +1,33 @@
+{%- assign _title = page.meta_title | default: page.title | default: site.data.general_settings.title -%}
+{%- assign _desc  = page.meta_description | default: page.description | default: site.data.general_settings.description -%}
+{%- assign _abs   = page.url | absolute_url -%}
+{%- if page.og_image -%}
+  {%- assign _img = page.og_image -%}
+{%- elsif page.image -%}
+  {%- assign _img = page.image | absolute_url -%}
+{%- elsif site.data.general_settings.meta_og_image -%}
+  {%- assign _img = site.data.general_settings.meta_og_image | absolute_url -%}
+{%- endif -%}
+{%- assign _twitter_img = page.twitter_image | default: _img -%}
+{%- assign _og_type = page.og_type | default: "website" -%}
+{%- assign _site_name = site.data.general_settings.title -%}
+
 <!-- Open Graph / Facebook -->
-<meta property="og:type" content="website">
-<meta property="og:url" content=" {{page.url}} ">
-<meta property="og:title" content="{% if page.meta_title %} {{ page.meta_title }} {% elsif page.title %} {{ page.title }} {% else %} {{ site.data.general_settings.title }}{% endif %}">
-<meta property="og:description" content="{% if page.meta_description %} {{ page.meta_description }} {% elsif page.description %} {{ page.description}} {% else %}
-    {{ site.data.general_settings.description }}{% endif %}">
-{% if page.image %}
-<meta property="og:image" content="{{ page.image | relative_url }}" />
-{% elsif site.data.general_settings.meta_og_image %}
-<meta property="og:image" content="{{ site.data.general_settings.meta_og_image | relative_url }}" />
-{% endif %}
+<meta property="og:type" content="{{ _og_type }}">
+<meta property="og:site_name" content="{{ _site_name | escape }}">
+<meta property="og:url" content="{{ _abs }}">
+<meta property="og:title" content="{{ _title | strip | escape }}">
+<meta property="og:description" content="{{ _desc | strip_newlines | strip | escape }}">
+{% if _img %}<meta property="og:image" content="{{ _img }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">{% endif %}
+{% if page.og_locale %}<meta property="og:locale" content="{{ page.og_locale }}">{% else %}<meta property="og:locale" content="en_US">{% endif %}
+
 <!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:url" content="{{page.url}}">
-<meta property="twitter:title" content="{% if page.meta_title %} {{ page.meta_title }} {% elsif page.title %} {{ page.title }} {% else %} {{ site.data.general_settings.title }}{% endif %}">
-<meta property="twitter:description" content="{% if page.meta_description %} {{ page.meta_description }} {% elsif page.description %} {{ page.description}} {% else %}
-    {{ site.data.general_settings.description }}{% endif %}">
-{% if page.image %}
-<meta property="twitter:image" content="{{ page.image | relative_url }}" />
-{% elsif site.data.general_settings.meta_twitter_image %}
-<meta property="twitter:image" content="{{ site.data.general_settings.meta_twitter_image | relative_url }}" />
-{% endif %}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="{{ _abs }}">
+<meta name="twitter:title" content="{{ _title | strip | escape }}">
+<meta name="twitter:description" content="{{ _desc | strip_newlines | strip | escape }}">
+{% if _twitter_img %}<meta name="twitter:image" content="{{ _twitter_img }}">{% endif %}
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />

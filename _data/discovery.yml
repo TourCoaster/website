@@ -1,0 +1,7 @@
+# AUTO-GENERATED stub. Run `node scripts/prefetch-discovery.mjs` before
+# `jekyll build` to refresh from /v1/sitemap-data. This stub keeps Jekyll
+# happy when the API is unreachable so the site still builds.
+generated_at: ~
+source: stub
+tours: []
+guides: []
