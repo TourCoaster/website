@@ -64,10 +64,6 @@ app.route('/v1', v1);
 // static Jekyll output for those paths.
 app.route('/guides', guidesHtmlRoute);
 app.route('/tours', toursHtmlRoute);
-
-// /watch/:tour_id — server-side gated VR/2D player. Auth + ACL happen in
-// the route handler so unauthenticated users see a sign-in CTA without
-// learning whether the tour exists, and 402 users get a "Subscribe" page.
 app.route('/watch', watchRoute);
 
 app.get('/', (c) =>

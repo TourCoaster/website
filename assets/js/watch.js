@@ -1,22 +1,6 @@
 /* eslint-disable */
-/**
- * /watch/:tour_id player.
- *
- * The HTML is rendered by the Worker after auth+ACL checks; this script
- * picks up `<script id="watch-data">`, fetches a freshly-signed HLS URL
- * from the API, attaches it to the `<video>` element bound to the
- * <a-videosphere>, opens a WebSocket for chat + viewer count, and runs a
- * small state machine across loading → playing → ended.
- *
- * No interactive elements modify the videosphere; A-Frame's built-in
- * VR-mode button does the WebXR hand-off.
- */
 (function () {
   'use strict';
-
-  // ------------------------------------------------------------------
-  // Bootstrapping.
-  // ------------------------------------------------------------------
 
   var data;
   try {
@@ -40,8 +24,6 @@
   var vrViewers = document.getElementById('watch-vr-viewers');
   var vrStatus = document.getElementById('watch-vr-status');
   var vrChatText = document.getElementById('watch-vr-chat-text');
-  // Rolling buffer of the last few chat lines so the in-VR <a-text> stays
-  // legible. We render the freshest message at the top.
   var vrChatBuffer = [];
   var toast = document.getElementById('watch-toast');
 
@@ -91,12 +73,6 @@
     if (hud) hud.hidden = false;
   }
 
-  // ------------------------------------------------------------------
-  // HLS attachment. Safari + Quest do native HLS; everywhere else uses
-  // hls.js. We always set `crossorigin="anonymous"` so A-Frame can use
-  // the texture in WebGL.
-  // ------------------------------------------------------------------
-
   var hls = null;
   function attachHls(url) {
     var canNative = videoEl.canPlayType('application/vnd.apple.mpegurl') !== '';
@@ -120,9 +96,6 @@
     var play = videoEl.play();
     if (play && play.catch) {
       play.catch(function () {
-        // Autoplay blocked — show a tap-to-start CTA. We start muted to
-        // satisfy autoplay policies; users can unmute via the standard
-        // browser controls if they want.
         showFallback('Tap to start the tour.', '<a class="btn" href="#" id="watch-tap-start">Start</a>');
         var btn = document.getElementById('watch-tap-start');
         if (btn) btn.addEventListener('click', function (ev) {
@@ -133,10 +106,6 @@
     }
   }
 
-  // ------------------------------------------------------------------
-  // State machine.
-  // ------------------------------------------------------------------
-
   async function startPlayback() {
     if (state.kind === 'idle') {
       setStatus("Waiting for the guide to go live…", 'idle');
@@ -146,10 +115,6 @@
     if (state.kind === 'ended') {
       setStatus('This tour has ended', 'ended');
       var ctaEnded = '<a class="btn secondary" href="/tours/' + encodeURIComponent(tour.slug) + '">Back to tour</a>';
-      // Prefer the server-supplied `hasReplay` flag (driven by the
-      // live_streams.recording_uid presence). Falling back to the marker
-      // URL on the tour record keeps existing tours that were recorded
-      // before this field was added playable.
       if (state.hasReplay || tour.hasReplay) {
         ctaEnded = '<a class="btn" href="/watch/' + encodeURIComponent(tour.slug) + '?replay=1">Watch the replay</a> ' + ctaEnded;
       }
@@ -176,14 +141,8 @@
     }
   }
 
-  // ------------------------------------------------------------------
-  // Realtime overlay (chat + viewer count + status pushes).
-  // ------------------------------------------------------------------
-
   var ws = null;
   function openWs() {
-    // Connect for both 'idle' (with a stream row) and 'live' so we can
-    // pick up the status=live transition without polling.
     if (!state.streamId || (state.kind !== 'live' && state.kind !== 'idle')) return;
     var proto = apiBase.indexOf('https') === 0 ? 'wss://' : 'ws://';
     var host = apiBase.replace(/^https?:\/\//, '');
@@ -195,9 +154,6 @@
       if (msg.type === 'hello') {
         if (typeof msg.viewer_count === 'number') setViewerCount(msg.viewer_count);
         if (msg.status === 'live') {
-          // The room already knows the stream is broadcasting — promote
-          // idle → live and start playback, in case the DB state we were
-          // rendered with is stale.
           if (state.kind === 'idle' && state.streamId) {
             state = { kind: 'live', streamId: state.streamId };
             setStatus('Live now', 'live');
@@ -211,8 +167,6 @@
         setViewerCount(msg.viewer_count);
       } else if (msg.type === 'status') {
         if (msg.status === 'live') {
-          // Promote idle → live and kick off playback now that the guide
-          // is actually broadcasting.
           if (state.kind === 'idle' && state.streamId) state = { kind: 'live', streamId: state.streamId };
           setStatus('Live now', 'live');
           startPlayback();
@@ -222,15 +176,11 @@
       }
     });
     ws.addEventListener('close', function () {
-      // Soft reconnect while we're still expecting traffic for this stream.
       if (state.kind === 'live' || state.kind === 'idle') setTimeout(openWs, 4000);
     });
   }
 
   function onEnded() {
-    // Preserve replay availability from the initial server-rendered state
-    // (or the tour record) so the ended screen still shows the replay CTA
-    // when a recording exists, even after the live → ended transition.
     var hadReplay = (state && state.hasReplay) || !!tour.hasReplay;
     var endedStreamId = state && state.streamId;
     state = { kind: 'ended', streamId: endedStreamId, hasReplay: hadReplay };
@@ -255,8 +205,6 @@
     while (chatList.children.length > 60) chatList.removeChild(chatList.firstChild);
     chatList.scrollTop = chatList.scrollHeight;
 
-    // Mirror into the in-VR chat panel so subscribers in WebXR can read
-    // chat without dropping out of the headset.
     if (vrChatText && vrChatText.setAttribute) {
       var line = ((msg.role === 'guide' ? 'GUIDE ' : '') +
                   (msg.from || 'guest').slice(0, 8) + ': ' +
@@ -277,15 +225,9 @@
     });
   }
 
-  // ------------------------------------------------------------------
-  // Boot.
-  // ------------------------------------------------------------------
-
   startPlayback();
   openWs();
 
-  // If the videosphere texture is unsupported (no WebGL), show the 2D
-  // fallback. A-Frame raises a `renderer-error` event in that case.
   var scene = document.getElementById('watch-scene');
   if (scene) scene.addEventListener('renderer-error', function () {
     showFallback('Your browser does not support 3D rendering for this tour.');

@@ -1,11 +1,3 @@
-/**
- * Server-rendered VR/2D player shell for /watch/:tour_id.
- * The page itself is mostly progressive — A-Frame + hls.js are loaded from
- * the CDN and the heavy lifting lives in /assets/js/watch.js. We bake the
- * tour metadata + stream id + initial state into a JSON island so the
- * client never has to expose a signed URL until it has explicitly hit
- * /v1/streams/:id/playback.
- */
 import { escapeHtml } from './escape';
 
 const SITE_ORIGIN = 'https://tourcoaster.com';
@@ -22,8 +14,6 @@ export type WatchTour = {
   title: string;
   description: string | null;
   vr_enabled: boolean;
-  // Boolean signal only — the actual replay URL is signed on demand by
-  // /v1/streams/:id/replay. We never bake a replay URL into the HTML.
   hasReplay: boolean;
 };
 
@@ -82,8 +72,6 @@ const stateLabel = (state: WatchState): string => {
 export const renderWatchPage = (data: WatchData): string => {
   const { tour, state } = data;
   const titleText = `${tour.title} — Watch on TourCoaster`;
-  // Server-rendered chrome: the headline and "fallback" message are visible
-  // even before A-Frame + hls.js initialize so the page degrades gracefully.
   const description = tour.description
     ? escapeHtml(tour.description.slice(0, 240))
     : 'A 360° live tour on TourCoaster.';
@@ -108,7 +96,6 @@ export const renderWatchPage = (data: WatchData): string => {
   #watch-fallback h1 { margin:0 0 8px; font-size:1.25rem; }
   #watch-fallback p { margin:0 0 12px; opacity:.85; }
   #watch-fallback a.btn { display:inline-block; padding:8px 18px; background:#ff4f7b; color:#fff; border-radius:999px; text-decoration:none; font-weight:600; }
-  /* 2D HUD overlay (hidden once we're in VR). */
   #watch-hud { position:fixed; left:0; right:0; bottom:0; padding:14px 18px; display:flex; gap:14px; align-items:flex-end; pointer-events:none; z-index:5; }
   #watch-hud .stack { pointer-events:auto; flex:1; max-width:320px; background:rgba(0,0,0,.55); border-radius:14px; padding:10px 12px; backdrop-filter:blur(8px); }
   #watch-hud h2 { font-size:.85rem; margin:0 0 6px; opacity:.8; text-transform:uppercase; letter-spacing:.06em; }
@@ -137,15 +124,10 @@ export const renderWatchPage = (data: WatchData): string => {
     <a-camera position="0 0 0" wasd-controls-enabled="false">
       <a-cursor color="#ffffff" opacity="0.4"></a-cursor>
     </a-camera>
-    <!-- Floating in-world HUD; positioned slightly below eye line. -->
     <a-entity id="watch-vr-hud" position="0 -0.6 -1.4">
       <a-text id="watch-vr-status" value="${stateLabel(state)}" align="center" color="#ffffff" width="2.4"></a-text>
       <a-text id="watch-vr-viewers" value="0 watching" align="center" color="#ff4f7b" width="2" position="0 -0.18 0"></a-text>
     </a-entity>
-    <!-- In-world chat panel anchored to the left of the viewer so chat is
-         legible inside WebXR (the 2D DOM HUD isn't visible in VR). The
-         panel renders the most recent six lines from /v1/streams/:id/socket.
-    -->
     <a-entity id="watch-vr-chat" position="-1.6 0 -1.4" rotation="0 30 0">
       <a-plane width="1.4" height="1.0" color="#000000" opacity="0.45"></a-plane>
       <a-text value="Chat" color="#ff4f7b" width="1.2" position="-0.6 0.42 0.01"></a-text>
@@ -153,7 +135,6 @@ export const renderWatchPage = (data: WatchData): string => {
     </a-entity>
   </a-scene>
 
-  <!-- 2D fallback / pre-init UI. Hidden once the player attaches. -->
   <section id="watch-fallback" role="status">
     <div class="panel">
       <h1>${escapeHtml(tour.title)}</h1>
@@ -162,7 +143,6 @@ export const renderWatchPage = (data: WatchData): string => {
     </div>
   </section>
 
-  <!-- 2D HUD shown alongside the videosphere when not in VR. -->
   <div id="watch-hud" hidden>
     <div class="stack" id="watch-status-card">
       <h2>Status</h2>
