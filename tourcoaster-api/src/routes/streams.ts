@@ -252,6 +252,39 @@ streamsRoute.get('/:id/playback', async (c) => {
 });
 
 // ---------------------------------------------------------------------------
+// GET /v1/streams/:id/replay
+// Recordings are created with `recording.requireSignedURLs: true`, so the
+// `tours.replay_hls_url` value is just a marker — actual playback needs a
+// fresh signed JWT. Same ACL as live playback. 404 if the recording hasn't
+// landed yet.
+// ---------------------------------------------------------------------------
+
+streamsRoute.get('/:id/replay', async (c) => {
+  const user = c.get('user');
+  const row = await loadStream(c.env, c.req.param('id'));
+  if (!row) throw new AppError(404, 'stream_not_found', 'Stream not found.');
+  if (!row.recording_uid) {
+    throw new AppError(404, 'recording_not_ready', 'No recording is available for this stream yet.');
+  }
+
+  const allowed =
+    row.owner_id === user.id ||
+    user.role === 'admin' ||
+    (await userHasActiveSubscription(c.env, user.id)) ||
+    (await userHasVrSession(c.env, user.id, row.tour_id));
+  if (!allowed) {
+    throw new AppError(402, 'payment_required', 'A subscription or booking is required to watch this replay.');
+  }
+
+  const { token, expiresAt } = await signPlaybackToken(c.env, { uid: row.recording_uid });
+  return c.json({
+    hls_url: buildSignedHlsUrl(c.env, token),
+    expires_at: new Date(expiresAt * 1000).toISOString(),
+    recording_uid: row.recording_uid,
+  });
+});
+
+// ---------------------------------------------------------------------------
 // GET /v1/streams/:id/status — polling fallback for non-WebSocket clients.
 // ---------------------------------------------------------------------------
 

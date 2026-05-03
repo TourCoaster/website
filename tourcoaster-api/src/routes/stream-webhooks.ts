@@ -110,8 +110,12 @@ const onRecordingReady = async (env: AppEnv['Bindings'], videoUid: string): Prom
   }
   if (!liveInputUid) return;
 
+  // We deliberately store the *unsigned* manifest URL as a presence marker
+  // only — recordings are created with requireSignedURLs:true so this URL
+  // is not directly playable. Consumers must hit GET /v1/streams/:id/replay
+  // to obtain a freshly-signed URL.
   const customer = env.STREAM_CUSTOMER_CODE || 'customer-unknown';
-  const replayUrl = `https://${customer}.cloudflarestream.com/${videoUid}/manifest/video.m3u8`;
+  const replayMarker = `https://${customer}.cloudflarestream.com/${videoUid}/manifest/video.m3u8`;
   const now = new Date().toISOString();
 
   await env.DB.prepare(
@@ -120,11 +124,10 @@ const onRecordingReady = async (env: AppEnv['Bindings'], videoUid: string): Prom
     .bind(videoUid, now, liveInputUid)
     .run();
 
-  // Persist on the tour so the public tour page can offer a replay.
   await env.DB.prepare(
     `UPDATE tours SET replay_hls_url = ?1, updated_at = ?2
        WHERE id = (SELECT tour_id FROM live_streams WHERE stream_uid = ?3 LIMIT 1)`
   )
-    .bind(replayUrl, now, liveInputUid)
+    .bind(replayMarker, now, liveInputUid)
     .run();
 };
