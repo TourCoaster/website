@@ -17,12 +17,12 @@ app.notFound(notFoundHandler);
 
 const v1 = new Hono<AppEnv>();
 v1.route('/health', healthRoute); // public
+v1.route('/auth/logout', logoutRoute); // public, best-effort cookie clear
 
 const protectedRoutes = new Hono<AppEnv>();
 protectedRoutes.use('*', requireAccessAuth());
 protectedRoutes.route('/me', meRoute);
 protectedRoutes.route('/auth/role', roleRoute);
-protectedRoutes.route('/auth/logout', logoutRoute);
 
 v1.route('/', protectedRoutes);
 

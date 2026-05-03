@@ -13,8 +13,12 @@ const slugifyEmail = (email: string): string => {
   return base.length > 0 ? base : 'guide';
 };
 
-const uniqueGuideSlug = async (env: AppEnv['Bindings'], baseEmail: string): Promise<string> => {
+const candidateSlugs = async (
+  env: AppEnv['Bindings'],
+  baseEmail: string
+): Promise<string[]> => {
   const base = slugifyEmail(baseEmail);
+  const tried: string[] = [];
   for (let i = 0; i < 50; i++) {
     const candidate = i === 0 ? base : `${base}-${i + 1}`;
     const existing = await env.DB.prepare(
@@ -22,10 +26,16 @@ const uniqueGuideSlug = async (env: AppEnv['Bindings'], baseEmail: string): Prom
     )
       .bind(candidate)
       .first<{ x: number }>();
-    if (!existing) return candidate;
+    if (!existing) tried.push(candidate);
+    if (tried.length >= 3) break;
   }
-  return `${base}-${crypto.randomUUID().slice(0, 8)}`;
+  // Always have a guaranteed-unique fallback in case all probed slugs race.
+  tried.push(`${base}-${crypto.randomUUID().slice(0, 8)}`);
+  return tried;
 };
+
+const isUniqueViolation = (err: unknown): boolean =>
+  err instanceof Error && /UNIQUE constraint failed/i.test(err.message);
 
 export const meRoute = new Hono<AppEnv>().get('/', async (c) => {
   const user = c.get('user');
@@ -76,20 +86,40 @@ export const roleRoute = new Hono<AppEnv>().post('/', async (c) => {
   const chosen = role as Role;
 
   if (chosen === 'guide') {
-    const slug = await uniqueGuideSlug(c.env, user.email);
-    const stmts = [
-      c.env.DB.prepare(
-        'UPDATE users SET role = ?1, updated_at = ?2 WHERE id = ?3 AND role IS NULL'
-      ).bind(chosen, now, user.id),
-      c.env.DB.prepare(
-        `INSERT INTO guide_profiles (user_id, slug, status, charges_enabled, created_at, updated_at)
-         VALUES (?1, ?2, 'pending', 0, ?3, ?3)`
-      ).bind(user.id, slug, now),
-    ];
-    const results = await c.env.DB.batch(stmts);
-    if (!results[0]?.meta || results[0].meta.changes === 0) {
-      throw new AppError(409, 'role_already_set', 'Role has already been set on this account.');
+    const slugs = await candidateSlugs(c.env, user.email);
+    let lastErr: unknown;
+    for (const slug of slugs) {
+      try {
+        const stmts = [
+          c.env.DB.prepare(
+            'UPDATE users SET role = ?1, updated_at = ?2 WHERE id = ?3 AND role IS NULL'
+          ).bind(chosen, now, user.id),
+          c.env.DB.prepare(
+            `INSERT INTO guide_profiles (user_id, slug, status, charges_enabled, created_at, updated_at)
+             VALUES (?1, ?2, 'pending', 0, ?3, ?3)`
+          ).bind(user.id, slug, now),
+        ];
+        const results = await c.env.DB.batch(stmts);
+        if (!results[0]?.meta || results[0].meta.changes === 0) {
+          throw new AppError(409, 'role_already_set', 'Role has already been set on this account.');
+        }
+        return c.json({ ok: true, role: chosen, slug });
+      } catch (err) {
+        if (err instanceof AppError) throw err;
+        if (isUniqueViolation(err)) {
+          lastErr = err;
+          continue; // try the next slug candidate
+        }
+        throw err;
+      }
     }
+    throw new AppError(
+      500,
+      'slug_allocation_failed',
+      'Could not allocate a unique guide slug. Please try again.'
+    );
+    // lastErr is intentionally swallowed; logged via console.error in real env.
+    void lastErr;
   } else {
     const res = await c.env.DB.prepare(
       'UPDATE users SET role = ?1, updated_at = ?2 WHERE id = ?3 AND role IS NULL'
@@ -104,11 +134,13 @@ export const roleRoute = new Hono<AppEnv>().post('/', async (c) => {
   return c.json({ ok: true, role: chosen });
 });
 
+/**
+ * Best-effort logout. Mounted *outside* `requireAccessAuth` so an
+ * expired/invalid cookie still gets a 204 + cookie-clear instead of a 401.
+ * The frontend follows up with a redirect to the Cloudflare Access global
+ * logout endpoint to terminate the IdP session.
+ */
 export const logoutRoute = new Hono<AppEnv>().post('/', (c) => {
-  // Clear Cloudflare Access cookies on this origin. The frontend should
-  // additionally redirect the user to:
-  //   https://<team>.cloudflareaccess.com/cdn-cgi/access/logout
-  // to terminate the Access session globally.
   for (const name of ['CF_Authorization', 'CF_AppSession']) {
     deleteCookie(c, name, { path: '/', secure: true, sameSite: 'Lax' });
   }
