@@ -138,10 +138,31 @@
           '<span class="small text-muted">' + esc(fmtDate(s.started_at)) + '</span></div>' +
           '<div class="fw-semibold mb-1">' + esc(s.title) + '</div>' +
           '<div class="small text-muted mb-2">' + esc(s.guide_display_name || '') + (s.location ? ' · ' + esc(s.location) : '') + '</div>' +
-          '<a class="btn btn-sm btn-primary rounded-pill" href="/watch/' + esc(s.slug) + '">Watch</a>' +
-          '</div></div>';
+          '<div class="d-flex gap-2">' +
+          '<a class="btn btn-sm btn-primary rounded-pill" href="/watch/' + esc(s.tour_id) + '">Watch</a>' +
+          '<button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" data-save-tour="' + esc(s.tour_id) + '">Save</button>' +
+          '</div></div></div>';
       }).join('');
+      wireSaveButtons(el);
     } catch (_) { setEmpty('td-live', 'Could not load live tours.'); }
+  }
+
+  function wireSaveButtons(scope) {
+    scope.querySelectorAll('[data-save-tour]').forEach(function (btn) {
+      btn.addEventListener('click', async function () {
+        var tid = btn.getAttribute('data-save-tour');
+        btn.disabled = true;
+        try {
+          var r = await api('/v1/wishlist/' + encodeURIComponent(tid), { method: 'POST' });
+          if (!r.ok) throw new Error('http ' + r.status);
+          btn.textContent = 'Saved';
+          loadWishlist();
+        } catch (_) {
+          btn.disabled = false;
+          showError('Could not save to wishlist.');
+        }
+      });
+    });
   }
 
   // -------------------- Subscription --------------------
@@ -210,14 +231,18 @@
       if (list.length === 0) { setEmpty('td-history', 'No past tours yet.'); return; }
       el.innerHTML = list.map(function (h) {
         var replay = h.has_replay
-          ? '<a class="btn btn-sm btn-outline-primary rounded-pill" href="/watch/' + esc(h.slug) + '?replay=1">Watch replay</a>'
+          ? '<a class="btn btn-sm btn-outline-primary rounded-pill" href="/watch/' + esc(h.tour_id) + '?replay=1">Watch replay</a>'
           : '<span class="small text-muted">Replay unavailable</span>';
-        return '<div class="col-md-6"><div class="td-card d-flex justify-content-between align-items-center">' +
+        return '<div class="col-md-6"><div class="td-card d-flex justify-content-between align-items-center gap-2">' +
           '<div>' +
           '<div class="fw-semibold"><a href="/tours/' + esc(h.slug) + '">' + esc(h.title) + '</a></div>' +
           '<div class="small text-muted">' + esc(h.location || '') + ' · ' + esc(fmtDate(h.last_seen_at)) + '</div>' +
-          '</div>' + replay + '</div></div>';
+          '</div>' +
+          '<div class="d-flex gap-2 align-items-center">' + replay +
+          '<button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" data-save-tour="' + esc(h.tour_id) + '">Save</button>' +
+          '</div></div></div>';
       }).join('');
+      wireSaveButtons(el);
     } catch (_) { setEmpty('td-history', 'Could not load history.'); }
   }
 
@@ -244,7 +269,7 @@
       var json = await res.json();
       var list = json.items || [];
       if (list.length === 0) {
-        el.innerHTML = '<div class="col-12"><p class="td-empty mb-0">Save tours you want to watch later — they\'ll appear here.</p></div>';
+        el.innerHTML = '<div class="col-12"><p class="td-empty mb-0">Save tours you want to watch later — use the Save button on Live tours, History, or any tour page.</p></div>';
         return;
       }
       el.innerHTML = list.map(function (w) {

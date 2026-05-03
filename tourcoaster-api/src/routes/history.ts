@@ -15,6 +15,9 @@ type HistoryRow = {
   has_replay: number;
 };
 
+// tour_id is included in the SELECT (s.tour_id, grouped) so the dashboard can
+// link to /watch/:tour_id and POST /v1/wishlist/:tour_id without a round-trip.
+
 // Past tours the traveler watched/attended. A vr_session row means the user
 // either completed a booking or had a subscription that granted them access;
 // we surface a replay link when the tour has any ended stream with a recording
