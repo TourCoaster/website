@@ -218,7 +218,8 @@
 
     document.getElementById('publish-btn').addEventListener('click', async function () {
       try {
-        await save();
+        var ok = await save();
+        if (!ok) return; // save() already showed an error banner; don't proceed.
         var pubRes = await api('/v1/tours/' + encodeURIComponent(tour.id) + '/publish', { method: 'POST' });
         if (!pubRes.ok) {
           var err; try { err = await pubRes.json(); } catch (_) { err = null; }
@@ -314,8 +315,10 @@
         tour = await res.json();
         fillForm(tour);
         setBanner('Saved.', 'success');
+        return true;
       } catch (e2) {
         setBanner(e2.message, 'danger');
+        return false;
       } finally {
         saveBtn.disabled = false;
         saveBtn.textContent = prev;

@@ -461,17 +461,20 @@ toursRoute.get('/', async (c) => {
   const limitParam = parseInt(url.searchParams.get('limit') ?? '24', 10);
   const limit = Number.isFinite(limitParam) ? Math.min(Math.max(limitParam, 1), 60) : 24;
 
-  const where: string[] = [`status = 'published'`];
+  // Build qualified-column predicates from the start so the JOIN below stays
+  // unambiguous. Suspended owners' tours never appear in the listing —
+  // mirrors the active-owner filter on the /tours/:slug HTML route.
+  const where: string[] = [`t.status = 'published'`, `u.status = 'active'`];
   const binds: unknown[] = [];
   if (category && ALLOWED_CATEGORIES.includes(category as never)) {
     binds.push(category);
-    where.push(`category = ?${binds.length}`);
+    where.push(`t.category = ?${binds.length}`);
   }
   if (q && q.length >= 2 && q.length <= 60) {
     const pat = `%${q.replace(/[%_]/g, (m) => '\\' + m)}%`;
     binds.push(pat, pat);
     where.push(
-      `(title LIKE ?${binds.length - 1} ESCAPE '\\' OR description LIKE ?${binds.length} ESCAPE '\\')`
+      `(t.title LIKE ?${binds.length - 1} ESCAPE '\\' OR t.description LIKE ?${binds.length} ESCAPE '\\')`
     );
   }
   if (cursor) {
@@ -481,7 +484,7 @@ toursRoute.get('/', async (c) => {
       if (!created || !id) throw new Error('bad_cursor');
       binds.push(created, created, id);
       where.push(
-        `(created_at < ?${binds.length - 2} OR (created_at = ?${binds.length - 1} AND id < ?${binds.length}))`
+        `(t.created_at < ?${binds.length - 2} OR (t.created_at = ?${binds.length - 1} AND t.id < ?${binds.length}))`
       );
     } catch {
       throw new AppError(400, 'invalid_cursor', 'cursor is malformed.');
@@ -489,8 +492,10 @@ toursRoute.get('/', async (c) => {
   }
 
   binds.push(limit + 1);
-  const sql = `SELECT * FROM tours WHERE ${where.join(' AND ')}
-               ORDER BY created_at DESC, id DESC LIMIT ?${binds.length}`;
+  const sql = `SELECT t.* FROM tours t
+               JOIN users u ON u.id = t.owner_id
+               WHERE ${where.join(' AND ')}
+               ORDER BY t.created_at DESC, t.id DESC LIMIT ?${binds.length}`;
   const res = await c.env.DB.prepare(sql).bind(...binds).all<TourRow>();
   const rows = res.results ?? [];
 
