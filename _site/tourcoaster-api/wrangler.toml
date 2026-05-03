@@ -1,0 +1,44 @@
+name = "tourcoaster-api"
+main = "src/index.ts"
+compatibility_date = "2024-12-18"
+compatibility_flags = ["nodejs_compat"]
+
+# Routes: production. Replace with your zone after DNS is set up.
+# routes = [
+#   { pattern = "api.tourcoaster.com/*", zone_name = "tourcoaster.com" }
+# ]
+
+# ---------------------------------------------------------------------------
+# Bindings — replace the placeholder IDs with the real ones from
+# `wrangler d1 create tourcoaster`, `wrangler kv:namespace create ...`,
+# and `wrangler r2 bucket create tourcoaster-media`.
+# ---------------------------------------------------------------------------
+
+[[d1_databases]]
+binding = "DB"
+database_name = "tourcoaster"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+migrations_dir = "migrations"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "REPLACE_WITH_SESSIONS_KV_ID"
+preview_id = "REPLACE_WITH_SESSIONS_KV_PREVIEW_ID"
+
+[[kv_namespaces]]
+binding = "FLAGS"
+id = "REPLACE_WITH_FLAGS_KV_ID"
+preview_id = "REPLACE_WITH_FLAGS_KV_PREVIEW_ID"
+
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "tourcoaster-media"
+preview_bucket_name = "tourcoaster-media-preview"
+
+# ---------------------------------------------------------------------------
+# Public configuration. Secrets (STRIPE_SECRET_KEY, STREAM_API_TOKEN, etc.)
+# are set via `wrangler secret put NAME` — never put them here.
+# ---------------------------------------------------------------------------
+[vars]
+ENVIRONMENT = "development"
+PUBLIC_SITE_ORIGIN = "http://localhost:5000"

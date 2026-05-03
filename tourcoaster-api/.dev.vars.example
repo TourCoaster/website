@@ -1,0 +1,27 @@
+# Copy to .dev.vars for local `wrangler dev`. Never commit .dev.vars.
+# Add only secrets here — non-secret config goes in [vars] inside wrangler.toml.
+
+# Cloudflare Access (Phase 3)
+CF_ACCESS_TEAM_DOMAIN=your-team.cloudflareaccess.com
+CF_ACCESS_AUD=your-access-application-aud-tag
+
+# Stripe (Phase 6)
+STRIPE_SECRET_KEY=sk_test_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+STRIPE_PRICE_EXPLORER=price_xxx
+STRIPE_PRICE_WANDERER=price_xxx
+
+# Cloudflare Stream (Phase 7)
+CF_ACCOUNT_ID=xxx
+STREAM_API_TOKEN=xxx
+STREAM_SIGNING_KEY_ID=xxx
+STREAM_SIGNING_PEM="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+
+# Live-input stream-key encryption (Phase 7) — 32 random bytes, base64-encoded.
+STREAM_KEY_ENCRYPTION_KEY=base64-encoded-32-byte-key
+
+# Email (Phase 12)
+RESEND_API_KEY=re_xxx
+
+# Slack alerts (Phase 12)
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/xxx/xxx/xxx
