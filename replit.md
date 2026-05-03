@@ -97,7 +97,8 @@ Static site deployment:
 - `/blogs/index` — Blog listing
 - `/browse/` — Static crawler-friendly snapshot of every published tour + guide
 - `/sitemap.xml` — Augmented with prefetched API data (see below)
-- `/robots.txt` — Allows crawling, disallows account-only paths
+- `/robots.txt` — Allow-all with sitemap reference (account-only paths
+  are protected by Cloudflare Access, not robots.txt)
 
 ## SEO & Discovery (Phase 11)
 
@@ -113,9 +114,11 @@ Static site deployment:
   guide pages, `BlogPosting` on blog posts. Driven by `page.jsonld_kind`.
 - OG/Twitter cards via `_includes/core/head/meta-og-tags.html` (absolute
   URLs, fallback chain, configurable `og_type` / `og_image`).
-- Dynamic OG images: `og.tourcoaster.com/{tour,guide}/<slug>.png` served
-  by the same Workers binary (templated SVG; PNG rasterization is a
-  follow-up).
+- Dynamic OG images: `og.tourcoaster.com/{tour,guide,site}.png` served
+  by the same Workers binary, rasterized to real PNGs via `workers-og`
+  (satori + resvg/yoga wasm). Matching `.svg` variants are also served.
+  Tour and guide layouts default `og:image` / `twitter:image` to these
+  URLs whenever `page.slug` is present.
 - IndexNow: daily Cloudflare Cron (`17 4 * * *`) at
   `tourcoaster-api/src/scheduled.ts` diffs the sitemap snapshot stored in
   the FLAGS KV and POSTs changed URLs to api.indexnow.org. Set the
