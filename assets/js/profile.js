@@ -5,8 +5,9 @@
  * Loads /v1/guides/me, renders form values, PATCHes on submit, and runs the
  * presigned avatar upload flow on file pick:
  *   1. POST /v1/guides/me/avatar { contentType }  →  { uploadUrl, key }
+ *      (the server persists avatar_key on the guide's profile in this call)
  *   2. PUT <uploadUrl>  with the file bytes
- *   3. PATCH /v1/guides/me { avatar_key: key }
+ *   3. GET /v1/guides/me  to refresh the form with the new key
  *
  * Depends on /assets/js/auth.js for window.TourCoasterAuth.api.
  */
