@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { deleteCookie } from 'hono/cookie';
 import type { AppEnv, Role } from '../types';
 import { AppError } from '../middleware/error';
+import { requireAccessAuth } from '../auth/middleware';
 
 const slugifyEmail = (email: string): string => {
   const local = email.split('@')[0] ?? 'guide';
@@ -37,7 +38,9 @@ const candidateSlugs = async (
 const isUniqueViolation = (err: unknown): boolean =>
   err instanceof Error && /UNIQUE constraint failed/i.test(err.message);
 
-export const meRoute = new Hono<AppEnv>().get('/', async (c) => {
+export const meRoute = new Hono<AppEnv>();
+meRoute.use('*', requireAccessAuth());
+meRoute.get('/', async (c) => {
   const user = c.get('user');
 
   let profile: Record<string, unknown> | null = null;
@@ -63,7 +66,9 @@ export const meRoute = new Hono<AppEnv>().get('/', async (c) => {
 
 const ROLE_VALUES: ReadonlyArray<Role> = ['traveler', 'guide'];
 
-export const roleRoute = new Hono<AppEnv>().post('/', async (c) => {
+export const roleRoute = new Hono<AppEnv>();
+roleRoute.use('*', requireAccessAuth());
+roleRoute.post('/', async (c) => {
   const user = c.get('user');
 
   let body: unknown;

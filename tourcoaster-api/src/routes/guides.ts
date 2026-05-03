@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { AppEnv, GuideProfile } from '../types';
 import { AppError } from '../middleware/error';
-import { requireRole } from '../auth/middleware';
+import { requireAccessAuth, requireRole } from '../auth/middleware';
 import { presignPut } from '../r2/presign';
 import { renderGuidePage } from '../render/guide-html';
 
@@ -45,6 +45,7 @@ const rowToProfile = (row: Record<string, unknown>): GuideProfile => ({
 // ----------------------------------------------------------------------------
 
 const me = new Hono<AppEnv>();
+me.use('*', requireAccessAuth());
 me.use('*', requireRole('guide'));
 
 me.get('/', async (c) => {

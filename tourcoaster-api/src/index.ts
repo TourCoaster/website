@@ -10,7 +10,6 @@ import {
   guidesPublicRoute,
   mediaRoute,
 } from './routes/guides';
-import { requireAccessAuth } from './auth/middleware';
 import type { AppEnv } from './types';
 
 const app = new Hono<AppEnv>();
@@ -21,23 +20,19 @@ app.use('*', corsMiddleware());
 app.onError(errorHandler);
 app.notFound(notFoundHandler);
 
+// Each sub-router self-protects (or doesn't) — there is no parent wildcard
+// auth middleware so registration order cannot accidentally lock out a
+// public path. Protected sub-routers are: meRoute, roleRoute, guidesMeRoute.
+// Public sub-routers are: healthRoute, logoutRoute, mediaRoute, guidesPublicRoute.
 const v1 = new Hono<AppEnv>();
-v1.route('/health', healthRoute); // public
-v1.route('/auth/logout', logoutRoute); // public, best-effort cookie clear
-v1.route('/media', mediaRoute); // public read-through to R2
-
-// Protected routes — must be registered BEFORE the public /guides/:slug
-// route so that /v1/guides/me is not shadowed by the public slug matcher.
-const protectedRoutes = new Hono<AppEnv>();
-protectedRoutes.use('*', requireAccessAuth());
-protectedRoutes.route('/me', meRoute);
-protectedRoutes.route('/auth/role', roleRoute);
-protectedRoutes.route('/guides/me', guidesMeRoute);
-v1.route('/', protectedRoutes);
-
-// Public guide JSON by slug. Registered AFTER /guides/me so the protected
-// route wins. The public handler also explicitly rejects the reserved slug
-// "me" as defense-in-depth.
+v1.route('/health', healthRoute);
+v1.route('/auth/logout', logoutRoute);
+v1.route('/media', mediaRoute);
+v1.route('/me', meRoute);
+v1.route('/auth/role', roleRoute);
+// /guides/me MUST be registered before /guides/:slug so the literal beats
+// the slug matcher.
+v1.route('/guides/me', guidesMeRoute);
 v1.route('/guides', guidesPublicRoute);
 
 app.route('/v1', v1);
