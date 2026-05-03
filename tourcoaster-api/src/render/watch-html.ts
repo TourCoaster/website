@@ -112,9 +112,12 @@ export const renderWatchPage = (data: WatchData): string => {
   #watch-toast { position:fixed; top:18px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,.7); padding:8px 14px; border-radius:999px; font-size:.85rem; opacity:0; pointer-events:none; transition:opacity .25s; z-index:6; }
   #watch-toast.show { opacity:1; }
   #watch-back { position:fixed; top:14px; left:14px; color:#fff; background:rgba(0,0,0,.5); padding:6px 12px; border-radius:999px; text-decoration:none; font-size:.8rem; z-index:6; }
+  #watch-unmute { position:fixed; top:14px; right:14px; color:#fff; background:#ff4f7b; border:none; padding:8px 16px; border-radius:999px; font-size:.85rem; font-weight:600; cursor:pointer; z-index:6; }
+  #watch-unmute[hidden] { display:none; }
 </style>
 </head><body data-auth-page="watch">
   <a id="watch-back" href="/tours/${encodeURIComponent(tour.slug)}">&larr; Tour</a>
+  <button id="watch-unmute" type="button" hidden>🔊 Unmute</button>
 
   <a-scene id="watch-scene" embedded vr-mode-ui="enabled: true" loading-screen="dotsColor: #ff4f7b; backgroundColor: #000" device-orientation-permission-ui="enabled: true">
     <a-assets timeout="30000">

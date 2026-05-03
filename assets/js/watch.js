@@ -71,6 +71,22 @@
   function hideFallback() {
     fallback.style.display = 'none';
     if (hud) hud.hidden = false;
+    var um = document.getElementById('watch-unmute');
+    if (um && videoEl.muted) um.hidden = false;
+  }
+
+  var unmuteBtn = document.getElementById('watch-unmute');
+  if (unmuteBtn) {
+    unmuteBtn.addEventListener('click', function () {
+      try { videoEl.muted = false; videoEl.volume = 1; } catch (_) {}
+      var p = videoEl.play(); if (p && p.catch) p.catch(function () {});
+      unmuteBtn.hidden = true;
+    });
+  }
+  if (videoEl) {
+    videoEl.addEventListener('volumechange', function () {
+      if (unmuteBtn) unmuteBtn.hidden = !videoEl.muted;
+    });
   }
 
   var hls = null;
