@@ -68,7 +68,13 @@ layout: default
               <small><i class="jam jam-info"></i> {{ page.accessibility_notes }}</small>
             </div>
             {% endif %}
+            {% if page.slug %}
+            <button type="button" class="btn btn-primary btn-block w-100 mb-2"
+                    data-book-tour-slug="{{ page.slug }}">Book Now</button>
+            <p class="small text-muted mb-2">Secure checkout via Stripe.</p>
+            {% else %}
             <a href="/contact/contact-1" class="btn btn-primary btn-block w-100 mb-2">Book Now</a>
+            {% endif %}
             {% if page.vr_available %}
             <a href="/vr-experiences" class="btn btn-outline-primary btn-block w-100">
               <i class="jam jam-camera"></i> Try VR Preview
@@ -95,3 +101,5 @@ layout: default
 </div>
 
 {% include layouts/footer/footer-1.html %}
+
+<script src="/assets/js/billing.js" defer></script>

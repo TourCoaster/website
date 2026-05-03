@@ -94,16 +94,18 @@
   }
 
   function bindBookButtons() {
-    document.querySelectorAll('[data-book-tour]').forEach(function (btn) {
+    document.querySelectorAll('[data-book-tour], [data-book-tour-slug]').forEach(function (btn) {
       btn.addEventListener('click', async function (ev) {
         ev.preventDefault();
         var tourId = btn.getAttribute('data-book-tour');
-        if (!tourId) return;
+        var slug = btn.getAttribute('data-book-tour-slug');
+        if (!tourId && !slug) return;
         var prev = btn.textContent;
         btn.disabled = true;
         btn.textContent = 'Redirecting…';
         try {
-          var json = await postJson('/v1/checkout/in-person', { tour_id: tourId });
+          var payload = tourId ? { tour_id: tourId } : { slug: slug };
+          var json = await postJson('/v1/checkout/in-person', payload);
           if (json) redirectToStripe(json);
         } catch (e) {
           alert(e.message);

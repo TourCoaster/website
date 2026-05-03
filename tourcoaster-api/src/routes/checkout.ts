@@ -54,27 +54,33 @@ const ensureCustomer = async (
 
 checkoutRoute.post('/in-person', async (c) => {
   const user = c.get('user');
-  let body: { tour_id?: unknown; scheduled_at?: unknown };
+  let body: { tour_id?: unknown; slug?: unknown; scheduled_at?: unknown };
   try {
     body = (await c.req.json()) as typeof body;
   } catch {
     throw new AppError(400, 'invalid_body', 'Body must be JSON.');
   }
   const tourId = typeof body.tour_id === 'string' ? body.tour_id : '';
-  if (!tourId) throw new AppError(422, 'missing_tour_id', 'tour_id is required.');
+  const slug = typeof body.slug === 'string' ? body.slug : '';
+  if (!tourId && !slug) {
+    throw new AppError(422, 'missing_tour_ref', 'tour_id or slug is required.');
+  }
   const scheduledAt =
     typeof body.scheduled_at === 'string' && !Number.isNaN(Date.parse(body.scheduled_at))
       ? body.scheduled_at
       : null;
 
+  // Resolve tour by id (UUID) or slug. Slugs are public/stable; ids are used
+  // by the worker-rendered pages where we already know the row id.
   const tour = await c.env.DB.prepare(
     `SELECT t.id, t.title, t.description, t.owner_id, t.price_cents, t.currency, t.status,
             g.stripe_account_id, g.charges_enabled
        FROM tours t
        JOIN guide_profiles g ON g.user_id = t.owner_id
-      WHERE t.id = ?1`
+      WHERE (?1 != '' AND t.id = ?1) OR (?2 != '' AND t.slug = ?2)
+      LIMIT 1`
   )
-    .bind(tourId)
+    .bind(tourId, slug)
     .first<{
       id: string;
       title: string;
