@@ -1,0 +1,95 @@
+# TourCoaster Homepage Redesign
+
+## Context
+TourCoaster sells two things:
+1. **In-person experiences** — hiking tours, city tours, expert travel guides
+2. **VR Tour subscription** — virtual versions of the same tours (for people who can't travel, want to preview, or just love armchair adventure)
+
+The current homepage looks dated. Rebuild it from scratch as a bold, vibrant, energetic travel brand. Think *Outside Magazine* meets *Airbnb Experiences* — editorial, confident, photo-forward. NOT corporate SaaS, NOT sterile minimalism, NOT generic startup template.
+
+## Design system
+
+**Color palette (pick ONE primary, no purple-blue gradients):**
+- Primary: deep forest `#0F4C3A` OR sunset orange `#E85D2C` — choose based on which feels more energetic with the imagery
+- Background: warm off-white `#FAF7F2` (not pure white)
+- Text: `#1A1A1A` (not pure black)
+- Single contrasting accent for CTAs only
+
+**Typography:**
+- ONE sans-serif family, multiple weights (Inter Tight, Söhne, or General Sans)
+- Display sizes BIG: hero headline 96–128px desktop, 56px mobile
+- Tight letter-spacing on headlines (-0.02em to -0.04em)
+- Generous body line-height (1.5–1.6)
+
+**Imagery:**
+- Real travel/outdoor photography, full-bleed, edge-to-edge
+- No overlays unless needed for text legibility
+- Use Unsplash placeholders with search terms like "hiking landscape", "mountain trail", "city tour" — I'll swap real photos later
+
+## Homepage sections (in this order)
+
+### 1. Hero (95vh)
+- Full-bleed dramatic landscape photo (hiker on trail, mountain vista, or vibrant city street)
+- Massive bottom-aligned headline overlaying photo: **"Tours worth showing up for. And the ones you can take from your couch."**
+- Sub-line: one sentence about both products
+- Two CTAs side-by-side: primary "Browse Tours" + secondary "Try VR Free"
+- Minimal nav at top: logo left, [Tours, VR, Guides, Sign in] right
+
+### 2. Dual-product split
+This is the most important section — surfaces both product lines instantly.
+- Two equal columns, full width, no padding between
+- LEFT panel: "Go there." — large photo, 2-line description of in-person tours, CTA
+- RIGHT panel: "Or go in VR." — different photo, 2-line description of subscription, CTA
+- Different background tones for each panel so the split is visually obvious
+
+### 3. Featured tours grid
+- 3 or 4 tours, large cards (don't cram — let them breathe)
+- Each card: 4:5 photo, location label, tour name, duration, price, "Available in VR" badge where relevant
+- Hover: subtle photo zoom (1.05x, 600ms ease-out), nothing else
+- "View all 47 tours →" link below grid
+
+### 4. Three reasons / why TourCoaster
+- Numbered 01, 02, 03 in large display weight
+- Short headline + one paragraph each
+- NO icons in colored circles — let typography do the work
+- Examples: "Local guides, not tour guides" / "Small groups, never coach loads" / "Every trail, also in VR"
+
+### 5. VR subscription block
+- Inverted color (dark background if rest is light)
+- Headline: **"Can't travel? We bring the trail to you."**
+- Brief explainer + "From $X/month" pricing teaser + CTA to plans page
+- Imagery suggestion: stylized first-person POV from a VR tour with a subtle viewfinder hint — avoid clichéd "person wearing headset" shot, it looks dated
+
+### 6. Testimonials
+- Maximum 3, real-feeling, with name + tour they took + small photo
+- Don't fabricate "Trusted by 10,000+ adventurers" — leave a comment for me to fill in real numbers
+
+### 7. Footer
+- Dark, organized columns: Tours / VR / Company / Support
+- Single email input + button for newsletter, no checkboxes
+- Social icons in a row, monochrome
+
+## Tech requirements
+- Next.js + Tailwind CSS
+- Mobile-first; test breakpoints at 375px, 768px, 1440px
+- `next/image` for all photos with proper sizing
+- Lazy-load everything below the fold
+- Semantic HTML (`<section>`, `<article>`, `<nav>`, h1–h3 hierarchy)
+- WCAG AA contrast minimum
+- Respect `prefers-reduced-motion`
+
+## DO NOT do these (AI codegen defaults to all of these — please don't)
+- ❌ Purple-to-blue gradient anywhere
+- ❌ Glassmorphism / frosted glass cards
+- ❌ Floating 3D dashboard or app mockup in the hero
+- ❌ Three-column "features" row with Lucide icons in colored rounded squares
+- ❌ Centered hero text on a flat color background
+- ❌ `rounded-3xl` and heavy shadows on everything — keep radii modest (8–12px)
+- ❌ Animated blur orbs / gradient meshes in the background
+- ❌ Generic CTA copy like "Get started" or "Learn more" — be specific
+- ❌ Stock photos of diverse teams pointing at laptops
+
+## Output
+- Single page (`app/page.tsx` or `pages/index.tsx`)
+- Split into reasonable components (Hero, DualSplit, TourGrid, ReasonsList, VRBlock, Testimonials, Footer) — but don't over-architect
+- Add `// TODO: replace with real data` comments where I'll need to plug in real tours, testimonials, pricing
