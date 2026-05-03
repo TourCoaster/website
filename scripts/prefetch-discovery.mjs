@@ -70,7 +70,7 @@ const fileExists = async (p) => {
     const res = await fetch(API_URL, { signal: ctrl.signal });
     if (!res.ok) throw new Error(`http ${res.status}`);
     payload = await res.json();
-    if (!payload || !Array.isArray(payload.tours)) {
+    if (!payload || !Array.isArray(payload.tours) || !Array.isArray(payload.guides)) {
       throw new Error('malformed payload');
     }
   } catch (err) {
