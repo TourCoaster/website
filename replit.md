@@ -43,7 +43,7 @@ TourCoaster is a hybrid exploration network built on the Snowlake Jekyll theme. 
 - `_includes/vr-card.html` — Reusable VR experience card component
 
 ### Pages
-- `index.html` — Homepage (hero, featured tours, VR section, guides, accessibility)
+- `index.html` — Platform landing page (hero with badge + dual CTAs, trust bar, How It Works, featured tours, two-sides marketplace split for travelers/guides, VR section, guides, testimonials, accessibility, stats, final CTA)
 - `explore.html` — Tour search with client-side filtering
 - `vr-experiences.html` — VR experiences landing page
 - `guides.html` — All guides directory

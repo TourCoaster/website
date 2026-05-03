@@ -6,15 +6,46 @@ font_scheme:
 
 {% include layouts/nav/nav-1.html default_logo="white" drop_search=true %}
 
-<div class="wrapper image-wrapper bg-image inverse-text" data-image-src="/assets/images/art/bg1.webp" style="background-image: url('/assets/images/art/bg1.webp'); background-size:cover; background-position:center;">
-  <div class="container inner text-center" style="padding: 120px 0 100px;">
-    <h1 class="display-3 mb-4" style="text-shadow: 2px 2px 8px rgba(0,0,0,0.5); font-weight:700;">Explore the World.<br/>Your Way.</h1>
-    <p class="lead mb-5" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.5); max-width:700px; margin:0 auto; font-size:1.3rem;">
-      Connect with verified local guides for authentic hiking and city tours — or experience destinations through immersive VR from anywhere.
+<div class="wrapper image-wrapper bg-image inverse-text" data-image-src="/assets/images/art/bg1.webp" style="background-image: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)), url('/assets/images/art/bg1.webp'); background-size:cover; background-position:center;">
+  <div class="container inner text-center" style="padding: 140px 0 110px;">
+    <span class="badge bg-white text-dark rounded-pill px-3 py-2 mb-4" style="font-size:0.85rem; letter-spacing:0.5px;">
+      <i class="jam jam-shield-check me-1"></i> Verified guides · Secure bookings · VR-ready
+    </span>
+    <h1 class="display-2 mb-4" style="text-shadow: 2px 2px 12px rgba(0,0,0,0.6); font-weight:800; line-height:1.1;">
+      Real tours. Real guides.<br/>Anywhere — including&nbsp;VR.
+    </h1>
+    <p class="lead mb-5" style="text-shadow: 1px 1px 6px rgba(0,0,0,0.6); max-width:740px; margin:0 auto; font-size:1.25rem;">
+      TourCoaster is the marketplace for human-led travel. Book a hike, walk a city with a local, or step into a destination through immersive 360° VR — from a browser or a headset.
     </p>
     <div class="space10"></div>
-    <a href="/explore" class="btn btn-white btn-lg rounded-pill me-2 mb-2">Explore Tours</a>
-    <a href="/vr-experiences" class="btn btn-outline-white btn-lg rounded-pill mb-2">Try VR Experiences</a>
+    <a href="/explore" class="btn btn-white btn-lg rounded-pill me-2 mb-2 px-4">Find a Tour</a>
+    <a href="/vr-experiences" class="btn btn-outline-white btn-lg rounded-pill mb-2 px-4">Try VR Free</a>
+    <div class="mt-4" style="font-size:0.95rem; opacity:0.9;">
+      <i class="jam jam-star text-yellow"></i> <strong>4.9 average</strong> across 1,200+ reviews
+    </div>
+  </div>
+</div>
+
+<div class="wrapper bg-light" style="padding: 30px 0; border-bottom:1px solid #eee;">
+  <div class="container">
+    <div class="row text-center align-items-center">
+      <div class="col-6 col-md-3 mb-3 mb-md-0">
+        <i class="jam jam-shield-check text-primary" style="font-size:1.6rem;"></i>
+        <span class="ms-2" style="font-weight:600;">ID-verified guides</span>
+      </div>
+      <div class="col-6 col-md-3 mb-3 mb-md-0">
+        <i class="jam jam-lock text-primary" style="font-size:1.6rem;"></i>
+        <span class="ms-2" style="font-weight:600;">Stripe-secured payments</span>
+      </div>
+      <div class="col-6 col-md-3">
+        <i class="jam jam-accessibility text-primary" style="font-size:1.6rem;"></i>
+        <span class="ms-2" style="font-weight:600;">Accessibility-first</span>
+      </div>
+      <div class="col-6 col-md-3">
+        <i class="jam jam-camera text-primary" style="font-size:1.6rem;"></i>
+        <span class="ms-2" style="font-weight:600;">Live + 360° VR</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -32,28 +63,28 @@ font_scheme:
         <div class="icon icon-blob icon-blob-rose color-rose mb-3">
           <i class="jam jam-search" style="font-size:2.5rem;"></i>
         </div>
-        <h5>Discover</h5>
+        <h5>1. Discover</h5>
         <p>Browse tours by destination, type, difficulty, and accessibility. Find your perfect adventure.</p>
       </div>
       <div class="col-md-6 col-lg-3 mb-5">
         <div class="icon icon-blob icon-blob-blue color-blue mb-3">
           <i class="jam jam-user" style="font-size:2.5rem;"></i>
         </div>
-        <h5>Meet Your Guide</h5>
+        <h5>2. Meet Your Guide</h5>
         <p>Connect with verified local experts who know every trail, street, and hidden gem.</p>
       </div>
       <div class="col-md-6 col-lg-3 mb-5">
         <div class="icon icon-blob icon-blob-green color-green mb-3">
           <i class="jam jam-camera" style="font-size:2.5rem;"></i>
         </div>
-        <h5>Experience in VR</h5>
+        <h5>3. Experience in VR</h5>
         <p>Preview tours or explore remotely through immersive 360-degree virtual experiences.</p>
       </div>
       <div class="col-md-6 col-lg-3 mb-5">
         <div class="icon icon-blob icon-blob-violet color-violet mb-3">
           <i class="jam jam-heart" style="font-size:2.5rem;"></i>
         </div>
-        <h5>Accessible to All</h5>
+        <h5>4. Accessible to All</h5>
         <p>Accessibility-first design with wheelchair routes, audio descriptions, and VR alternatives.</p>
       </div>
     </div>
@@ -77,6 +108,59 @@ font_scheme:
     </div>
     <div class="text-center mt-4">
       <a href="/explore" class="btn btn-primary btn-lg rounded-pill">View All Tours</a>
+    </div>
+  </div>
+</div>
+
+<div class="wrapper white-wrapper">
+  <div class="container inner">
+    <div class="row text-center mb-5">
+      <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+        <h2 class="section-title mb-2">Two Sides, One Network</h2>
+        <p class="lead">Whether you're packing a backpack or building a guiding career, TourCoaster meets you where you are.</p>
+      </div>
+    </div>
+    <div class="row align-items-stretch">
+      <div class="col-lg-6 mb-4">
+        <div class="card h-100 border-0 shadow-sm" style="border-radius:14px;">
+          <div class="card-body p-5">
+            <div class="d-flex align-items-center mb-3">
+              <div class="icon icon-blob icon-blob-blue color-blue me-3" style="flex-shrink:0;">
+                <i class="jam jam-map" style="font-size:1.8rem;"></i>
+              </div>
+              <h3 class="mb-0">For Travelers</h3>
+            </div>
+            <p class="lead mb-4" style="font-size:1.05rem;">Skip the cookie-cutter tour buses. Book directly with locals who actually live there.</p>
+            <ul class="list-unstyled mb-4">
+              <li class="mb-2"><i class="jam jam-check text-success me-2"></i> Free cancellation up to 24h before</li>
+              <li class="mb-2"><i class="jam jam-check text-success me-2"></i> Preview tours in VR before you book</li>
+              <li class="mb-2"><i class="jam jam-check text-success me-2"></i> Filter by accessibility, language, pace</li>
+              <li class="mb-2"><i class="jam jam-check text-success me-2"></i> Verified reviews from real travelers</li>
+            </ul>
+            <a href="/explore" class="btn btn-primary rounded-pill px-4">Browse Tours</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 mb-4">
+        <div class="card h-100 border-0 shadow-sm" style="border-radius:14px;">
+          <div class="card-body p-5">
+            <div class="d-flex align-items-center mb-3">
+              <div class="icon icon-blob icon-blob-green color-green me-3" style="flex-shrink:0;">
+                <i class="jam jam-briefcase" style="font-size:1.8rem;"></i>
+              </div>
+              <h3 class="mb-0">For Guides</h3>
+            </div>
+            <p class="lead mb-4" style="font-size:1.05rem;">Turn your local knowledge into a sustainable income — in person and through VR.</p>
+            <ul class="list-unstyled mb-4">
+              <li class="mb-2"><i class="jam jam-check text-success me-2"></i> Keep up to 88% of every booking</li>
+              <li class="mb-2"><i class="jam jam-check text-success me-2"></i> Stripe payouts in 30+ currencies</li>
+              <li class="mb-2"><i class="jam jam-check text-success me-2"></i> Stream live VR tours from your phone</li>
+              <li class="mb-2"><i class="jam jam-check text-success me-2"></i> Tools for scheduling, chat, and reviews</li>
+            </ul>
+            <a href="/for-guides" class="btn btn-primary rounded-pill px-4">Become a Guide</a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -124,6 +208,70 @@ font_scheme:
 </div>
 
 <div class="wrapper light-wrapper">
+  <div class="container inner">
+    <div class="row text-center mb-5">
+      <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+        <h2 class="section-title mb-2">What Travelers Are Saying</h2>
+        <p class="lead">Real reviews from real trips — every one verified against a completed booking.</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm" style="border-radius:12px;">
+          <div class="card-body p-4">
+            <div class="mb-3" style="color:#f5b400;">
+              <i class="jam jam-star"></i><i class="jam jam-star"></i><i class="jam jam-star"></i><i class="jam jam-star"></i><i class="jam jam-star"></i>
+            </div>
+            <p class="mb-4">"Elena's Gothic Quarter walk was the highlight of our Barcelona trip. We stopped at three tapas places only locals know — and the route was fully wheelchair-friendly for my mum."</p>
+            <div class="d-flex align-items-center">
+              <img src="/assets/images/art/u1.webp" class="rounded-circle me-3" alt="Sarah K." style="width:48px; height:48px; object-fit:cover;" />
+              <div>
+                <strong>Sarah K.</strong><br/>
+                <small class="text-muted">Old Town Barcelona Walk</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm" style="border-radius:12px;">
+          <div class="card-body p-4">
+            <div class="mb-3" style="color:#f5b400;">
+              <i class="jam jam-star"></i><i class="jam jam-star"></i><i class="jam jam-star"></i><i class="jam jam-star"></i><i class="jam jam-star"></i>
+            </div>
+            <p class="mb-4">"Did the Mont Blanc VR experience on my Quest before booking the real hike. Got a feel for the elevation, the views, even the breathing — totally changed how I prepared."</p>
+            <div class="d-flex align-items-center">
+              <img src="/assets/images/art/u2.webp" class="rounded-circle me-3" alt="Marcus T." style="width:48px; height:48px; object-fit:cover;" />
+              <div>
+                <strong>Marcus T.</strong><br/>
+                <small class="text-muted">Mont Blanc VR + Tour</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm" style="border-radius:12px;">
+          <div class="card-body p-4">
+            <div class="mb-3" style="color:#f5b400;">
+              <i class="jam jam-star"></i><i class="jam jam-star"></i><i class="jam jam-star"></i><i class="jam jam-star"></i><i class="jam jam-star"></i>
+            </div>
+            <p class="mb-4">"As a guide, I made more in my first six months on TourCoaster than two years on the big platforms. Payouts hit my account within 48 hours, every time."</p>
+            <div class="d-flex align-items-center">
+              <img src="/assets/images/art/u3.webp" class="rounded-circle me-3" alt="Priya N." style="width:48px; height:48px; object-fit:cover;" />
+              <div>
+                <strong>Priya N.</strong><br/>
+                <small class="text-muted">Verified Guide · Mumbai</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrapper white-wrapper">
   <div class="container inner">
     <div class="row align-items-center">
       <div class="col-lg-6">
@@ -176,17 +324,7 @@ font_scheme:
   </div>
 </div>
 
-<div class="wrapper image-wrapper bg-image inverse-text" data-image-src="/assets/images/art/bg2.webp" style="background-image: url('/assets/images/art/bg2.webp'); background-size:cover;">
-  <div class="container inner text-center" style="padding: 80px 0;">
-    <h2 class="mb-3" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.5);">Become a TourCoaster Guide</h2>
-    <p class="lead mb-4" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.3); max-width:600px; margin: 0 auto;">
-      Share your local expertise with the world. Lead physical tours, create VR content, and earn from a growing global audience.
-    </p>
-    <a href="/for-guides" class="btn btn-white btn-lg rounded-pill">Join the Network</a>
-  </div>
-</div>
-
-<div class="wrapper white-wrapper">
+<div class="wrapper light-wrapper">
   <div class="container inner">
     <div class="row text-center">
       <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
@@ -212,6 +350,17 @@ font_scheme:
         <p>Continents</p>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="wrapper image-wrapper bg-image inverse-text" data-image-src="/assets/images/art/bg2.webp" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.5)), url('/assets/images/art/bg2.webp'); background-size:cover;">
+  <div class="container inner text-center" style="padding: 100px 0;">
+    <h2 class="display-4 mb-3" style="text-shadow: 1px 1px 8px rgba(0,0,0,0.5); font-weight:700;">Ready to start exploring?</h2>
+    <p class="lead mb-4" style="text-shadow: 1px 1px 4px rgba(0,0,0,0.4); max-width:640px; margin: 0 auto;">
+      Find your next adventure, or share your own corner of the world with travelers from across the globe.
+    </p>
+    <a href="/explore" class="btn btn-white btn-lg rounded-pill me-2 mb-2 px-4">Find a Tour</a>
+    <a href="/for-guides" class="btn btn-outline-white btn-lg rounded-pill mb-2 px-4">Become a Guide</a>
   </div>
 </div>
 
