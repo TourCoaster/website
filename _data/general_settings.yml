@@ -9,7 +9,7 @@ favicon: "/assets/images/favicon.webp"
 meta_og_image: "/assets/images/meta-image.webp"
 meta_twitter_image: "/assets/images/meta-image.webp"
 
-color_scheme: Green
+color_scheme: green
 font_scheme:
 
 black_logo_1x: "/assets/images/logo.webp"

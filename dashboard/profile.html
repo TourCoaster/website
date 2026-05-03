@@ -1,0 +1,47 @@
+---
+layout: default
+title: "Edit Profile"
+permalink: /dashboard/profile/
+description: "Edit your TourCoaster guide profile."
+noindex: true
+---
+
+{% include layouts/nav/nav-1.html default_logo="black" %}
+
+<div class="wrapper light-wrapper page-title-wrapper">
+  <div class="container inner">
+    <h1 class="page-title">Edit Profile</h1>
+    <p class="lead">Your public guide profile, visible at /guides/[your-slug].</p>
+  </div>
+</div>
+
+<div class="wrapper white-wrapper">
+  <div class="container inner" style="max-width:720px;">
+    <form id="profile-form" class="card shadow-sm rounded-4 p-4">
+      <div class="mb-3">
+        <label class="form-label">Display name</label>
+        <input class="form-control" name="display_name" placeholder="e.g. Marie L." disabled />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Location</label>
+        <input class="form-control" name="location" placeholder="City, Country" disabled />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Languages</label>
+        <input class="form-control" name="languages" placeholder="English, French, Spanish" disabled />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Bio</label>
+        <textarea class="form-control" name="bio" rows="5" placeholder="Tell travelers what makes your tours special." disabled></textarea>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Avatar</label>
+        <input type="file" class="form-control" name="avatar" accept="image/*" disabled />
+      </div>
+      <button type="submit" class="btn btn-primary rounded-pill" disabled>Save changes</button>
+      <p class="text-muted mt-3 mb-0"><small>This editor activates once authentication and the API ship.</small></p>
+    </form>
+  </div>
+</div>
+
+{% include layouts/footer/footer-1.html %}

@@ -1,0 +1,65 @@
+---
+layout: default
+title: "Pricing"
+permalink: /pricing
+description: "TourCoaster subscription plans for VR experiences and unlimited exploration."
+---
+
+{% include layouts/nav/nav-1.html default_logo="black" drop_search=true %}
+
+<div class="wrapper light-wrapper page-title-wrapper">
+  <div class="container inner text-center">
+    <h1 class="page-title">Choose Your Plan</h1>
+    <p class="lead">Start free. Upgrade for unlimited VR access and exclusive live tours.</p>
+  </div>
+</div>
+
+<div class="wrapper white-wrapper">
+  <div class="container inner">
+    <div class="row gy-4">
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm rounded-4 p-4 text-center">
+          <h4 class="mb-2">Free</h4>
+          <p class="text-muted mb-3">Browse the platform</p>
+          <h2 class="mb-3">$0<small class="text-muted fs-6">/mo</small></h2>
+          <ul class="list-unstyled text-start mb-4">
+            <li class="mb-2"><i class="jam jam-check text-primary"></i> Browse all guides &amp; tours</li>
+            <li class="mb-2"><i class="jam jam-check text-primary"></i> Wishlist &amp; save tours</li>
+            <li class="mb-2"><i class="jam jam-check text-primary"></i> Book in-person tours</li>
+          </ul>
+          <a href="/signup" class="btn btn-outline-primary rounded-pill mt-auto">Get Started</a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 shadow rounded-4 p-4 text-center border-primary border-2">
+          <span class="badge bg-primary rounded-pill align-self-center mb-2">Most Popular</span>
+          <h4 class="mb-2">Explorer</h4>
+          <p class="text-muted mb-3">Unlimited VR tours</p>
+          <h2 class="mb-3">$19<small class="text-muted fs-6">/mo</small></h2>
+          <ul class="list-unstyled text-start mb-4">
+            <li class="mb-2"><i class="jam jam-check text-primary"></i> Everything in Free</li>
+            <li class="mb-2"><i class="jam jam-check text-primary"></i> Unlimited live VR tours</li>
+            <li class="mb-2"><i class="jam jam-check text-primary"></i> Quest, mobile &amp; desktop</li>
+          </ul>
+          <button class="btn btn-primary rounded-pill mt-auto" data-plan="explorer" disabled title="Available after backend launch">Subscribe</button>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 shadow-sm rounded-4 p-4 text-center">
+          <h4 class="mb-2">Wanderer</h4>
+          <p class="text-muted mb-3">Replays &amp; exclusives</p>
+          <h2 class="mb-3">$39<small class="text-muted fs-6">/mo</small></h2>
+          <ul class="list-unstyled text-start mb-4">
+            <li class="mb-2"><i class="jam jam-check text-primary"></i> Everything in Explorer</li>
+            <li class="mb-2"><i class="jam jam-check text-primary"></i> Tour replays on demand</li>
+            <li class="mb-2"><i class="jam jam-check text-primary"></i> Exclusive guide-only tours</li>
+          </ul>
+          <button class="btn btn-outline-primary rounded-pill mt-auto" data-plan="wanderer" disabled title="Available after backend launch">Subscribe</button>
+        </div>
+      </div>
+    </div>
+    <p class="text-center text-muted mt-5"><small>Subscriptions launch with the platform's payments rollout. Sign up now to be notified.</small></p>
+  </div>
+</div>
+
+{% include layouts/footer/footer-1.html %}

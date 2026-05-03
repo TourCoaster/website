@@ -1,0 +1,27 @@
+---
+layout: default
+title: "Create your account"
+permalink: /signup
+description: "Join TourCoaster to book tours, watch live VR, or become a guide."
+noindex: true
+---
+
+{% include layouts/nav/nav-1.html default_logo="black" %}
+
+<div class="wrapper white-wrapper">
+  <div class="container inner" style="max-width:520px;">
+    <div class="text-center mb-4">
+      <h1 class="mb-2">Join TourCoaster</h1>
+      <p class="text-muted">Travel as a guest or guide</p>
+    </div>
+    <div class="card shadow-sm rounded-4 p-4">
+      <button id="google-signup" class="btn btn-outline-dark btn-lg rounded-pill w-100 mb-3" disabled title="Authentication launches with the backend rollout">
+        <i class="jam jam-google me-2"></i> Continue with Google
+      </button>
+      <p class="text-center text-muted mb-0"><small>You'll choose Traveler or Guide on your first sign in.</small></p>
+    </div>
+    <p class="text-center mt-4">Already have an account? <a href="/login">Sign in</a></p>
+  </div>
+</div>
+
+{% include layouts/footer/footer-1.html %}

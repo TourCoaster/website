@@ -1,0 +1,35 @@
+{% comment %} Extra SEO partial: canonical link + JSON-LD. Used by default layout. {% endcomment %}
+{% assign abs_url = page.url | absolute_url %}
+<link rel="canonical" href="{{ abs_url }}" />
+<meta name="robots" content="{% if page.noindex %}noindex,nofollow{% else %}index,follow{% endif %}" />
+
+{% if page.url == "/" or page.url == "/index.html" %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "{{ site.data.general_settings.title | escape }}",
+  "url": "{{ site.url }}",
+  "logo": "{{ site.data.general_settings.black_logo_1x | absolute_url }}",
+  "description": "{{ site.data.general_settings.description | strip_newlines | strip | escape }}",
+  "email": "{{ site.data.general_settings.email }}",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "{{ site.data.general_settings.address_01 | escape }}"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "{{ site.data.general_settings.title | escape }}",
+  "url": "{{ site.url }}",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "{{ site.url }}/explore?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+{% endif %}

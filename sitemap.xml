@@ -1,0 +1,28 @@
+---
+permalink: /sitemap.xml
+layout: null
+sitemap: false
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  {%- assign pages = site.pages | where_exp: "p", "p.sitemap != false" -%}
+  {%- for page in pages -%}
+    {%- if page.url contains '.html' or page.url == '/' -%}
+      {%- unless page.url contains '/dashboard' or page.url contains '/watch' -%}
+  <url>
+    <loc>{{ page.url | absolute_url | replace: '/index.html', '/' }}</loc>
+    <changefreq>weekly</changefreq>
+  </url>
+      {%- endunless -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- for tour in site.tours -%}
+  <url><loc>{{ tour.url | absolute_url }}</loc><changefreq>weekly</changefreq></url>
+  {%- endfor -%}
+  {%- for guide in site.guides -%}
+  <url><loc>{{ guide.url | absolute_url }}</loc><changefreq>weekly</changefreq></url>
+  {%- endfor -%}
+  {%- for vr in site.vr_experiences -%}
+  <url><loc>{{ vr.url | absolute_url }}</loc><changefreq>weekly</changefreq></url>
+  {%- endfor -%}
+</urlset>
