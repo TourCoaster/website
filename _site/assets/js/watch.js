@@ -182,7 +182,9 @@
 
   var ws = null;
   function openWs() {
-    if (state.kind !== 'live' || !state.streamId) return;
+    // Connect for both 'idle' (with a stream row) and 'live' so we can
+    // pick up the status=live transition without polling.
+    if (!state.streamId || (state.kind !== 'live' && state.kind !== 'idle')) return;
     var proto = apiBase.indexOf('https') === 0 ? 'wss://' : 'ws://';
     var host = apiBase.replace(/^https?:\/\//, '');
     try {
@@ -197,15 +199,20 @@
       } else if (msg.type === 'viewer_count' && typeof msg.viewer_count === 'number') {
         setViewerCount(msg.viewer_count);
       } else if (msg.type === 'status') {
-        if (msg.status === 'live') { setStatus('Live now', 'live'); startPlayback(); }
-        else if (msg.status === 'ended') { onEnded(); }
+        if (msg.status === 'live') {
+          // Promote idle → live and kick off playback now that the guide
+          // is actually broadcasting.
+          if (state.kind === 'idle' && state.streamId) state = { kind: 'live', streamId: state.streamId };
+          setStatus('Live now', 'live');
+          startPlayback();
+        } else if (msg.status === 'ended') { onEnded(); }
       } else if (msg.type === 'chat') {
         appendChat(msg);
       }
     });
     ws.addEventListener('close', function () {
-      // Soft reconnect after a delay if the page is still in 'live'.
-      if (state.kind === 'live') setTimeout(openWs, 4000);
+      // Soft reconnect while we're still expecting traffic for this stream.
+      if (state.kind === 'live' || state.kind === 'idle') setTimeout(openWs, 4000);
     });
   }
 

@@ -157,8 +157,14 @@ watchRoute.get('/:tourId', async (c) => {
   const wantsReplay = c.req.query('replay') === '1';
   let state: WatchState = { kind: 'idle' };
   if (stream) {
-    if (stream.status === 'live' || stream.status === 'connecting' || stream.status === 'idle') {
+    if (stream.status === 'live') {
       state = { kind: 'live', streamId: stream.id };
+    } else if (stream.status === 'connecting' || stream.status === 'idle') {
+      // Stream row exists but isn't actually broadcasting yet — keep the
+      // page in the 'waiting for the guide' UI; the WebSocket will push a
+      // status=live message when the guide actually goes live, at which
+      // point the client transitions into the live flow.
+      state = { kind: 'idle', streamId: stream.id } as WatchState;
     } else if (wantsReplay && stream.recording_uid) {
       state = { kind: 'replay', streamId: stream.id };
     } else {

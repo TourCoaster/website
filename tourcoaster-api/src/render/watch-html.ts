@@ -13,7 +13,7 @@ const SITE_ORIGIN = 'https://tourcoaster.com';
 export type WatchState =
   | { kind: 'live'; streamId: string }
   | { kind: 'replay'; streamId: string }
-  | { kind: 'idle' }
+  | { kind: 'idle'; streamId?: string }
   | { kind: 'ended'; streamId?: string; hasReplay?: boolean };
 
 export type WatchTour = {
