@@ -12,6 +12,10 @@ meta_twitter_image: "/assets/images/meta-image.webp"
 color_scheme: green
 font_scheme:
 
+# Cloudflare Access — set after creating the Zero Trust team. Used by
+# /assets/js/auth.js to redirect users through global logout.
+cf_access_team_domain: "tourcoaster.cloudflareaccess.com"
+
 black_logo_1x: "/assets/images/logo.webp"
 black_logo_2x: "/assets/images/logo@2x.webp"
 light_logo_1x: "/assets/images/logo-light.webp"

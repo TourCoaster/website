@@ -1,0 +1,9 @@
+{%- comment -%}
+Exposes auth-related configuration on `window` before /assets/js/auth.js
+runs. Include this immediately before the auth.js <script> tag.
+{%- endcomment -%}
+<script>
+  {%- if site.data.general_settings.cf_access_team_domain -%}
+  window.TOURCOASTER_CF_TEAM = {{ site.data.general_settings.cf_access_team_domain | jsonify }};
+  {%- endif -%}
+</script>

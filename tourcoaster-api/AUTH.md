@@ -126,6 +126,19 @@ to choose its bootstrap path.
 - The session cookie is `HttpOnly`, `Secure`, set by Cloudflare. We never
   read or set the cookie value ourselves; logout deletes it (with `Secure`
   and `SameSite=Lax`) and redirects through Access's logout endpoint.
-- Email is the upsert key; `google_sub` is treated as a stable hint. If a
-  user changes their primary email in Google Workspace, manually merge the
-  two `users` rows in D1.
+- **Identity binding.** `users.google_sub` (the Cloudflare Access JWT
+  `sub`) is the canonical identity key, not email. Provisioning resolves
+  in this order:
+  1. lookup by `google_sub` — if found, follow any email change;
+  2. lookup by `email` — only re-bind to the new subject when
+     `google_sub IS NULL` (e.g. a seeded admin row);
+  3. otherwise insert a new row.
+
+  "Same email, different subject" returns **409 `identity_conflict`** and
+  must be merged manually in D1 by an admin. We never silently overwrite
+  an existing row's `google_sub` based on email alone — that would allow
+  account takeover if a Google email were recycled.
+
+  Both `google_sub` and `email` are UNIQUE in D1; concurrent first-sight
+  inserts that race lose to a UNIQUE constraint and the loser retries
+  the SELECT.
