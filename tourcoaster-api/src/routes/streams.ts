@@ -242,26 +242,36 @@ const userHasVrSession = async (
 streamsRoute.get('/live', async (c) => {
   const user = c.get('user');
   const hasSub = user.role === 'admin' ? true : await userHasActiveSubscription(c.env, user.id);
+  const isAdmin = user.role === 'admin';
 
+  // Apply access filtering inside SQL so LIMIT 50 is taken from the visible
+  // set, not the raw set. Admin and active-subscription holders see all
+  // currently-live streams; everyone else sees only their own streams or
+  // tours they have a non-expired vr_session for.
   const rows = await c.env.DB.prepare(
     `SELECT ls.id, ls.tour_id, ls.started_at, ls.status,
             t.slug, t.title, t.location,
             gp.display_name AS guide_display_name,
             gp.slug AS guide_slug,
-            (ls.owner_id = ?1) AS is_owner,
-            EXISTS (
-              SELECT 1 FROM vr_sessions s
-               WHERE s.user_id = ?1 AND s.tour_id = ls.tour_id
-                 AND (s.expires_at IS NULL OR s.expires_at > strftime('%Y-%m-%dT%H:%M:%fZ','now'))
-            ) AS has_vr_session
+            (ls.owner_id = ?1) AS is_owner
        FROM live_streams ls
        JOIN tours t ON t.id = ls.tour_id
        LEFT JOIN guide_profiles gp ON gp.user_id = ls.owner_id
       WHERE ls.status IN ('connecting','live')
+        AND (
+          ?2 = 1
+          OR ?3 = 1
+          OR ls.owner_id = ?1
+          OR EXISTS (
+            SELECT 1 FROM vr_sessions s
+             WHERE s.user_id = ?1 AND s.tour_id = ls.tour_id
+               AND (s.expires_at IS NULL OR s.expires_at > strftime('%Y-%m-%dT%H:%M:%fZ','now'))
+          )
+        )
       ORDER BY (ls.started_at IS NULL), ls.started_at DESC
       LIMIT 50`
   )
-    .bind(user.id)
+    .bind(user.id, isAdmin ? 1 : 0, hasSub ? 1 : 0)
     .all<{
       id: string;
       tour_id: string;
@@ -273,13 +283,9 @@ streamsRoute.get('/live', async (c) => {
       guide_display_name: string | null;
       guide_slug: string | null;
       is_owner: number;
-      has_vr_session: number;
     }>();
 
-  const items = (rows.results ?? []).filter(
-    (r) => user.role === 'admin' || r.is_owner === 1 || hasSub || r.has_vr_session === 1
-  );
-  return c.json({ items });
+  return c.json({ items: rows.results ?? [] });
 });
 
 streamsRoute.get('/:id/playback', async (c) => {

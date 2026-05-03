@@ -272,7 +272,7 @@
       var json = await res.json();
       var list = json.items || [];
       if (list.length === 0) {
-        el.innerHTML = '<div class="col-12"><p class="td-empty mb-0">Save tours you want to watch later — use the Save button on Live tours, History, or any tour page.</p></div>';
+        el.innerHTML = '<div class="col-12"><p class="td-empty mb-0">Save tours you want to watch later — use the Save button on Live tours or History.</p></div>';
         return;
       }
       el.innerHTML = list.map(function (w) {
