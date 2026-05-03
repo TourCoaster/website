@@ -9,7 +9,8 @@ compatibility_flags = ["nodejs_compat"]
 # zone_name once DNS is set up; in development `wrangler dev` ignores routes.
 routes = [
   { pattern = "api.tourcoaster.com/*", zone_name = "tourcoaster.com" },
-  { pattern = "tourcoaster.com/guides/*", zone_name = "tourcoaster.com" }
+  { pattern = "tourcoaster.com/guides/*", zone_name = "tourcoaster.com" },
+  { pattern = "tourcoaster.com/tours/*", zone_name = "tourcoaster.com" }
 ]
 
 # ---------------------------------------------------------------------------

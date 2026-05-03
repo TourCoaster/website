@@ -1,0 +1,42 @@
+---
+layout: default
+title: "My Tours"
+permalink: /dashboard/tours/
+description: "Manage your TourCoaster tours."
+noindex: true
+body_attributes: 'data-auth-page="dashboard-tours"'
+---
+
+{% include layouts/nav/nav-1.html default_logo="black" %}
+
+<div class="wrapper light-wrapper page-title-wrapper">
+  <div class="container inner d-flex flex-wrap align-items-center justify-content-between">
+    <div>
+      <h1 class="page-title mb-1">My Tours</h1>
+      <p class="text-muted mb-0">Drafts, published, and scheduled tours.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="/dashboard/" class="btn btn-sm btn-outline-secondary rounded-pill">&larr; Dashboard</a>
+      <a href="/dashboard/tours/edit/?id=new" class="btn btn-sm btn-primary rounded-pill">+ New tour</a>
+    </div>
+  </div>
+</div>
+
+<div class="wrapper white-wrapper">
+  <div class="container inner" style="max-width:920px;">
+    <div id="tours-status" class="alert alert-info" role="status">Loading your tours…</div>
+
+    <div id="tours-empty" class="text-center py-5" style="display:none;">
+      <p class="lead text-muted">You haven't created any tours yet.</p>
+      <a href="/dashboard/tours/edit/?id=new" class="btn btn-primary rounded-pill">Create your first tour</a>
+    </div>
+
+    <div id="tours-list" class="row gy-3" style="display:none;"></div>
+  </div>
+</div>
+
+{% include utilities/auth-config.html %}
+<script src="/assets/js/auth.js" defer></script>
+<script src="/assets/js/tours.js" defer></script>
+
+{% include layouts/footer/footer-1.html %}

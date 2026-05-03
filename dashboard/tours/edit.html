@@ -1,0 +1,125 @@
+---
+layout: default
+title: "Edit Tour"
+permalink: /dashboard/tours/edit/
+description: "Edit a TourCoaster tour."
+noindex: true
+body_attributes: 'data-auth-page="dashboard-tour-edit"'
+---
+
+{% include layouts/nav/nav-1.html default_logo="black" %}
+
+<div class="wrapper light-wrapper page-title-wrapper">
+  <div class="container inner d-flex flex-wrap align-items-center justify-content-between">
+    <div>
+      <h1 class="page-title mb-1" id="page-title">Edit Tour</h1>
+      <p class="text-muted mb-0">Public URL: <code data-public-url>/tours/…</code></p>
+    </div>
+    <a href="/dashboard/tours/" class="btn btn-sm btn-outline-secondary rounded-pill">&larr; My tours</a>
+  </div>
+</div>
+
+<div class="wrapper white-wrapper">
+  <div class="container inner" style="max-width:880px;">
+    <div id="tour-status" class="alert alert-info" role="status">Loading…</div>
+
+    <form id="tour-form" class="card shadow-sm rounded-4 p-4" style="display:none;">
+      <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+        <span id="status-badge" class="badge bg-secondary">draft</span>
+        <span class="text-muted small" id="updated-at"></span>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="title">Title</label>
+        <input class="form-control" id="title" name="title" required minlength="3" maxlength="120" />
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="slug">Slug</label>
+          <div class="input-group">
+            <span class="input-group-text">/tours/</span>
+            <input class="form-control" id="slug" name="slug" maxlength="60" pattern="[a-z0-9](?:[a-z0-9-]{0,58}[a-z0-9])?" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="category">Category</label>
+          <select class="form-select" id="category" name="category">
+            <option value="">— select —</option>
+            <option value="nature">Nature</option>
+            <option value="city">City</option>
+            <option value="food">Food</option>
+            <option value="history">History</option>
+            <option value="adventure">Adventure</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mb-3 mt-3">
+        <label class="form-label" for="location">Location</label>
+        <input class="form-control" id="location" name="location" maxlength="160" placeholder="City, Country" />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="description">Description</label>
+        <textarea class="form-control" id="description" name="description" rows="6" maxlength="8000"></textarea>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label" for="duration_minutes">Duration (min)</label>
+          <input type="number" class="form-control" id="duration_minutes" name="duration_minutes" min="1" max="43200" />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="capacity">Capacity</label>
+          <input type="number" class="form-control" id="capacity" name="capacity" min="1" max="10000" />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="price_cents">Price (cents)</label>
+          <input type="number" class="form-control" id="price_cents" name="price_cents" min="0" max="10000000" required />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label" for="currency">Currency</label>
+          <select class="form-select" id="currency" name="currency">
+            <option>USD</option><option>EUR</option><option>GBP</option>
+            <option>CAD</option><option>AUD</option><option>JPY</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-check form-switch mt-3">
+        <input class="form-check-input" type="checkbox" id="vr_enabled" name="vr_enabled">
+        <label class="form-check-label" for="vr_enabled">VR streaming enabled</label>
+      </div>
+
+      <div class="mb-3 mt-2" id="scheduled-wrap" style="display:none;">
+        <label class="form-label" for="scheduled_at">Scheduled at (VR session)</label>
+        <input type="datetime-local" class="form-control" id="scheduled_at" name="scheduled_at" />
+      </div>
+
+      <hr class="my-4">
+
+      <h2 class="h5 mb-3">Photos</h2>
+      <div class="d-flex flex-wrap gap-2 mb-3" id="media-grid"></div>
+      <input type="file" class="form-control mb-3" id="media-input" accept="image/jpeg,image/png,image/webp" />
+      <small class="text-muted d-block mb-3">JPEG, PNG, or WebP. Up to 10 MB each.</small>
+
+      <div id="status-banner" class="alert d-none" role="status"></div>
+
+      <div class="d-flex flex-wrap justify-content-between gap-2 mt-2">
+        <button type="button" class="btn btn-outline-danger rounded-pill" id="delete-btn">Delete tour</button>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-outline-primary rounded-pill" id="save-btn">Save draft</button>
+          <button type="button" class="btn btn-primary rounded-pill" id="publish-btn">Publish</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% include utilities/auth-config.html %}
+<script src="/assets/js/auth.js" defer></script>
+<script src="/assets/js/tours.js" defer></script>
+
+{% include layouts/footer/footer-1.html %}

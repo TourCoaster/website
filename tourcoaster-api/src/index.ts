@@ -10,6 +10,13 @@ import {
   guidesPublicRoute,
   mediaRoute,
 } from './routes/guides';
+import {
+  toursHtmlRoute,
+  toursListRoute,
+  toursMineRoute,
+  toursReadByIdRoute,
+  toursWriteRoute,
+} from './routes/tours';
 import type { AppEnv } from './types';
 
 const app = new Hono<AppEnv>();
@@ -20,28 +27,36 @@ app.use('*', corsMiddleware());
 app.onError(errorHandler);
 app.notFound(notFoundHandler);
 
-// Each sub-router self-protects (or doesn't) — there is no parent wildcard
-// auth middleware so registration order cannot accidentally lock out a
-// public path. Protected sub-routers are: meRoute, roleRoute, guidesMeRoute.
-// Public sub-routers are: healthRoute, logoutRoute, mediaRoute, guidesPublicRoute.
+// Each sub-router self-protects (or doesn't). Public sub-routers carry no
+// auth middleware; protected sub-routers self-apply requireAccessAuth().
 const v1 = new Hono<AppEnv>();
 v1.route('/health', healthRoute);
 v1.route('/auth/logout', logoutRoute);
 v1.route('/media', mediaRoute);
 v1.route('/me', meRoute);
 v1.route('/auth/role', roleRoute);
-// /guides/me MUST be registered before /guides/:slug so the literal beats
-// the slug matcher.
+
+// Protected guide routes. Mounted before /guides/:slug to avoid shadowing.
 v1.route('/guides/me', guidesMeRoute);
 v1.route('/guides', guidesPublicRoute);
 
+// Tours: protected /mine before public listing; protected resource writes
+// share the same /tours mount, so the writeRouter handles POST/PATCH/DELETE
+// on /tours and /tours/:id*. Order matters — register writeRouter (which
+// covers POST /, PATCH /:id, DELETE /:id, POST /:id/publish, POST /:id/media)
+// BEFORE the public listing/read routes so its protected handlers win.
+v1.route('/tours/mine', toursMineRoute);
+v1.route('/tours', toursWriteRoute);
+v1.route('/tours', toursReadByIdRoute);
+v1.route('/tours', toursListRoute);
+
 app.route('/v1', v1);
 
-// Public server-rendered guide pages. In production this Worker is also
-// mounted on `tourcoaster.com/guides/*` via a Workers Route in wrangler.toml,
-// so requests to https://tourcoaster.com/guides/<slug> hit this handler and
-// override the static Jekyll output.
+// Public server-rendered pages. In production a Workers Route on
+// tourcoaster.com/{guides,tours}/* hits these handlers and overrides the
+// static Jekyll output for those paths.
 app.route('/guides', guidesHtmlRoute);
+app.route('/tours', toursHtmlRoute);
 
 app.get('/', (c) =>
   c.json({
