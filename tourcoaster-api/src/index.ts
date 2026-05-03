@@ -86,8 +86,13 @@ app.get('/:keyfile{[A-Za-z0-9_-]+\\.txt}', (c) => {
   return c.text(expected, 200, { 'cache-control': 'public, max-age=86400' });
 });
 
-// OG image worker — served from og.tourcoaster.com via wrangler routes.
-app.route('/', ogRoute);
+// OG image worker — only handle requests for og.tourcoaster.com so
+// the API root and other paths on the api host are unaffected.
+app.use('*', async (c, next) => {
+  const host = c.req.header('host') ?? '';
+  if (host.startsWith('og.')) return ogRoute.fetch(c.req.raw, c.env, c.executionCtx);
+  await next();
+});
 
 // Public server-rendered pages. In production a Workers Route on
 // tourcoaster.com/{guides,tours}/* hits these handlers and overrides the
