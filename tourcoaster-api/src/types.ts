@@ -12,7 +12,18 @@ export type Bindings = {
   R2_PUBLIC_BASE: string;
   R2_ACCESS_KEY_ID?: string;
   R2_SECRET_ACCESS_KEY?: string;
+  // Stripe — set as Worker secrets in production. Optional at the type level
+  // so tests/dev can boot without payments configured; routes that need them
+  // throw a 503 'stripe_not_configured' if missing.
+  STRIPE_SECRET_KEY?: string;
+  STRIPE_WEBHOOK_SECRET?: string;
+  STRIPE_PRICE_EXPLORER?: string;
+  STRIPE_PRICE_WANDERER?: string;
+  // Platform fee in basis points (1500 = 15%). Defaults to 1500 if unset.
+  PLATFORM_FEE_BPS?: string;
 };
+
+export type Plan = 'explorer' | 'wanderer';
 
 export type Role = 'traveler' | 'guide' | 'admin';
 

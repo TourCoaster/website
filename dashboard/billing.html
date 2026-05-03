@@ -1,0 +1,53 @@
+---
+layout: default
+title: "Billing"
+permalink: /dashboard/billing/
+description: "Manage your TourCoaster payouts and subscriptions."
+noindex: true
+body_attributes: 'data-auth-page="dashboard-billing"'
+---
+
+{% include layouts/nav/nav-1.html default_logo="black" %}
+
+<div class="wrapper light-wrapper page-title-wrapper">
+  <div class="container inner d-flex flex-wrap align-items-center justify-content-between">
+    <div>
+      <h1 class="page-title mb-1">Billing</h1>
+      <p class="text-muted mb-0">Payouts (guides) and subscriptions (travelers).</p>
+    </div>
+    <a href="/dashboard/" class="btn btn-sm btn-outline-secondary rounded-pill">&larr; Dashboard</a>
+  </div>
+</div>
+
+<div class="wrapper white-wrapper">
+  <div class="container inner" style="max-width:760px;">
+    <div id="billing-status" class="alert alert-info" role="status">Loading…</div>
+
+    <section id="payouts-card" class="card shadow-sm rounded-4 p-4 mb-4" style="display:none;">
+      <h2 class="h5 mb-2">Payouts</h2>
+      <p class="text-muted small">Connect your Stripe Express account so we can pay out 85% of every booking automatically. TourCoaster keeps 15% as a platform fee.</p>
+      <p class="mb-3">
+        Status:
+        <span id="payouts-status-badge" class="badge bg-secondary">unknown</span>
+      </p>
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-primary rounded-pill" id="connect-onboard-btn">Connect payouts</button>
+        <button class="btn btn-outline-secondary rounded-pill" id="connect-refresh-btn" style="display:none;">Refresh status</button>
+      </div>
+    </section>
+
+    <section id="subscription-card" class="card shadow-sm rounded-4 p-4" style="display:none;">
+      <h2 class="h5 mb-2">Subscription &amp; receipts</h2>
+      <p class="text-muted small">Update your card, view receipts, or cancel from Stripe's secure portal.</p>
+      <button class="btn btn-outline-primary rounded-pill" id="portal-btn">Manage billing</button>
+    </section>
+
+    <div id="billing-banner" class="alert d-none mt-3" role="status"></div>
+  </div>
+</div>
+
+{% include utilities/auth-config.html %}
+<script src="/assets/js/auth.js" defer></script>
+<script src="/assets/js/billing.js" defer></script>
+
+{% include layouts/footer/footer-1.html %}

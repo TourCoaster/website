@@ -1,0 +1,27 @@
+---
+layout: default
+title: "Payment successful"
+permalink: /checkout/success/
+description: "Your TourCoaster purchase is confirmed."
+noindex: true
+---
+
+{% include layouts/nav/nav-1.html default_logo="black" drop_search=true %}
+
+<div class="wrapper white-wrapper">
+  <div class="container inner text-center" style="max-width:640px;">
+    <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+         style="width:72px;height:72px;background:#e6f7ee;color:#13a463;">
+      <i class="jam jam-check" style="font-size:34px;"></i>
+    </div>
+    <h1 class="page-title">Payment received</h1>
+    <p class="lead">Thanks — your purchase is confirmed. We've emailed your receipt and your booking will appear in your dashboard within a moment.</p>
+    <p class="text-muted small">It can take up to 30 seconds for your dashboard to update while we sync with Stripe.</p>
+    <div class="d-flex flex-wrap justify-content-center gap-2 mt-4">
+      <a href="/dashboard/" class="btn btn-primary rounded-pill">Go to my dashboard</a>
+      <a href="/explore/" class="btn btn-outline-primary rounded-pill">Browse more tours</a>
+    </div>
+  </div>
+</div>
+
+{% include layouts/footer/footer-1.html %}

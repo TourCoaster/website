@@ -5,31 +5,31 @@
   <!-- Meta Tags-->
   <meta charset="utf-8" />
 <!-- Primary Meta Tags -->
-<title> Pricing </title>
-<meta name="title" content=" Pricing ">
-<meta name="description" content=" TourCoaster subscription plans for VR experiences and unlimited exploration. ">
+<title> Billing </title>
+<meta name="title" content=" Billing ">
+<meta name="description" content=" Manage your TourCoaster payouts and subscriptions. ">
 
   <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
-<meta property="og:url" content=" /pricing ">
-<meta property="og:title" content=" Pricing ">
-<meta property="og:description" content=" TourCoaster subscription plans for VR experiences and unlimited exploration. ">
+<meta property="og:url" content=" /dashboard/billing/ ">
+<meta property="og:title" content=" Billing ">
+<meta property="og:description" content=" Manage your TourCoaster payouts and subscriptions. ">
 
 <meta property="og:image" content="/assets/images/meta-image.webp" />
 
 <!-- Twitter -->
 <meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:url" content="/pricing">
-<meta property="twitter:title" content=" Pricing ">
-<meta property="twitter:description" content=" TourCoaster subscription plans for VR experiences and unlimited exploration. ">
+<meta property="twitter:url" content="/dashboard/billing/">
+<meta property="twitter:title" content=" Billing ">
+<meta property="twitter:description" content=" Manage your TourCoaster payouts and subscriptions. ">
 
 <meta property="twitter:image" content="/assets/images/meta-image.webp" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
 
-<link rel="canonical" href="http://0.0.0.0:5000/pricing" />
-<meta name="robots" content="index,follow" />
+<link rel="canonical" href="http://0.0.0.0:5000/dashboard/billing/" />
+<meta name="robots" content="noindex,nofollow" />
 
 
 
@@ -54,7 +54,7 @@
   <!-- Google Analytics-->
   
 </head>
-<body >
+<body  data-auth-page="dashboard-billing">
   <div class="content-wrapper">
     <!--  Nav Name :Classic Header -->
 <nav
@@ -87,24 +87,6 @@
 
         
         
-        
-        <li class="dropdown search-dropdown position-static nav-item">
-    <a href="#" role="button" class="collapse-toggle" data-bs-toggle="collapse" data-bs-target=".search-dropdown-menu"
-        aria-haspopup="true" aria-expanded="false"><i class="jam jam-search"></i></a>
-    <div class="dropdown-menu search-dropdown-menu w-100 collapse">
-        <div class="form-wrapper">
-            <form class="inverse-text">
-                <input type="text" id="search-input" class="form-control" placeholder="Search blog posts.." />
-            </form>
-            <!-- /.search-form -->
-            <i class="dropdown-close jam jam-close"></i>
-        </div>
-        <!-- /.form-wrapper -->
-        <ul id="results-container" class="position-static"></ul>
-    </div>
-</li>
-<li class="nav-item"><button class="plain" data-bs-toggle="offcanvas-info"><i class="jam jam-info"></i></button>
-</li>
         
       </ul>
       <!-- /.navbar-nav -->
@@ -241,59 +223,46 @@
   <!-- /.offcanvas-info -->
 
 <div class="wrapper light-wrapper page-title-wrapper">
-  <div class="container inner text-center">
-    <h1 class="page-title">Choose Your Plan</h1>
-    <p class="lead">Start free. Upgrade for unlimited VR access and exclusive live tours.</p>
+  <div class="container inner d-flex flex-wrap align-items-center justify-content-between">
+    <div>
+      <h1 class="page-title mb-1">Billing</h1>
+      <p class="text-muted mb-0">Payouts (guides) and subscriptions (travelers).</p>
+    </div>
+    <a href="/dashboard/" class="btn btn-sm btn-outline-secondary rounded-pill">&larr; Dashboard</a>
   </div>
 </div>
 
 <div class="wrapper white-wrapper">
-  <div class="container inner">
-    <div class="row gy-4">
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm rounded-4 p-4 text-center">
-          <h4 class="mb-2">Free</h4>
-          <p class="text-muted mb-3">Browse the platform</p>
-          <h2 class="mb-3">$0<small class="text-muted fs-6">/mo</small></h2>
-          <ul class="list-unstyled text-start mb-4">
-            <li class="mb-2"><i class="jam jam-check text-primary"></i> Browse all guides &amp; tours</li>
-            <li class="mb-2"><i class="jam jam-check text-primary"></i> Wishlist &amp; save tours</li>
-            <li class="mb-2"><i class="jam jam-check text-primary"></i> Book in-person tours</li>
-          </ul>
-          <a href="/signup" class="btn btn-outline-primary rounded-pill mt-auto">Get Started</a>
-        </div>
+  <div class="container inner" style="max-width:760px;">
+    <div id="billing-status" class="alert alert-info" role="status">Loading…</div>
+
+    <section id="payouts-card" class="card shadow-sm rounded-4 p-4 mb-4" style="display:none;">
+      <h2 class="h5 mb-2">Payouts</h2>
+      <p class="text-muted small">Connect your Stripe Express account so we can pay out 85% of every booking automatically. TourCoaster keeps 15% as a platform fee.</p>
+      <p class="mb-3">
+        Status:
+        <span id="payouts-status-badge" class="badge bg-secondary">unknown</span>
+      </p>
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-primary rounded-pill" id="connect-onboard-btn">Connect payouts</button>
+        <button class="btn btn-outline-secondary rounded-pill" id="connect-refresh-btn" style="display:none;">Refresh status</button>
       </div>
-      <div class="col-md-4">
-        <div class="card h-100 shadow rounded-4 p-4 text-center border-primary border-2">
-          <span class="badge bg-primary rounded-pill align-self-center mb-2">Most Popular</span>
-          <h4 class="mb-2">Explorer</h4>
-          <p class="text-muted mb-3">Unlimited VR tours</p>
-          <h2 class="mb-3">$19<small class="text-muted fs-6">/mo</small></h2>
-          <ul class="list-unstyled text-start mb-4">
-            <li class="mb-2"><i class="jam jam-check text-primary"></i> Everything in Free</li>
-            <li class="mb-2"><i class="jam jam-check text-primary"></i> Unlimited live VR tours</li>
-            <li class="mb-2"><i class="jam jam-check text-primary"></i> Quest, mobile &amp; desktop</li>
-          </ul>
-          <button class="btn btn-primary rounded-pill mt-auto" data-plan="explorer">Subscribe</button>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card h-100 shadow-sm rounded-4 p-4 text-center">
-          <h4 class="mb-2">Wanderer</h4>
-          <p class="text-muted mb-3">Replays &amp; exclusives</p>
-          <h2 class="mb-3">$39<small class="text-muted fs-6">/mo</small></h2>
-          <ul class="list-unstyled text-start mb-4">
-            <li class="mb-2"><i class="jam jam-check text-primary"></i> Everything in Explorer</li>
-            <li class="mb-2"><i class="jam jam-check text-primary"></i> Tour replays on demand</li>
-            <li class="mb-2"><i class="jam jam-check text-primary"></i> Exclusive guide-only tours</li>
-          </ul>
-          <button class="btn btn-outline-primary rounded-pill mt-auto" data-plan="wanderer">Subscribe</button>
-        </div>
-      </div>
-    </div>
-    <p class="text-center text-muted mt-5"><small>You'll be redirected to Stripe to complete the subscription. We never store your card details.</small></p>
+    </section>
+
+    <section id="subscription-card" class="card shadow-sm rounded-4 p-4" style="display:none;">
+      <h2 class="h5 mb-2">Subscription &amp; receipts</h2>
+      <p class="text-muted small">Update your card, view receipts, or cancel from Stripe's secure portal.</p>
+      <button class="btn btn-outline-primary rounded-pill" id="portal-btn">Manage billing</button>
+    </section>
+
+    <div id="billing-banner" class="alert d-none mt-3" role="status"></div>
   </div>
 </div>
+
+<script>window.TOURCOASTER_CF_TEAM = "tourcoaster.cloudflareaccess.com";</script>
+
+<script src="/assets/js/auth.js" defer></script>
+<script src="/assets/js/billing.js" defer></script>
 
 <!-- footer with details v1 -->
 <footer class=" dark-wrapper inverse-text ">
@@ -416,8 +385,6 @@
     </ul>
   </div>
 </footer>
-
-<script src="/assets/js/billing.js" defer></script>
 
   </div>
   <!-- Site Scripts-->

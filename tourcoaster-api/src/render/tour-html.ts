@@ -181,6 +181,7 @@ export const renderTourPage = (t: RenderTour, apiBase: string): string => {
   <link rel="stylesheet" href="${SITE_ORIGIN}/assets/css/style.css">
   <link rel="stylesheet" href="${SITE_ORIGIN}/assets/css/color/green.css">
   ${ldBlocks.join('\n  ')}
+  <script src="${SITE_ORIGIN}/assets/js/billing.js" defer></script>
 </head>
 <body>
   <main class="wrapper white-wrapper">
@@ -210,7 +211,9 @@ export const renderTourPage = (t: RenderTour, apiBase: string): string => {
             <div class="text-muted small mb-3">per person</div>
             ${t.capacity ? `<p class="small mb-2"><i class="jam jam-user me-1"></i>Up to ${t.capacity} guests</p>` : ''}
             ${vrBlock}
-            <a href="${SITE_ORIGIN}/contact/contact-1" class="btn btn-primary w-100 rounded-pill mt-2">Book this tour</a>
+            <button type="button" class="btn btn-primary w-100 rounded-pill mt-2"
+                    data-book-tour="${escapeHtml(t.id)}">Book this tour</button>
+            <p class="small text-muted mt-2 mb-0">Secure checkout via Stripe.</p>
           </div>
         </aside>
       </div>

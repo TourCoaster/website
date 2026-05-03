@@ -4,7 +4,7 @@ import type { AppEnv } from '../types';
 
 export class AppError extends HTTPException {
   public readonly code: string;
-  constructor(status: 400 | 401 | 402 | 403 | 404 | 409 | 422 | 429 | 500 | 503, code: string, message: string) {
+  constructor(status: 400 | 401 | 402 | 403 | 404 | 409 | 422 | 429 | 500 | 502 | 503, code: string, message: string) {
     super(status, { message });
     this.code = code;
   }

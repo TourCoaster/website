@@ -11,7 +11,8 @@
     "db:migrate:remote": "wrangler d1 migrations apply tourcoaster --remote",
     "db:studio:local": "wrangler d1 execute tourcoaster --local --command \"SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;\"",
     "lint": "eslint \"src/**/*.ts\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "stripe:setup": "node scripts/stripe-setup.mjs"
   },
   "dependencies": {
     "aws4fetch": "^1.0.20",

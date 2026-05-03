@@ -41,7 +41,7 @@ description: "TourCoaster subscription plans for VR experiences and unlimited ex
             <li class="mb-2"><i class="jam jam-check text-primary"></i> Unlimited live VR tours</li>
             <li class="mb-2"><i class="jam jam-check text-primary"></i> Quest, mobile &amp; desktop</li>
           </ul>
-          <button class="btn btn-primary rounded-pill mt-auto" data-plan="explorer" disabled title="Available after backend launch">Subscribe</button>
+          <button class="btn btn-primary rounded-pill mt-auto" data-plan="explorer">Subscribe</button>
         </div>
       </div>
       <div class="col-md-4">
@@ -54,12 +54,14 @@ description: "TourCoaster subscription plans for VR experiences and unlimited ex
             <li class="mb-2"><i class="jam jam-check text-primary"></i> Tour replays on demand</li>
             <li class="mb-2"><i class="jam jam-check text-primary"></i> Exclusive guide-only tours</li>
           </ul>
-          <button class="btn btn-outline-primary rounded-pill mt-auto" data-plan="wanderer" disabled title="Available after backend launch">Subscribe</button>
+          <button class="btn btn-outline-primary rounded-pill mt-auto" data-plan="wanderer">Subscribe</button>
         </div>
       </div>
     </div>
-    <p class="text-center text-muted mt-5"><small>Subscriptions launch with the platform's payments rollout. Sign up now to be notified.</small></p>
+    <p class="text-center text-muted mt-5"><small>You'll be redirected to Stripe to complete the subscription. We never store your card details.</small></p>
   </div>
 </div>
 
 {% include layouts/footer/footer-1.html %}
+
+<script src="/assets/js/billing.js" defer></script>

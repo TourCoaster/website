@@ -11,6 +11,9 @@ import {
   mediaRoute,
 } from './routes/guides';
 import { toursHtmlRoute, toursRoute } from './routes/tours';
+import { billingRoute } from './routes/billing';
+import { checkoutRoute } from './routes/checkout';
+import { webhooksRoute } from './routes/webhooks';
 import type { AppEnv } from './types';
 
 const app = new Hono<AppEnv>();
@@ -37,6 +40,12 @@ v1.route('/guides', guidesPublicRoute);
 // Tours: a single router with per-route auth. Public GET /tours and GET
 // /tours/:id reach their handlers without traversing guide-only middleware.
 v1.route('/tours', toursRoute);
+
+// Stripe surfaces. /webhooks/stripe is unauthenticated (signature-verified
+// in-handler); /billing/* and /checkout/* self-apply requireAccessAuth.
+v1.route('/billing', billingRoute);
+v1.route('/checkout', checkoutRoute);
+v1.route('/webhooks', webhooksRoute);
 
 app.route('/v1', v1);
 
