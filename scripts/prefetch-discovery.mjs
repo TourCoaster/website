@@ -1,16 +1,6 @@
 #!/usr/bin/env node
-// Prefetch /v1/sitemap-data into _data/discovery.yml so Jekyll can render
-// sitemap.xml and the static browse.html snapshot from live API content.
-//
-// Run before `bundle exec jekyll build`. If the API is unreachable or
-// returns an error, we leave the existing _data/discovery.yml in place
-// (so a stale snapshot is preferred over an empty sitemap) and exit 0 —
-// publishing must not be blocked by API hiccups.
-//
-// Env:
-//   DISCOVERY_API_URL  default: http://localhost:8787/v1/sitemap-data
-//                      production: https://api.tourcoaster.com/v1/sitemap-data
-//   PREFETCH_TIMEOUT   default: 8000 (ms)
+// Prefetch /v1/sitemap-data into _data/discovery.yml. Run before
+// `bundle exec jekyll build`. Env: DISCOVERY_API_URL, PREFETCH_TIMEOUT.
 
 import { writeFile, mkdir, access } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';

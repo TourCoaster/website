@@ -1,12 +1,6 @@
 import { Hono } from 'hono';
 import type { AppEnv } from '../types';
 
-// ----------------------------------------------------------------------------
-// /v1/search?q=...
-// LIKE-based v1 search across guide names, tour titles/descriptions, and
-// tour locations. Returns up to 20 hits per kind. Public — no auth required.
-// ----------------------------------------------------------------------------
-
 export const searchRoute = new Hono<AppEnv>();
 
 const escapeLike = (s: string): string => s.replace(/[%_\\]/g, (m) => '\\' + m);
@@ -92,14 +86,6 @@ searchRoute.get('/', async (c) => {
     { 'cache-control': 'public, max-age=60' }
   );
 });
-
-// ----------------------------------------------------------------------------
-// /v1/sitemap-data
-// All published guides + tours with updated_at, used by:
-//   1. The Jekyll prefetch script that writes sitemap.xml + browse.html.
-//   2. The daily IndexNow cron that diffs against the previous snapshot.
-// Cached for 5 minutes via the Cache API to absorb prebuild/cron bursts.
-// ----------------------------------------------------------------------------
 
 export const sitemapDataRoute = new Hono<AppEnv>();
 

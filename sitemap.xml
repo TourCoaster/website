@@ -13,12 +13,6 @@ sitemap: false
   </url>
   {%- endfor -%}
 
-  {%- comment -%}
-    Live data prefetched from /v1/sitemap-data into _data/discovery.yml.
-    See scripts/prefetch-discovery.mjs. We prefer live data; the static
-    Jekyll collections under _tours/_guides/_vr_experiences are still
-    emitted as a fallback for any handcrafted pages.
-  {%- endcomment -%}
   {%- for tour in site.data.discovery.tours -%}
   <url>
     <loc>{{ "/tours/" | append: tour.slug | append: "/" | absolute_url }}</loc>

@@ -42,16 +42,22 @@ defaults:
       type: "guides"
     values:
       layout: "guide-profile"
+      jsonld_kind: "guide"
+      og_type: "profile"
   - scope:
       path: ""
       type: "tours"
     values:
       layout: "tour-detail"
+      jsonld_kind: "tour"
+      og_type: "product"
   - scope:
       path: ""
       type: "vr_experiences"
     values:
       layout: "vr-detail"
+      jsonld_kind: "tour"
+      og_type: "video.other"
 
 ############################################################
 pagination:

@@ -1,18 +1,4 @@
-{% comment %}
-  Extra SEO partial: canonical link, robots meta, and JSON-LD.
-  Included from _layouts/default.html. Per-page overrides:
-    page.canonical              — override the canonical URL
-    page.noindex                — adds noindex,nofollow
-    page.jsonld_kind            — "tour", "guide", "tour_event", "blog"; default
-                                 omits the page-specific block (Organization +
-                                 WebSite ld+json on the homepage cover the
-                                 default case).
-    page.title / page.description / page.image — populate JSON-LD fields.
-    page.location / page.duration_minutes / page.price / page.currency
-                                — TouristTrip extras for tours.
-    page.starts_at / page.stream_url
-                                — Event extras for live VR airings.
-{% endcomment %}
+{% comment %}Canonical, robots, and JSON-LD. Driven by page.jsonld_kind ("tour", "guide", "blog"); homepage emits Organization + WebSite by default.{% endcomment %}
 {% assign abs_url = page.canonical | default: page.url | absolute_url %}
 <link rel="canonical" href="{{ abs_url }}" />
 <meta name="robots" content="{% if page.noindex %}noindex,nofollow{% else %}index,follow,max-image-preview:large{% endif %}" />
@@ -78,7 +64,9 @@
   }
 }
 </script>
-  {% if page.vr_enabled and page.starts_at %}
+  {% assign _vr = page.vr_enabled | default: page.vr_available %}
+  {% assign _starts = page.starts_at | default: page.scheduled_at %}
+  {% if _vr and _starts %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -86,7 +74,7 @@
   "name": {{ page.title | append: " — Live VR" | jsonify }},
   "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
   "eventStatus": "https://schema.org/EventScheduled",
-  "startDate": "{{ page.starts_at }}",
+  "startDate": "{{ _starts }}",
   "url": "{{ page.stream_url | default: abs_url }}",
   {% if tour_image %}"image": "{{ tour_image | absolute_url }}",{% endif %}
   "location": {

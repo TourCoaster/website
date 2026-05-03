@@ -1,17 +1,12 @@
 import type { AppEnv } from './types';
 import { buildSitemapPayload } from './routes/discovery';
 
-// ----------------------------------------------------------------------------
-// Cloudflare Cron Trigger handler. Runs daily, diffs the current published
-// guides + tours against the previous snapshot stored in the FLAGS KV, and
-// submits changed/new URLs to IndexNow. Bing/Yandex/Naver/Seznam all consume
-// IndexNow; Google still uses sitemap discovery, so we also re-submit the
-// sitemap URL to ensure freshness.
-// ----------------------------------------------------------------------------
+// Daily cron: diffs published tours/guides vs. the FLAGS KV snapshot and
+// pings IndexNow with changed URLs.
 
 const KV_KEY = 'discovery:sitemap-snapshot:v1';
 
-type Snapshot = Record<string, string>; // url -> updated_at iso
+type Snapshot = Record<string, string>;
 
 const buildSnapshot = (
   origin: string,
@@ -63,8 +58,6 @@ export const scheduled = async (
   env: AppEnv['Bindings'],
   ctx: ExecutionContext
 ): Promise<void> => {
-  // Always submit production URLs from the cron — PUBLIC_SITE_ORIGIN may be
-  // a localhost value in the dev binding, which IndexNow would reject.
   const rawOrigin = env.PUBLIC_SITE_ORIGIN || '';
   const origin = /^https:\/\/[^/]+/.test(rawOrigin)
     ? rawOrigin.replace(/\/$/, '')
@@ -88,10 +81,6 @@ export const scheduled = async (
   ctx.waitUntil(
     (async () => {
       const ok = await submitIndexNow(env, host, urls);
-      // Only persist the snapshot when the IndexNow ping actually succeeded
-      // (or when no key is configured and there's nothing to retry). On
-      // failure we keep the previous snapshot so the next cron run will
-      // re-submit the same URLs.
       if (ok) {
         try {
           await env.FLAGS.put(KV_KEY, JSON.stringify(next));
