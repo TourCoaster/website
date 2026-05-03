@@ -5,16 +5,12 @@ sitemap: false
 ---
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  {%- assign pages = site.pages | where_exp: "p", "p.sitemap != false" -%}
-  {%- for page in pages -%}
-    {%- if page.url contains '.html' or page.url == '/' -%}
-      {%- unless page.url contains '/dashboard' or page.url contains '/watch' -%}
+  {%- assign primary = "/,/about,/explore,/vr-experiences,/guides,/destinations,/for-guides,/accessibility,/pricing" | split: "," -%}
+  {%- for path in primary -%}
   <url>
-    <loc>{{ page.url | absolute_url | replace: '/index.html', '/' }}</loc>
+    <loc>{{ path | absolute_url }}</loc>
     <changefreq>weekly</changefreq>
   </url>
-      {%- endunless -%}
-    {%- endif -%}
   {%- endfor -%}
   {%- for tour in site.tours -%}
   <url><loc>{{ tour.url | absolute_url }}</loc><changefreq>weekly</changefreq></url>
@@ -24,5 +20,8 @@ sitemap: false
   {%- endfor -%}
   {%- for vr in site.vr_experiences -%}
   <url><loc>{{ vr.url | absolute_url }}</loc><changefreq>weekly</changefreq></url>
+  {%- endfor -%}
+  {%- for post in site.posts -%}
+  <url><loc>{{ post.url | absolute_url }}</loc><changefreq>monthly</changefreq><lastmod>{{ post.date | date_to_xmlschema }}</lastmod></url>
   {%- endfor -%}
 </urlset>
