@@ -1,0 +1,34 @@
+#21 - Moderation & Admin Console
+What & Why
+The moment signup is open to the public, the platform inherits two responsibilities it does not currently support: handling abuse reports and removing content that violates the community rules. Right now there is no report button anywhere, no admin queue, no audit log of admin actions. Shipping this task before public launch is non-negotiable for a marketplace that minutes user-generated code.
+
+Done looks like
+Every user-generated surface (project, profile, brief, gallery) has a "Report" button that opens a one-screen form: reason (copyright / NSFW / spam / harassment / other) + optional note.
+An admin (is_admin = 1) lands on /admin and sees a queue of open reports with the report metadata, a snapshot of the reported content, the reporter handle, and three buttons: Dismiss, Hide (set status=hidden, content stays in DB), Remove (status=removed, content is wiped from public surfaces but kept for legal record).
+All admin actions write to an append-only audit_log table with admin_id, target_kind, target_id, action, reason, at. The log is queryable from /admin/audit and never deletable.
+A reported user gets a notification only when the action is remove (so dismissing or hiding does not tip them off).
+Three-strikes rule: a user with three remove actions in 90 days is auto-suspended (cannot sign in, sees a static page) until an admin clears them.
+The studio, mint, and gallery surfaces refuse to load status='removed' content with a 410 Gone response.
+Rate-limit on report submission (10 / day per user) and a one-shot anti-duplicate guard so the same reporter cannot stack reports on the same target.
+Out of scope
+Public moderation policy doc and appeal flow (separate doc work).
+ML-assisted moderation, image classifiers.
+DMCA-specific intake flow with counter-notice — generic "copyright" reason for now.
+Multi-admin RBAC (everyone with is_admin=1 has the full toolset for v1).
+Email notifications to admins on new reports — they check the queue.
+Steps
+Schema + flags — Add reports, audit_log tables and is_admin, is_suspended flags on users. Add status (active|hidden|removed) on every user-generated content table.
+Report endpoint + button — Implement POST /v1/reports with rate-limit and anti-dup; add a global "Report" include rendered on every relevant page.
+Status guard — Update every public reader endpoint and Jekyll page to skip non-active content for non-admins; serve 410 for direct hits.
+Admin queue — Add /admin (auth + admin gate) with the report queue, content snapshot, and action buttons. Each action POSTs to /v1/admin/reports/:id/action and writes the audit log.
+Audit log + three-strikes — Add /admin/audit listing the audit log; add a trigger or cron that flips is_suspended on the third remove in 90 days and writes a suspend audit row.
+Suspended-user page — Replace the dashboard / studio shell with a static "Account suspended — contact support" page when the session belongs to a suspended user.
+Relevant files
+workers/api/migrations/0001_init.sql
+workers/api/src/index.ts
+_includes
+_layouts
+Dependencies
+
+Profile, portfolio & follow
+Open task

@@ -27,17 +27,12 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "bundle exec jekyll serve --host 0.0.0.0 --port 5000"
+args = "bundle install && node scripts/prefetch-discovery.mjs && bundle exec jekyll serve --host 0.0.0.0 --port 5000"
 waitForPort = 5000
 
 [[ports]]
 localPort = 5000
 externalPort = 80
-
-[[ports]]
-localPort = 8787
-externalPort = 3000
-exposeLocalhost = true
 
 [deployment]
 deploymentTarget = "static"
