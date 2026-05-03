@@ -1,9 +1,11 @@
 [build]
-  command = "jekyll build"
+  command = "node scripts/prefetch-discovery.mjs && jekyll build"
   publish = "_site"
 
 [build.environment]
   RUBY_VERSION = "3.1.2"
+  NODE_VERSION = "20"
+  DISCOVERY_API_URL = "https://api.tourcoaster.com/v1/sitemap-data"
 
 [[headers]]
   for = "/*"
@@ -22,7 +24,7 @@
   JEKYLL_ENV = "production"
 
 [context.deploy-preview]
-  command = "jekyll build --drafts --future"
+  command = "node scripts/prefetch-discovery.mjs && jekyll build --drafts --future"
 
 [context.branch-deploy]
-  command = "jekyll build --drafts --future"
+  command = "node scripts/prefetch-discovery.mjs && jekyll build --drafts --future"

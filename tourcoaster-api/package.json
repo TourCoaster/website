@@ -15,9 +15,11 @@
     "stripe:setup": "node scripts/stripe-setup.mjs"
   },
   "dependencies": {
+    "@resvg/resvg-wasm": "^2.6.2",
     "aws4fetch": "^1.0.20",
     "hono": "^4.6.14",
-    "jose": "^6.2.3"
+    "jose": "^6.2.3",
+    "workers-og": "^0.0.27"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241218.0",

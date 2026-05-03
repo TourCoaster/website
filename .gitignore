@@ -1,0 +1,15 @@
+_site/
+.jekyll-cache/
+.jekyll-metadata
+.sass-cache/
+*.gem
+.bundle/
+vendor/
+
+node_modules/
+.cache/
+.DS_Store
+
+# Prefetched at build time; refreshed by scripts/prefetch-discovery.mjs.
+# The committed stub keeps Jekyll happy when the API is unreachable.
+!_data/discovery.yml
