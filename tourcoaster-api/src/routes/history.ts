@@ -15,20 +15,28 @@ type HistoryRow = {
   has_replay: number;
 };
 
-// tour_id is included in the SELECT (s.tour_id, grouped) so the dashboard can
-// link to /watch/:tour_id and POST /v1/wishlist/:tour_id without a round-trip.
-
-// Past tours the traveler watched/attended. A vr_session row means the user
-// either completed a booking or had a subscription that granted them access;
-// we surface a replay link when the tour has any ended stream with a recording
-// (or a permanent replay_hls_url on the tour itself).
+// Past tours the traveler watched (vr_sessions) OR attended in person (paid
+// bookings whose scheduled_at has passed). De-duplicated per tour, sorted by
+// the most recent attendance/watch time.
 historyRoute.get('/me', async (c) => {
   const user = c.get('user');
+  const nowIso = new Date().toISOString();
   const rows = await c.env.DB.prepare(
-    `SELECT s.tour_id,
+    `WITH events AS (
+       SELECT tour_id, created_at  AS seen_at, source FROM vr_sessions
+        WHERE user_id = ?1
+       UNION ALL
+       SELECT tour_id, COALESCE(scheduled_at, created_at) AS seen_at,
+              'booking' AS source
+         FROM bookings
+        WHERE traveler_id = ?1
+          AND status = 'paid'
+          AND COALESCE(scheduled_at, created_at) <= ?2
+     )
+     SELECT e.tour_id,
             t.slug, t.title, t.location,
-            MAX(s.created_at) AS last_seen_at,
-            MAX(s.source)     AS source,
+            MAX(e.seen_at) AS last_seen_at,
+            MAX(e.source)  AS source,
             CASE
               WHEN t.replay_hls_url IS NOT NULL THEN 1
               WHEN EXISTS (
@@ -38,14 +46,13 @@ historyRoute.get('/me', async (c) => {
               ) THEN 1
               ELSE 0
             END AS has_replay
-       FROM vr_sessions s
-       JOIN tours t ON t.id = s.tour_id
-      WHERE s.user_id = ?1
-      GROUP BY s.tour_id, t.slug, t.title, t.location, t.replay_hls_url
+       FROM events e
+       JOIN tours t ON t.id = e.tour_id
+      GROUP BY e.tour_id, t.slug, t.title, t.location, t.replay_hls_url
       ORDER BY last_seen_at DESC
       LIMIT 50`
   )
-    .bind(user.id)
+    .bind(user.id, nowIso)
     .all<HistoryRow>();
   return c.json({ items: rows.results ?? [] });
 });
