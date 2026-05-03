@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import type { AppEnv } from '../types';
 import { AppError } from '../middleware/error';
 import { requireAccessAuth, requireRole } from '../auth/middleware';
+import { verifyAccessJwt } from '../auth/jwks';
 import { presignPut } from '../r2/presign';
 import { renderTourPage } from '../render/tour-html';
 
@@ -123,6 +124,45 @@ const ownerCheck = async (
   return tour;
 };
 
+/**
+ * Resolve the calling user's `users.id` from either the Cf-Access-Jwt-Assertion
+ * header or the CF_Authorization cookie, using the same verifier as
+ * requireAccessAuth(). Returns null when no token is present or the token is
+ * invalid — the caller decides how to react. Used by GET /:id so unauthenticated
+ * traffic can still hit the public path.
+ */
+const resolveCallerId = async (c: {
+  req: { header: (k: string) => string | undefined; raw: Request };
+  env: AppEnv['Bindings'];
+}): Promise<string | null> => {
+  const header = c.req.header('Cf-Access-Jwt-Assertion');
+  // Hono's getCookie is exposed off the context; reproduce its lookup here so
+  // this helper can be called from outside a middleware closure.
+  const cookieHeader = c.req.header('cookie') ?? '';
+  let cookieToken: string | undefined;
+  for (const part of cookieHeader.split(/;\s*/)) {
+    const eq = part.indexOf('=');
+    if (eq > 0 && part.slice(0, eq) === 'CF_Authorization') {
+      cookieToken = decodeURIComponent(part.slice(eq + 1));
+      break;
+    }
+  }
+  const token = header ?? cookieToken;
+  if (!token) return null;
+  let claims;
+  try {
+    claims = await verifyAccessJwt(token, c.env);
+  } catch {
+    return null;
+  }
+  const userRow = await c.env.DB.prepare(
+    'SELECT id FROM users WHERE google_sub = ?1 LIMIT 1'
+  )
+    .bind(claims.sub)
+    .first<{ id: string }>();
+  return userRow?.id ?? null;
+};
+
 const validatePatch = (
   body: Record<string, unknown>
 ): { sets: string[]; values: unknown[] } => {
@@ -220,13 +260,16 @@ const validatePatch = (
 };
 
 // ----------------------------------------------------------------------------
-// Protected: /v1/tours/mine
+// Single tours router. Auth is applied per-route inline so public GETs reach
+// their handlers without traversing guide-only middleware.
 // ----------------------------------------------------------------------------
 
-const mine = new Hono<AppEnv>();
-mine.use('*', requireAccessAuth());
-mine.use('*', requireRole('guide'));
-mine.get('/', async (c) => {
+const protectGuide = [requireAccessAuth(), requireRole('guide')] as const;
+export const toursRoute = new Hono<AppEnv>();
+
+// Owner-scoped listing. Specific path declared before /:id to avoid /:id
+// matching "mine".
+toursRoute.get('/mine', ...protectGuide, async (c) => {
   const user = c.get('user');
   const res = await c.env.DB.prepare(
     `SELECT * FROM tours WHERE owner_id = ?1 AND status != 'deleted'
@@ -238,15 +281,7 @@ mine.get('/', async (c) => {
   return c.json({ tours });
 });
 
-// ----------------------------------------------------------------------------
-// Protected write surface: /v1/tours (POST, plus the resource sub-router)
-// ----------------------------------------------------------------------------
-
-const writeRouter = new Hono<AppEnv>();
-writeRouter.use('*', requireAccessAuth());
-writeRouter.use('*', requireRole('guide'));
-
-writeRouter.post('/', async (c) => {
+toursRoute.post('/', ...protectGuide, async (c) => {
   const user = c.get('user');
   let body: Record<string, unknown>;
   try {
@@ -263,7 +298,6 @@ writeRouter.post('/', async (c) => {
   const now = new Date().toISOString();
   const baseSlug = slugify(title);
 
-  // Try a few slug candidates; on UNIQUE collision, suffix.
   const candidates: string[] = [baseSlug];
   for (let i = 2; i <= 5; i++) candidates.push(`${baseSlug}-${i}`);
   candidates.push(`${baseSlug}-${crypto.randomUUID().slice(0, 8)}`);
@@ -286,7 +320,7 @@ writeRouter.post('/', async (c) => {
   throw new AppError(500, 'slug_allocation_failed', 'Could not allocate a tour slug. Try again.');
 });
 
-writeRouter.patch('/:id', async (c) => {
+toursRoute.patch('/:id', ...protectGuide, async (c) => {
   const user = c.get('user');
   const id = c.req.param('id');
   await ownerCheck(c.env, id, user.id);
@@ -319,12 +353,11 @@ writeRouter.patch('/:id', async (c) => {
   return c.json(await hydrate(c.env, tour));
 });
 
-writeRouter.post('/:id/publish', async (c) => {
+toursRoute.post('/:id/publish', ...protectGuide, async (c) => {
   const user = c.get('user');
   const id = c.req.param('id');
   const tour = await ownerCheck(c.env, id, user.id);
 
-  // Minimum required fields to be public.
   const missing: string[] = [];
   if (!tour.title || tour.title.length < 3) missing.push('title');
   if (!tour.description || tour.description.length < 20) missing.push('description');
@@ -352,7 +385,7 @@ writeRouter.post('/:id/publish', async (c) => {
   return c.json(await hydrate(c.env, updated));
 });
 
-writeRouter.delete('/:id', async (c) => {
+toursRoute.delete('/:id', ...protectGuide, async (c) => {
   const user = c.get('user');
   const id = c.req.param('id');
   await ownerCheck(c.env, id, user.id);
@@ -365,7 +398,7 @@ writeRouter.delete('/:id', async (c) => {
   return c.body(null, 204);
 });
 
-writeRouter.post('/:id/media', async (c) => {
+toursRoute.post('/:id/media', ...protectGuide, async (c) => {
   const user = c.get('user');
   const id = c.req.param('id');
   await ownerCheck(c.env, id, user.id);
@@ -389,7 +422,6 @@ writeRouter.post('/:id/media', async (c) => {
   const key = `tours/${id}/${mediaId}.${ext}`;
   const uploadUrl = await presignPut(c.env, key, ct, 600);
 
-  // Determine next position.
   const posRow = await c.env.DB.prepare(
     `SELECT COALESCE(MAX(position), -1) + 1 AS next_pos FROM tour_media WHERE tour_id = ?1`
   )
@@ -406,7 +438,7 @@ writeRouter.post('/:id/media', async (c) => {
   return c.json({ uploadUrl, mediaId, key, contentType: ct, position, maxBytes: MAX_MEDIA_BYTES, expiresIn: 600 });
 });
 
-writeRouter.delete('/:id/media/:mediaId', async (c) => {
+toursRoute.delete('/:id/media/:mediaId', ...protectGuide, async (c) => {
   const user = c.get('user');
   const id = c.req.param('id');
   const mediaId = c.req.param('mediaId');
@@ -420,44 +452,8 @@ writeRouter.delete('/:id/media/:mediaId', async (c) => {
   return c.body(null, 204);
 });
 
-// ----------------------------------------------------------------------------
-// Owner-or-public read: /v1/tours/:id
-// ----------------------------------------------------------------------------
-
-const readById = new Hono<AppEnv>();
-readById.get('/:id', async (c) => {
-  const id = c.req.param('id');
-  const row = await c.env.DB.prepare('SELECT * FROM tours WHERE id = ?1').bind(id).first<TourRow>();
-  if (!row) throw new AppError(404, 'tour_not_found', 'Tour not found.');
-  const tour = rowToTour(row);
-
-  // If published, anyone can read. Otherwise require auth + ownership.
-  if (tour.status !== 'published') {
-    const claims = c.req.header('cf-access-jwt-assertion');
-    if (!claims) throw new AppError(404, 'tour_not_found', 'Tour not found.');
-    // Lazy: re-run protected middleware would require restructuring. Look up
-    // the user by Access claim and ensure ownership.
-    const { verifyAccessJwt } = await import('../auth/jwks');
-    const verified = await verifyAccessJwt(claims, c.env).catch(() => null);
-    if (!verified) throw new AppError(404, 'tour_not_found', 'Tour not found.');
-    const userRow = await c.env.DB.prepare(
-      'SELECT id FROM users WHERE google_sub = ?1 LIMIT 1'
-    )
-      .bind(verified.sub)
-      .first<{ id: string }>();
-    if (!userRow || userRow.id !== tour.owner_id) {
-      throw new AppError(404, 'tour_not_found', 'Tour not found.');
-    }
-  }
-  return c.json(await hydrate(c.env, tour));
-});
-
-// ----------------------------------------------------------------------------
-// Public listing: /v1/tours?category=&q=&limit=&cursor=
-// ----------------------------------------------------------------------------
-
-const list = new Hono<AppEnv>();
-list.get('/', async (c) => {
+// Public listing.
+toursRoute.get('/', async (c) => {
   const url = new URL(c.req.url);
   const category = url.searchParams.get('category');
   const q = url.searchParams.get('q');
@@ -518,8 +514,25 @@ list.get('/', async (c) => {
   });
 });
 
+// Public-or-owner read by id. Anyone may read a published tour. Drafts are
+// readable only by the owner; non-owners get 404 (no draft existence leak).
+toursRoute.get('/:id', async (c) => {
+  const id = c.req.param('id');
+  const row = await c.env.DB.prepare('SELECT * FROM tours WHERE id = ?1').bind(id).first<TourRow>();
+  if (!row) throw new AppError(404, 'tour_not_found', 'Tour not found.');
+  const tour = rowToTour(row);
+
+  if (tour.status !== 'published') {
+    const callerId = await resolveCallerId({ req: c.req, env: c.env });
+    if (!callerId || callerId !== tour.owner_id) {
+      throw new AppError(404, 'tour_not_found', 'Tour not found.');
+    }
+  }
+  return c.json(await hydrate(c.env, tour));
+});
+
 // ----------------------------------------------------------------------------
-// Public HTML: /tours/:slug — server-rendered, approved owner only.
+// Public HTML: /tours/:slug — server-rendered, published only.
 // ----------------------------------------------------------------------------
 
 export const toursHtmlRoute = new Hono<AppEnv>().get('/:slug', async (c) => {
@@ -544,13 +557,6 @@ export const toursHtmlRoute = new Hono<AppEnv>().get('/:slug', async (c) => {
   const url = new URL(c.req.url);
   const apiBase = url.host.startsWith('api.') ? `${url.protocol}//${url.host}` : 'https://api.tourcoaster.com';
   return c.html(renderTourPage(tour, apiBase), 200, {
-    // Edits must reflect "within seconds" per the task; never cache HTML.
     'cache-control': 'no-store',
   });
 });
-
-// Wire-up exposure for index.ts.
-export const toursWriteRoute = writeRouter;
-export const toursMineRoute = mine;
-export const toursReadByIdRoute = readById;
-export const toursListRoute = list;

@@ -10,13 +10,7 @@ import {
   guidesPublicRoute,
   mediaRoute,
 } from './routes/guides';
-import {
-  toursHtmlRoute,
-  toursListRoute,
-  toursMineRoute,
-  toursReadByIdRoute,
-  toursWriteRoute,
-} from './routes/tours';
+import { toursHtmlRoute, toursRoute } from './routes/tours';
 import type { AppEnv } from './types';
 
 const app = new Hono<AppEnv>();
@@ -40,15 +34,9 @@ v1.route('/auth/role', roleRoute);
 v1.route('/guides/me', guidesMeRoute);
 v1.route('/guides', guidesPublicRoute);
 
-// Tours: protected /mine before public listing; protected resource writes
-// share the same /tours mount, so the writeRouter handles POST/PATCH/DELETE
-// on /tours and /tours/:id*. Order matters — register writeRouter (which
-// covers POST /, PATCH /:id, DELETE /:id, POST /:id/publish, POST /:id/media)
-// BEFORE the public listing/read routes so its protected handlers win.
-v1.route('/tours/mine', toursMineRoute);
-v1.route('/tours', toursWriteRoute);
-v1.route('/tours', toursReadByIdRoute);
-v1.route('/tours', toursListRoute);
+// Tours: a single router with per-route auth. Public GET /tours and GET
+// /tours/:id reach their handlers without traversing guide-only middleware.
+v1.route('/tours', toursRoute);
 
 app.route('/v1', v1);
 
