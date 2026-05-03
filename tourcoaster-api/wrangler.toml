@@ -42,3 +42,6 @@ preview_bucket_name = "tourcoaster-media-preview"
 [vars]
 ENVIRONMENT = "development"
 PUBLIC_SITE_ORIGIN = "http://localhost:5000"
+# Cloudflare Access — set per environment. Not secrets, but required for auth.
+CF_ACCESS_TEAM_DOMAIN = "your-team.cloudflareaccess.com"
+CF_ACCESS_AUD = "REPLACE_WITH_ACCESS_APPLICATION_AUD"

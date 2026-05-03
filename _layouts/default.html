@@ -13,7 +13,7 @@ user can't scroll away from the modal. {% endcomment %}
   <!-- Google Analytics-->
   {% include utilities/analytics.html %}
 </head>
-<body {% if page.overflow %} class="overflow-hidden" {% endif %}>
+<body {% if page.overflow %}class="overflow-hidden" {% endif %}{% if page.body_attributes %} {{ page.body_attributes }}{% endif %}>
   <div class="content-wrapper">
     {{ content }}
   </div>

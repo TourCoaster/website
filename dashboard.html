@@ -4,14 +4,20 @@ title: "Dashboard"
 permalink: /dashboard/
 description: "Your TourCoaster dashboard."
 noindex: true
+body_attributes: 'data-auth-page="dashboard"'
 ---
 
 {% include layouts/nav/nav-1.html default_logo="black" %}
 
 <div class="wrapper light-wrapper page-title-wrapper">
-  <div class="container inner">
-    <h1 class="page-title">Dashboard</h1>
-    <p class="lead">Manage your bookings, subscription, and account.</p>
+  <div class="container inner d-flex flex-wrap align-items-center justify-content-between">
+    <div>
+      <h1 class="page-title mb-1">Dashboard</h1>
+      <p class="text-muted mb-0" data-auth-greeting>Loading…</p>
+    </div>
+    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" data-auth-signout>
+      Sign out
+    </button>
   </div>
 </div>
 
@@ -37,8 +43,9 @@ noindex: true
         </a>
       </div>
     </div>
-    <p class="text-muted mt-5"><small>The dashboard is a placeholder until authentication and the backend ship.</small></p>
   </div>
 </div>
+
+<script src="/assets/js/auth.js" defer></script>
 
 {% include layouts/footer/footer-1.html %}

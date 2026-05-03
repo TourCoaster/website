@@ -3,6 +3,8 @@ import { corsMiddleware } from './middleware/cors';
 import { errorHandler, notFoundHandler } from './middleware/error';
 import { requestId } from './middleware/request-id';
 import { healthRoute } from './routes/health';
+import { logoutRoute, meRoute, roleRoute } from './routes/me';
+import { requireAccessAuth } from './auth/middleware';
 import type { AppEnv } from './types';
 
 const app = new Hono<AppEnv>();
@@ -14,7 +16,15 @@ app.onError(errorHandler);
 app.notFound(notFoundHandler);
 
 const v1 = new Hono<AppEnv>();
-v1.route('/health', healthRoute);
+v1.route('/health', healthRoute); // public
+
+const protectedRoutes = new Hono<AppEnv>();
+protectedRoutes.use('*', requireAccessAuth());
+protectedRoutes.route('/me', meRoute);
+protectedRoutes.route('/auth/role', roleRoute);
+protectedRoutes.route('/auth/logout', logoutRoute);
+
+v1.route('/', protectedRoutes);
 
 app.route('/v1', v1);
 

@@ -54,7 +54,7 @@
   <!-- Google Analytics-->
   
 </head>
-<body >
+<body  data-auth-page="login">
   <div class="content-wrapper">
     <!--  Nav Name :Classic Header -->
 <nav
@@ -228,8 +228,8 @@
       <h1 class="mb-2">Welcome back</h1>
       <p class="text-muted">Sign in to TourCoaster</p>
     </div>
-    <div class="card shadow-sm rounded-4 p-4">
-      <button id="google-signin" class="btn btn-outline-dark btn-lg rounded-pill w-100 mb-3" disabled title="Authentication launches with the backend rollout">
+    <div class="card shadow-sm rounded-4 p-4" data-auth-card>
+      <button id="google-signin" class="btn btn-outline-dark btn-lg rounded-pill w-100 mb-3" disabled>
         <i class="jam jam-google me-2"></i> Continue with Google
       </button>
       <p class="text-center text-muted mb-0"><small>By continuing you agree to our Terms and Privacy Policy.</small></p>
@@ -237,6 +237,8 @@
     <p class="text-center mt-4">New here? <a href="/signup">Create an account</a></p>
   </div>
 </div>
+
+<script src="/assets/js/auth.js" defer></script>
 
 <!-- footer with details v1 -->
 <footer class=" dark-wrapper inverse-text ">

@@ -54,7 +54,7 @@
   <!-- Google Analytics-->
   
 </head>
-<body >
+<body  data-auth-page="dashboard">
   <div class="content-wrapper">
     <!--  Nav Name :Classic Header -->
 <nav
@@ -223,9 +223,14 @@
   <!-- /.offcanvas-info -->
 
 <div class="wrapper light-wrapper page-title-wrapper">
-  <div class="container inner">
-    <h1 class="page-title">Dashboard</h1>
-    <p class="lead">Manage your bookings, subscription, and account.</p>
+  <div class="container inner d-flex flex-wrap align-items-center justify-content-between">
+    <div>
+      <h1 class="page-title mb-1">Dashboard</h1>
+      <p class="text-muted mb-0" data-auth-greeting>Loading…</p>
+    </div>
+    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill" data-auth-signout>
+      Sign out
+    </button>
   </div>
 </div>
 
@@ -251,9 +256,10 @@
         </a>
       </div>
     </div>
-    <p class="text-muted mt-5"><small>The dashboard is a placeholder until authentication and the backend ship.</small></p>
   </div>
 </div>
+
+<script src="/assets/js/auth.js" defer></script>
 
 <!-- footer with details v1 -->
 <footer class=" dark-wrapper inverse-text ">
