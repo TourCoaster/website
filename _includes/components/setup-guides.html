@@ -1,0 +1,42 @@
+{%- comment -%}
+Renders the hardware setup guides defined in `_data/setup_guides.yml` as
+Bootstrap pill tabs. Each guide is a tab with an ordered list of steps and
+a small "recommended" line for bitrate/resolution.
+{%- endcomment -%}
+<div class="setup-guides">
+  <ul class="nav nav-pills mb-3" role="tablist">
+    {%- for g in site.data.setup_guides -%}
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link{% if forloop.first %} active{% endif %}"
+        id="setup-tab-{{ g.id }}"
+        data-bs-toggle="pill"
+        data-bs-target="#setup-pane-{{ g.id }}"
+        type="button"
+        role="tab"
+        aria-controls="setup-pane-{{ g.id }}"
+        aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+        {{ g.title }}
+      </button>
+    </li>
+    {%- endfor -%}
+  </ul>
+  <div class="tab-content">
+    {%- for g in site.data.setup_guides -%}
+    <div
+      class="tab-pane fade{% if forloop.first %} show active{% endif %}"
+      id="setup-pane-{{ g.id }}"
+      role="tabpanel"
+      aria-labelledby="setup-tab-{{ g.id }}">
+      <p class="text-muted small mb-2">
+        Recommended: <strong>{{ g.bitrate }}</strong> · {{ g.resolution }}
+      </p>
+      <ol class="mb-0 small">
+        {%- for step in g.steps -%}
+        <li class="mb-1">{{ step }}</li>
+        {%- endfor -%}
+      </ol>
+    </div>
+    {%- endfor -%}
+  </div>
+</div>

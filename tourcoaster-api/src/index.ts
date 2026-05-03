@@ -17,6 +17,7 @@ import { webhooksRoute } from './routes/webhooks';
 import { streamsRoute } from './routes/streams';
 import { streamWebhooksRoute } from './routes/stream-webhooks';
 import { watchRoute } from './routes/watch';
+import { speedtestRoute } from './routes/speedtest';
 import type { AppEnv } from './types';
 
 export { LiveTourRoom } from './stream/durable';
@@ -56,6 +57,7 @@ v1.route('/webhooks', webhooksRoute);
 // /webhooks/stream is unauthenticated (signature-verified in-handler).
 v1.route('/streams', streamsRoute);
 v1.route('/webhooks/stream', streamWebhooksRoute);
+v1.route('/speedtest', speedtestRoute);
 
 app.route('/v1', v1);
 

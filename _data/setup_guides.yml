@@ -1,0 +1,40 @@
+- id: insta360
+  title: "Insta360 X4 + phone"
+  bitrate: "12 Mbps"
+  resolution: "5.7K @ 30fps"
+  steps:
+    - "Power on the X4 and pair with the Insta360 app over Wi-Fi."
+    - "In the app, tap Live → Custom RTMP. Choose 360° equirectangular output."
+    - "Paste the RTMPS URL and stream key from this page into the app."
+    - "Set bitrate to 12 Mbps and resolution to 5.7K @ 30fps."
+    - "Tap Go Live in the app, then watch this dashboard for the 'live' badge."
+- id: gopro
+  title: "GoPro Max + phone"
+  bitrate: "10 Mbps"
+  resolution: "5.6K (stitched) @ 30fps"
+  steps:
+    - "Pair the GoPro Max with the Quik app on your phone."
+    - "Open Live Stream → Other / RTMP."
+    - "Paste the RTMPS URL and stream key."
+    - "Bitrate: 10 Mbps. Lens: 360°. Stabilization: Max HyperSmooth."
+    - "Start streaming and confirm the badge here flips to 'live'."
+- id: theta
+  title: "Ricoh Theta Z1 + OBS"
+  bitrate: "16 Mbps"
+  resolution: "4K (3840x1920) @ 30fps"
+  steps:
+    - "Connect Theta Z1 via USB; install Theta UVC Blender so OBS sees a 360° feed."
+    - "In OBS, add a Video Capture Source pointing at the Theta."
+    - "Settings → Stream: Custom service, Server = RTMPS URL, Stream key = key from this page."
+    - "Output: Bitrate 16 Mbps, Keyframe interval 2s, Profile high, Tune zerolatency."
+    - "Click Start Streaming."
+- id: usb360
+  title: "USB 360 webcam + OBS"
+  bitrate: "8 Mbps"
+  resolution: "4K equirectangular @ 30fps"
+  steps:
+    - "Plug the camera into a USB 3.0 port and confirm OBS lists it as a source."
+    - "Add a Video Capture Source; set the resolution to the camera's native 4K."
+    - "Stream settings: Custom service, Server = RTMPS URL, Stream key = key from this page."
+    - "Output: 8 Mbps, Keyframe interval 2s."
+    - "Start Streaming and verify the dashboard shows 'live' within ~30s."

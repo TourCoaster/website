@@ -13,17 +13,38 @@ body_attributes: 'data-auth-page="dashboard-live"'
   <div class="container inner d-flex flex-wrap align-items-center justify-content-between">
     <div>
       <h1 class="page-title mb-1">Go Live</h1>
-      <p class="text-muted mb-0">Stream a 360&deg; VR tour to your subscribers.</p>
+      <p class="text-muted mb-0">From here to streaming in under five minutes.</p>
     </div>
     <a href="/dashboard/" class="btn btn-sm btn-outline-secondary rounded-pill">&larr; Dashboard</a>
   </div>
 </div>
 
 <div class="wrapper white-wrapper">
-  <div class="container inner" style="max-width:760px;">
+  <div class="container inner" style="max-width:820px;">
+
     <div id="live-status" class="alert alert-info" role="status">Loading your tours…</div>
 
-    <section id="live-card" class="card shadow-sm rounded-4 p-4" style="display:none;">
+    <section id="preflight-card" class="card shadow-sm rounded-4 p-4 mb-4" style="display:none;">
+      <h2 class="h5 mb-3">Pre-flight checklist</h2>
+      <ul class="list-unstyled mb-0" id="preflight-list">
+        <li class="d-flex align-items-center mb-2" data-check="camera">
+          <span class="preflight-icon me-2" aria-hidden="true">⏳</span>
+          <span class="flex-grow-1">Camera detected (USB / OBS Virtual / Quik)</span>
+          <button type="button" class="btn btn-sm btn-link p-0" id="preflight-camera-btn">Test</button>
+        </li>
+        <li class="d-flex align-items-center mb-2" data-check="speed">
+          <span class="preflight-icon me-2" aria-hidden="true">⏳</span>
+          <span class="flex-grow-1">Upstream bandwidth ≥ 10 Mbps <small class="text-muted" id="preflight-speed-detail"></small></span>
+          <button type="button" class="btn btn-sm btn-link p-0" id="preflight-speed-btn">Run test</button>
+        </li>
+        <li class="d-flex align-items-center mb-0" data-check="tour">
+          <span class="preflight-icon me-2" aria-hidden="true">⏳</span>
+          <span class="flex-grow-1">Tour selected</span>
+        </li>
+      </ul>
+    </section>
+
+    <section id="live-card" class="card shadow-sm rounded-4 p-4 mb-4" style="display:none;">
       <h2 class="h5 mb-3">Stream credentials</h2>
 
       <div class="mb-3">
@@ -33,28 +54,70 @@ body_attributes: 'data-auth-page="dashboard-live"'
       </div>
 
       <div class="d-flex flex-wrap gap-2 mb-3">
-        <button id="live-start-btn" class="btn btn-primary rounded-pill">Generate stream credentials</button>
-        <button id="live-stop-btn" class="btn btn-outline-danger rounded-pill" style="display:none;">End live stream</button>
+        <button id="live-start-btn" class="btn btn-primary rounded-pill" disabled>Generate stream credentials</button>
+        <a id="live-test-link" class="btn btn-outline-secondary rounded-pill" href="#" target="_blank" rel="noopener" style="display:none;">Test viewer link &rarr;</a>
+        <button id="live-stop-btn" class="btn btn-danger rounded-pill ms-auto" style="display:none;">End live stream</button>
       </div>
 
       <div id="live-creds" class="alert alert-success" style="display:none;">
         <h3 class="h6 mb-2">Point your encoder at:</h3>
         <dl class="row mb-2 small">
           <dt class="col-sm-4">RTMPS URL</dt>
-          <dd class="col-sm-8"><code id="live-rtmps">—</code></dd>
+          <dd class="col-sm-8">
+            <code id="live-rtmps">—</code>
+            <button type="button" class="btn btn-sm btn-link p-0 ms-1" id="live-copy-rtmps">copy</button>
+          </dd>
           <dt class="col-sm-4">Stream key</dt>
           <dd class="col-sm-8">
             <code id="live-key" style="word-break:break-all;">—</code>
+            <button type="button" class="btn btn-sm btn-link p-0 ms-1" id="live-key-toggle">show</button>
             <button type="button" class="btn btn-sm btn-link p-0 ms-1" id="live-copy-key">copy</button>
           </dd>
-          <dt class="col-sm-4">Status</dt>
-          <dd class="col-sm-8"><span id="live-state-badge" class="badge bg-secondary">idle</span></dd>
         </dl>
         <p class="text-muted small mb-0">Treat the stream key like a password. It works until you click "End live stream".</p>
       </div>
 
+      <div id="live-status-panel" class="row text-center mt-3" style="display:none;">
+        <div class="col-4">
+          <div class="text-muted small">Status</div>
+          <div><span id="live-state-badge" class="badge bg-secondary">idle</span></div>
+        </div>
+        <div class="col-4">
+          <div class="text-muted small">Viewers now</div>
+          <div class="h4 mb-0" id="live-viewer-count">0</div>
+        </div>
+        <div class="col-4">
+          <div class="text-muted small">Live for</div>
+          <div class="h4 mb-0" id="live-duration">00:00</div>
+        </div>
+      </div>
+
       <div id="live-banner" class="alert d-none mt-3" role="status"></div>
     </section>
+
+    <section id="postlive-card" class="card shadow-sm rounded-4 p-4 mb-4" style="display:none;">
+      <h2 class="h5 mb-2">Stream wrap-up</h2>
+      <dl class="row small mb-3">
+        <dt class="col-sm-4">Duration</dt><dd class="col-sm-8" id="postlive-duration">—</dd>
+        <dt class="col-sm-4">Peak viewers</dt><dd class="col-sm-8" id="postlive-peak">—</dd>
+        <dt class="col-sm-4">Recording</dt><dd class="col-sm-8" id="postlive-recording">Processing — check back in a few minutes.</dd>
+      </dl>
+      <div class="d-flex flex-wrap gap-2">
+        <a id="postlive-share-link" class="btn btn-outline-secondary btn-sm rounded-pill" href="#" target="_blank" rel="noopener" style="display:none;">View tour page</a>
+        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" id="postlive-copy-share" style="display:none;">Copy share link</button>
+        <button type="button" class="btn btn-primary btn-sm rounded-pill ms-auto" id="postlive-again">Stream again</button>
+      </div>
+    </section>
+
+    <section class="card shadow-sm rounded-4 p-4 mb-4">
+      <h2 class="h5 mb-3">Hardware setup</h2>
+      {% include components/setup-guides.html %}
+    </section>
+
+    <p class="text-center text-muted small">
+      Need help? <a href="/contact/?topic=onboarding">Book a 15-minute onboarding call</a>.
+    </p>
+
   </div>
 </div>
 
