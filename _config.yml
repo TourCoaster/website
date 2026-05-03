@@ -7,6 +7,16 @@ plugins:
   - jekyll-paginate-v2
   - jekyll-archives
 
+exclude:
+  - tourcoaster-api
+  - node_modules
+  - vendor
+  - Gemfile
+  - Gemfile.lock
+  - .local
+  - README.md
+  - replit.md
+
 collections:
   authors:
     output: true

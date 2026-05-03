@@ -34,6 +34,11 @@ waitForPort = 5000
 localPort = 5000
 externalPort = 80
 
+[[ports]]
+localPort = 8787
+externalPort = 3000
+exposeLocalhost = true
+
 [deployment]
 deploymentTarget = "static"
 build = ["bundle", "exec", "jekyll", "build"]
