@@ -66,13 +66,21 @@ TourCoaster is a hybrid exploration network built on the Snowlake Jekyll theme. 
 bundle exec jekyll serve --host 0.0.0.0 --port 5000
 ```
 
-Configured as the "Start application" workflow on port 5000.
+Configured as the "Start application" workflow on port 5000. The
+`_plugins/prefetch_discovery.rb` Jekyll hook runs
+`scripts/prefetch-discovery.mjs` automatically on each build so
+`_data/discovery.yml` is refreshed from `/v1/sitemap-data`. Set
+`PREFETCH_DISCOVERY=0` to skip and `DISCOVERY_API_URL` to point at a
+non-default API host. The script preserves the previous snapshot if
+the API is unreachable.
 
 ## Deployment
 
 Static site deployment:
-- **Build command:** `bundle exec jekyll build`
+- **Build command:** `node scripts/prefetch-discovery.mjs && bundle exec jekyll build`
 - **Public directory:** `_site`
+- Configured in `netlify.toml` and `cloudflare.toml`. `npm run build`
+  is the canonical local command.
 
 ## URL Structure
 - `/` — Homepage

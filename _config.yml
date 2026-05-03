@@ -16,6 +16,9 @@ exclude:
   - .local
   - README.md
   - replit.md
+  - package.json
+  - package-lock.json
+  - scripts
 
 collections:
   authors:
