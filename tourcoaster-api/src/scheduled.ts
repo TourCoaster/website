@@ -35,16 +35,16 @@ const submitIndexNow = async (
   env: AppEnv['Bindings'],
   host: string,
   urls: string[]
-): Promise<void> => {
+): Promise<boolean> => {
   const key = env.INDEXNOW_KEY;
-  if (!key || urls.length === 0) return;
+  if (!key) return false;
+  if (urls.length === 0) return true;
   const body = {
     host,
     key,
     keyLocation: `https://${host}/${key}.txt`,
     urlList: urls.slice(0, 10000),
   };
-  // api.indexnow.org fans out to Bing, Yandex, Naver, Seznam.
   const res = await fetch('https://api.indexnow.org/IndexNow', {
     method: 'POST',
     headers: { 'content-type': 'application/json; charset=utf-8' },
@@ -53,7 +53,9 @@ const submitIndexNow = async (
   if (!res.ok) {
     const text = await res.text().catch(() => '');
     console.error('indexnow_failed', res.status, text.slice(0, 200));
+    return false;
   }
+  return true;
 };
 
 export const scheduled = async (
@@ -76,10 +78,22 @@ export const scheduled = async (
   }
 
   const changed = diffUrls(prev, next);
-  // Always re-ping the sitemap so search engines re-crawl daily even when
-  // nothing changed; cheap and harmless.
   const urls = Array.from(new Set([`${origin}/sitemap.xml`, ...changed]));
 
-  ctx.waitUntil(submitIndexNow(env, host, urls));
-  ctx.waitUntil(env.FLAGS.put(KV_KEY, JSON.stringify(next)));
+  ctx.waitUntil(
+    (async () => {
+      const ok = await submitIndexNow(env, host, urls);
+      // Only persist the snapshot when the IndexNow ping actually succeeded
+      // (or when no key is configured and there's nothing to retry). On
+      // failure we keep the previous snapshot so the next cron run will
+      // re-submit the same URLs.
+      if (ok) {
+        try {
+          await env.FLAGS.put(KV_KEY, JSON.stringify(next));
+        } catch (err) {
+          console.error('snapshot_write_failed', err);
+        }
+      }
+    })()
+  );
 };

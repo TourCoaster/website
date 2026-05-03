@@ -1,7 +1,6 @@
 baseurl: ""
 url: "https://tourcoaster.com"
 permalink: "/:title"
-destination: "/tmp/_site"
 
 plugins:
   - jekyll-feed

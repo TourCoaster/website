@@ -5,8 +5,6 @@ sitemap: false
 ---
 User-agent: *
 Allow: /
-Disallow: /dashboard/
-Disallow: /watch/
 
 Sitemap: {{ site.url }}/sitemap.xml
 Sitemap: {{ site.url }}/feed.xml
