@@ -63,3 +63,22 @@ R2_PUBLIC_BASE = "https://api.tourcoaster.com"
 PLATFORM_FEE_BPS = "1500"
 STRIPE_PRICE_EXPLORER = "price_REPLACE_WITH_EXPLORER_PRICE_ID"
 STRIPE_PRICE_WANDERER = "price_REPLACE_WITH_WANDERER_PRICE_ID"
+
+# Cloudflare Stream. CF_ACCOUNT_ID is your Cloudflare account id; the
+# STREAM_CUSTOMER_CODE is the `customer-<code>` subdomain assigned by Stream.
+# Secrets (STREAM_API_TOKEN, STREAM_WEBHOOK_SECRET, STREAM_SIGNING_KEY_ID,
+# STREAM_SIGNING_PEM, STREAM_KEY_SECRET) go through `wrangler secret put`.
+CF_ACCOUNT_ID = "REPLACE_WITH_CLOUDFLARE_ACCOUNT_ID"
+STREAM_CUSTOMER_CODE = "customer-REPLACE"
+
+# ---------------------------------------------------------------------------
+# Durable Object — LiveTourRoom (one instance per live_streams row).
+# Tracks viewer counts, fans out chat messages, and pushes status changes.
+# ---------------------------------------------------------------------------
+[[durable_objects.bindings]]
+name = "LIVE_ROOMS"
+class_name = "LiveTourRoom"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["LiveTourRoom"]

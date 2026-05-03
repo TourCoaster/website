@@ -14,7 +14,11 @@ import { toursHtmlRoute, toursRoute } from './routes/tours';
 import { billingRoute } from './routes/billing';
 import { checkoutRoute } from './routes/checkout';
 import { webhooksRoute } from './routes/webhooks';
+import { streamsRoute } from './routes/streams';
+import { streamWebhooksRoute } from './routes/stream-webhooks';
 import type { AppEnv } from './types';
+
+export { LiveTourRoom } from './stream/durable';
 
 const app = new Hono<AppEnv>();
 
@@ -46,6 +50,11 @@ v1.route('/tours', toursRoute);
 v1.route('/billing', billingRoute);
 v1.route('/checkout', checkoutRoute);
 v1.route('/webhooks', webhooksRoute);
+
+// Cloudflare Stream surfaces. /streams/* self-applies requireAccessAuth;
+// /webhooks/stream is unauthenticated (signature-verified in-handler).
+v1.route('/streams', streamsRoute);
+v1.route('/webhooks/stream', streamWebhooksRoute);
 
 app.route('/v1', v1);
 

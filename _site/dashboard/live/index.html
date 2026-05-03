@@ -54,7 +54,7 @@
   <!-- Google Analytics-->
   
 </head>
-<body >
+<body  data-auth-page="dashboard-live">
   <div class="content-wrapper">
     <!--  Nav Name :Classic Header -->
 <nav
@@ -223,30 +223,58 @@
   <!-- /.offcanvas-info -->
 
 <div class="wrapper light-wrapper page-title-wrapper">
-  <div class="container inner">
-    <h1 class="page-title">Go Live</h1>
-    <p class="lead">Stream a 360&deg; VR tour to your subscribers.</p>
+  <div class="container inner d-flex flex-wrap align-items-center justify-content-between">
+    <div>
+      <h1 class="page-title mb-1">Go Live</h1>
+      <p class="text-muted mb-0">Stream a 360&deg; VR tour to your subscribers.</p>
+    </div>
+    <a href="/dashboard/" class="btn btn-sm btn-outline-secondary rounded-pill">&larr; Dashboard</a>
   </div>
 </div>
 
 <div class="wrapper white-wrapper">
-  <div class="container inner">
-    <div class="card shadow-sm rounded-4 p-4 mb-4">
-      <h5 class="mb-3">Pre-flight checklist</h5>
-      <ul class="list-unstyled mb-0">
-        <li class="mb-2"><i class="jam jam-check text-muted"></i> 360&deg; camera connected</li>
-        <li class="mb-2"><i class="jam jam-check text-muted"></i> Internet upload &ge; 10 Mbps</li>
-        <li class="mb-2"><i class="jam jam-check text-muted"></i> Tour selected</li>
-      </ul>
-    </div>
-    <div class="card shadow-sm rounded-4 p-4">
-      <h5 class="mb-3">Stream credentials</h5>
-      <p class="text-muted mb-3">Click below to generate an RTMPS URL and stream key for your selected tour.</p>
-      <button class="btn btn-primary rounded-pill" disabled>Generate stream credentials</button>
-      <p class="text-muted mt-3 mb-0"><small>Live streaming activates once Cloudflare Stream is connected.</small></p>
-    </div>
+  <div class="container inner" style="max-width:760px;">
+    <div id="live-status" class="alert alert-info" role="status">Loading your tours…</div>
+
+    <section id="live-card" class="card shadow-sm rounded-4 p-4" style="display:none;">
+      <h2 class="h5 mb-3">Stream credentials</h2>
+
+      <div class="mb-3">
+        <label class="form-label" for="live-tour">Tour</label>
+        <select id="live-tour" class="form-select"></select>
+        <small class="text-muted">Only published tours with VR enabled appear here.</small>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2 mb-3">
+        <button id="live-start-btn" class="btn btn-primary rounded-pill">Generate stream credentials</button>
+        <button id="live-stop-btn" class="btn btn-outline-danger rounded-pill" style="display:none;">End live stream</button>
+      </div>
+
+      <div id="live-creds" class="alert alert-success" style="display:none;">
+        <h3 class="h6 mb-2">Point your encoder at:</h3>
+        <dl class="row mb-2 small">
+          <dt class="col-sm-4">RTMPS URL</dt>
+          <dd class="col-sm-8"><code id="live-rtmps">—</code></dd>
+          <dt class="col-sm-4">Stream key</dt>
+          <dd class="col-sm-8">
+            <code id="live-key" style="word-break:break-all;">—</code>
+            <button type="button" class="btn btn-sm btn-link p-0 ms-1" id="live-copy-key">copy</button>
+          </dd>
+          <dt class="col-sm-4">Status</dt>
+          <dd class="col-sm-8"><span id="live-state-badge" class="badge bg-secondary">idle</span></dd>
+        </dl>
+        <p class="text-muted small mb-0">Treat the stream key like a password. It works until you click "End live stream".</p>
+      </div>
+
+      <div id="live-banner" class="alert d-none mt-3" role="status"></div>
+    </section>
   </div>
 </div>
+
+<script>window.TOURCOASTER_CF_TEAM = "tourcoaster.cloudflareaccess.com";</script>
+
+<script src="/assets/js/auth.js" defer></script>
+<script src="/assets/js/live.js" defer></script>
 
 <!-- footer with details v1 -->
 <footer class=" dark-wrapper inverse-text ">

@@ -21,6 +21,18 @@ export type Bindings = {
   STRIPE_PRICE_WANDERER?: string;
   // Platform fee in basis points (1500 = 15%). Defaults to 1500 if unset.
   PLATFORM_FEE_BPS?: string;
+  // Cloudflare Stream — secrets via `wrangler secret put`. CF_ACCOUNT_ID and
+  // STREAM_CUSTOMER_CODE are non-secret config; STREAM_SIGNING_PEM holds the
+  // PKCS#8 private key that signs HLS playback JWTs (RS256).
+  CF_ACCOUNT_ID?: string;
+  STREAM_API_TOKEN?: string;
+  STREAM_WEBHOOK_SECRET?: string;
+  STREAM_SIGNING_KEY_ID?: string;
+  STREAM_SIGNING_PEM?: string;
+  STREAM_KEY_SECRET?: string;
+  STREAM_CUSTOMER_CODE?: string;
+  // Durable Object that fans out viewer count + chat for one live stream.
+  LIVE_ROOMS: DurableObjectNamespace;
 };
 
 export type Plan = 'explorer' | 'wanderer';
