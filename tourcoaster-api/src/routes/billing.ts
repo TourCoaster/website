@@ -148,10 +148,19 @@ billingRoute.post('/portal', async (c) => {
   if (!row?.stripe_customer_id) {
     throw new AppError(409, 'no_customer', 'You do not have a billing record yet — make a purchase first.');
   }
+  // Travelers manage their subscription from /dashboard/, guides from
+  // /dashboard/billing/. Send the user back to wherever they came from when
+  // possible; default to /dashboard/.
+  let body: { return_to?: unknown } = {};
+  try { body = (await c.req.json()) as typeof body; } catch { /* empty body is fine */ }
+  const returnPath =
+    typeof body.return_to === 'string' && body.return_to.startsWith('/')
+      ? body.return_to
+      : '/dashboard/';
   const session = await stripeFetch<{ url: string }>(c.env, '/v1/billing_portal/sessions', {
     body: {
       customer: row.stripe_customer_id,
-      return_url: `${successOrigin(c.env)}/dashboard/billing/`,
+      return_url: `${successOrigin(c.env)}${returnPath}`,
     },
   });
   return c.json({ url: session.url });

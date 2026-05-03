@@ -192,7 +192,10 @@
     btn.addEventListener('click', async function () {
       btn.disabled = true;
       try {
-        var res = await api('/v1/billing/portal', { method: 'POST' });
+        var res = await api('/v1/billing/portal', {
+          method: 'POST',
+          body: JSON.stringify({ return_to: '/dashboard/' }),
+        });
         var json = await res.json();
         if (!res.ok) throw new Error((json && json.error && json.error.message) || 'portal_failed');
         location.href = json.url;
@@ -311,6 +314,10 @@
     if (!meRes.ok) { showError('Could not load your account.'); return; }
     var me = await meRes.json();
 
+    if (me.role == null) {
+      location.href = '/login?return_to=' + encodeURIComponent(location.pathname);
+      return;
+    }
     if (me.role === 'guide' || me.role === 'admin') {
       var g = document.querySelector('[data-role="guide"]');
       if (g) g.style.display = '';
