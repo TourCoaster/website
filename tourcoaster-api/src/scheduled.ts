@@ -63,7 +63,12 @@ export const scheduled = async (
   env: AppEnv['Bindings'],
   ctx: ExecutionContext
 ): Promise<void> => {
-  const origin = (env.PUBLIC_SITE_ORIGIN || 'https://tourcoaster.com').replace(/\/$/, '');
+  // Always submit production URLs from the cron — PUBLIC_SITE_ORIGIN may be
+  // a localhost value in the dev binding, which IndexNow would reject.
+  const rawOrigin = env.PUBLIC_SITE_ORIGIN || '';
+  const origin = /^https:\/\/[^/]+/.test(rawOrigin)
+    ? rawOrigin.replace(/\/$/, '')
+    : 'https://tourcoaster.com';
   const host = new URL(origin).host;
 
   const payload = await buildSitemapPayload(env);
